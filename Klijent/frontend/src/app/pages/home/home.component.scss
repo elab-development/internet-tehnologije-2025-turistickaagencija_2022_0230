@@ -1,44 +1,46 @@
 .home {
   .main-content {
     display: flex;
-    justify-content: space-between;
+    position: relative;
+    justify-content: center;
     align-items: center;
     padding: 50px;
-    height: 100vh;
+    height: 60vh;
     background-color: #fff7f7;
-    background-image: url('/assets/mountain-scene.jpg');
+    background-image: url('/assets/background.jpg');
     background-size: cover;
     background-position: center;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+      }
 
     .text-content {
-      max-width: 40%;
+      z-index: 2;
       color: #333;
-
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       h1 {
-        font-size: 2.5rem;
+        font-size: 3rem;
         font-weight: bold;
-        color: #333;
+        color: #ffffff;
+        
       }
 
       p {
-        font-size: 1.1rem;
-        margin: 20px 0;
-      }
-
-      .explore-button {
-        display: inline-block;
-        padding: 12px 30px;
-        background-color: #ff4081;
-        color: white;
-        text-decoration: none;
+        font-size: 2rem;
+        margin: 5px 0;
         font-weight: bold;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-
-        &:hover {
-          background-color: #e03e7e;
-        }
+        color: #ffffff;
       }
+
+
     }
 
     .image-container {
@@ -46,16 +48,16 @@
       img {
         width: 100%;
         height: auto;
+
       }
     }
   }
 
-  /* ========================
-     Search Section
-     ======================== */
+ 
   .search-section {
     position: relative;
-    top: -50px; // malo preklapanje sa glavnom sekcijom
+    z-index: 2;
+    top: -50px; 
     display: flex;
     justify-content: center;
     padding: 2rem;

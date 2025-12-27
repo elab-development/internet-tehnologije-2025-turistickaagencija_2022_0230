@@ -16,7 +16,17 @@ import { FooterComponent } from "./components/footer/footer.component";
 <app-footer></app-footer>
 
   `,
-  styles: [],
+  styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .content {
+      flex: 1;
+    }
+  `],
 })
 export class AppComponent {
 

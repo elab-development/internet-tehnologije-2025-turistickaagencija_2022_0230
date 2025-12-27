@@ -2,7 +2,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
   padding-left: 128px;
   padding-right: 128px;
   background-color: #ffffff;
@@ -14,7 +13,7 @@
   }
 
   .logo-img {
-    height: 140px;
+    height: 100px;
     width: auto;
     cursor: pointer;
   }
@@ -28,10 +27,12 @@
       li {
         a {
           display: inline-block;     
-          padding: 23px 50px;           
+          padding: 1rem 2.5rem;           
           border-radius: 30px;         
           background-color: white;    
-          color: black;               
+          color: black;
+          font-size: 1rem;
+          font-weight: bold;               
           text-decoration: none;     
           transition: background 0.3s; 
           &:hover {
