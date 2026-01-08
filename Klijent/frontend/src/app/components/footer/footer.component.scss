@@ -62,9 +62,10 @@
           color: #8E8E8E;           
         }
       }
-      &.todo { background-color: #ffdb6b; }
+
     }
     .footer-col.company,
+    .footer-col.nsl,
     .footer-col.services {
       display: flex;
       flex-direction: column;
@@ -84,6 +85,51 @@
         color: #8e8e8e; 
         margin: 0 5rem 0 5rem;
         text-align: left;
+      }
+    }
+    .footer-col.nsl{
+      align-items: center;
+      gap: 1rem;
+      .nl{
+        font-size: 1.2rem;
+        color: #fff;    
+        font-weight: bold;
+      }
+      .nl-button{
+        padding: 1.2rem 6rem;
+        background-color: #FFD400;
+        border: none;
+        border-radius: 2rem;
+        color: #000;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s, border 0.3s ease;
+
+        &:hover{
+          background-color: #000000;
+          color: #fff;
+          border: solid  #FFD400 0.1rem;
+
+        }
+      }
+
+
+      .nl-input{
+        padding: 1rem 1.7rem;
+        border-radius: 2rem;
+        border: none;
+        font-size: 1rem;
+        color: #8e8e8e;
+        background-color: #000;
+        border: solid  #8e8e8e 0.1rem;
+
+        &:focus{
+          outline: none;
+          box-shadow: 0 0 5px #FFD400;
+          border: solid  #FFD400 0.1rem;
+          color: #fff;
+        }
       }
     }
   }

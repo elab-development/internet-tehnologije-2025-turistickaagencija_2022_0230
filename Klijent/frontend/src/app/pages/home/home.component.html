@@ -10,15 +10,80 @@
 
   <section class="search-section">
     <div class="search-container">
-      <input type="text" placeholder="Where do you want to go?" />
-      <select>
-        <option value="">Select Type</option>
-        <option value="beach">Beach</option>
-        <option value="mountain">Mountain</option>
-        <option value="city">City</option>
-      </select>
-      <button>Search</button>
+      <div class="search-1">
+        <p class="label">Location</p>
+        <div class="func">
+          <i class="fa-solid fa-location-dot icon"></i>
+          <input
+            class="name"
+            placeholder="Where are you going?"
+            readonly
+          >
+          <i class="fa-solid fa-chevron-down icon--arrow"></i>
+        </div>
+      </div>
+    <div class="separator"></div>
+    <div class="search-2" (click)="openCheckIn()">
+        <p class="label">Check In</p>
+        <div class="func">
+          <i class="fa-solid fa-calendar-days icon"></i>
+          <input
+            matInput
+            [matDatepicker]="checkInPicker"
+            (dateChange)="onCheckInSelect($event)"
+            [(ngModel)]="checkInDate"
+            [matDatepickerFilter]="checkInFilter"
+            placeholder="Choose date"
+            readonly
+            class="name"
+          >
+          <i class="fa-solid fa-chevron-down icon--arrow"></i>
+        </div>
+      </div>
+    <mat-datepicker #checkInPicker panelClass="custom-datepicker"></mat-datepicker>
+
+    <div class="separator"></div>
+    <div class="search-3" (click)="openCheckOut()">
+        <p class="label">Check Out</p>
+        <div class="func">
+          <i class="fa-solid fa-calendar-days icon"></i>
+          <input
+            matInput
+            [matDatepicker]="checkOutPicker"
+            (dateChange)="onCheckOutSelect($event)"
+            [(ngModel)]="checkOutDate"
+            [matDatepickerFilter]="checkOutFilter"
+            placeholder="Choose date"
+            readonly
+            class="name"
+          >
+          <i class="fa-solid fa-chevron-down icon--arrow"></i>
+        </div>
+      </div>
+    <mat-datepicker #checkOutPicker panelClass="custom-datepicker"></mat-datepicker>
+    <div class="separator"></div>
+    <div class="search-4">
+        <p class="label">Guest</p>
+        <div class="func">
+          <i class="fa-solid fa-user icon icon--user"></i>
+          <input
+            class="name"
+            placeholder="Adults & children"
+            readonly
+          >
+          <i class="fa-solid fa-chevron-down icon--arrow"></i>
+        </div>
+      </div>
+    <div class="search-5">
+      <button class="search-btn">
+        <div class="btn-container">
+          <i class="fa-solid fa-magnifying-glass icon icon--search"></i>
+          <span class="btn-text">Search</span>
+        </div>
+      </button>
+    </div>  
     </div>
   </section>
   
+
 </div>

@@ -34,9 +34,9 @@
           font-size: 1rem;
           font-weight: bold;               
           text-decoration: none;     
-          transition: background 0.3s; 
+          transition: background 0.3s, color 0.3s; 
           &:hover {
-            color: #b8b8b8;
+            color: #F2BB20; 
           }
         }
       }
@@ -46,16 +46,15 @@
     background-color: black;   
     color: white;              
   }
-  .navigation ul li a:hover {
-    background-color: lightgray;  
-    color: black;
-  }
+
 
   .navigation ul li:last-child a:hover {
-    background-color: darkgray;   
-    color: white;
-  }
+    background-color:#F2BB20;   
+    color: rgb(0, 0, 0);
 
+  
+  
+  }
 
   .navigation ul li:nth-last-child(3){
     margin-right: 200px;
