@@ -6,27 +6,46 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { formatDate } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 
+
+interface Guest {
+  type: 'Adults' | 'Children';
+  count: number;
+}
+
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  
   imports: [
     CommonModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
   ]
 })
+
 export class HomeComponent {
   title = 'Home page';
+  guestText: string = '';
   
+  guests: Guest[] = [
+    { type: 'Adults', count: 0 },
+    { type: 'Children', count: 0 }
+  ];
   checkInDate: Date | null = null;
   checkOutDate: Date | null = null;
   
   @ViewChild('checkInPicker') checkInPicker!: MatDatepicker<Date>;
   @ViewChild('checkOutPicker') checkOutPicker!: MatDatepicker<Date>;
+
+
+
+
+  activeDialog: 'location' | 'checkin' | 'checkout' | 'guests' | null = null;
+
 
   openCheckIn() {
     this.checkInPicker.open();
@@ -45,16 +64,6 @@ export class HomeComponent {
 
   onCheckOutSelect(event: any) {
     this.checkOutDate = event.value;
-  }
-
-  get checkInDateFormatted(): string {
-    if (!this.checkInDate) return 'Choose date';
-    return formatDate(this.checkInDate, 'dd.MM.yyyy', 'en-US');
-  }
-
-  get checkOutDateFormatted(): string {
-    if (!this.checkOutDate) return 'Choose date';
-    return formatDate(this.checkOutDate, 'dd.MM.yyyy', 'en-US');
   }
 
   checkInFilter = (date: Date | null): boolean => {
@@ -77,4 +86,27 @@ export class HomeComponent {
     minDate.setHours(0, 0, 0, 0);
     return date >= minDate;
   }
+    ngOnInit() {
+    document.addEventListener('click', () => {
+      if(this.activeDialog === 'guests')
+        this.closeGuests();
+    });
+  }
+
+    openGuests() {
+    this.activeDialog = 'guests';
+  }
+    getGuestCounts(): string {
+    return this.guests
+      .filter(g => g.count > 0)
+      .map(g => `${g.count} ${g.type}`)
+      .join(', ');
+  }
+    closeGuests() {
+    this.activeDialog = null;
+    this.guestText = this.getGuestCounts();
+  } 
+    closeDialog() {
+      this.activeDialog = null;
+    }
 }

@@ -14,76 +14,317 @@
         <p class="label">Location</p>
         <div class="func">
           <i class="fa-solid fa-location-dot icon"></i>
-          <input
-            class="name"
-            placeholder="Where are you going?"
-            readonly
-          >
+          <input class="name" placeholder="Where are you going?" readonly>
           <i class="fa-solid fa-chevron-down icon--arrow"></i>
         </div>
       </div>
-    <div class="separator"></div>
-    <div class="search-2" (click)="openCheckIn()">
+      <div class="separator"></div>
+      <div class="search-2" (click)="openCheckIn()">
         <p class="label">Check In</p>
         <div class="func">
           <i class="fa-solid fa-calendar-days icon"></i>
-          <input
-            matInput
-            [matDatepicker]="checkInPicker"
-            (dateChange)="onCheckInSelect($event)"
-            [(ngModel)]="checkInDate"
-            [matDatepickerFilter]="checkInFilter"
-            placeholder="Choose date"
-            readonly
-            class="name"
-          >
+          <input matInput [matDatepicker]="checkInPicker" (dateChange)="onCheckInSelect($event)"
+            [(ngModel)]="checkInDate" [matDatepickerFilter]="checkInFilter" placeholder="Choose date" readonly
+            class="name">
           <i class="fa-solid fa-chevron-down icon--arrow"></i>
         </div>
       </div>
-    <mat-datepicker #checkInPicker panelClass="custom-datepicker"></mat-datepicker>
+      <mat-datepicker #checkInPicker panelClass="custom-datepicker"></mat-datepicker>
 
-    <div class="separator"></div>
-    <div class="search-3" (click)="openCheckOut()">
+      <div class="separator"></div>
+      <div class="search-3" (click)="openCheckOut()">
         <p class="label">Check Out</p>
         <div class="func">
           <i class="fa-solid fa-calendar-days icon"></i>
-          <input
-            matInput
-            [matDatepicker]="checkOutPicker"
-            (dateChange)="onCheckOutSelect($event)"
-            [(ngModel)]="checkOutDate"
-            [matDatepickerFilter]="checkOutFilter"
-            placeholder="Choose date"
-            readonly
-            class="name"
-          >
+          <input matInput [matDatepicker]="checkOutPicker" (dateChange)="onCheckOutSelect($event)"
+            [(ngModel)]="checkOutDate" [matDatepickerFilter]="checkOutFilter" placeholder="Choose date" readonly
+            class="name">
           <i class="fa-solid fa-chevron-down icon--arrow"></i>
         </div>
       </div>
-    <mat-datepicker #checkOutPicker panelClass="custom-datepicker"></mat-datepicker>
-    <div class="separator"></div>
-    <div class="search-4">
+      <mat-datepicker #checkOutPicker panelClass="custom-datepicker"></mat-datepicker>
+      <div class="separator"></div>
+      <div class="search-4" (click)="$event.stopPropagation(); openGuests()">
         <p class="label">Guest</p>
         <div class="func">
           <i class="fa-solid fa-user icon icon--user"></i>
-          <input
-            class="name"
-            placeholder="Adults & children"
-            readonly
-          >
+          <input class="name" placeholder="Adults & children" [value]="guestText" readonly>
           <i class="fa-solid fa-chevron-down icon--arrow"></i>
         </div>
-      </div>
-    <div class="search-5">
-      <button class="search-btn">
-        <div class="btn-container">
-          <i class="fa-solid fa-magnifying-glass icon icon--search"></i>
-          <span class="btn-text">Search</span>
+        <div class="guests-dialog" *ngIf="activeDialog === 'guests'" (click)="$event.stopPropagation()">
+          <div class="guest-row" *ngFor="let guest of guests">
+            <span>{{guest.type}}</span>
+            <button (click)="guest.count = guest.count - 1" [disabled]="guest.count === 0">-</button>
+            <span>{{ guest.count }}</span>
+            <button (click)="guest.count = guest.count + 1">+</button>
+          </div>
         </div>
-      </button>
-    </div>  
+      </div>
+
+      <div class="search-5">
+        <button class="search-btn">
+          <div class="btn-container">
+            <i class="fa-solid fa-magnifying-glass icon icon--search"></i>
+            <span class="btn-text">Search</span>
+          </div>
+        </button>
+      </div>
     </div>
   </section>
-  
 
+  <section class="destinations-section">
+    <h1 class="title">Top Searched Destinations</h1>
+    <p class="subtitle">Favorite destinations of professional tourists</p>
+
+    <div class="destination-grid">
+
+      <div class="destination-card">
+        <img src="https://picsum.photos/100?random=2" alt="Venice">
+        <div class="info">
+          <h3>Venice</h3>
+          <span>356 Tours</span>
+        </div>
+        <button class="arrow">→</button>
+      </div>
+
+      <div class="destination-card">
+        <img src="https://picsum.photos/100?random=3" alt="Amsterdam">
+        <div class="info">
+          <h3>Amsterdam</h3>
+          <span>356 Tours</span>
+        </div>
+        <button class="arrow">→</button>
+      </div>
+
+      <div class="destination-card">
+        <img src="https://picsum.photos/100?random=4" alt="Budapest">
+        <div class="info">
+          <h3>Budapest</h3>
+          <span>356 Tours</span>
+        </div>
+        <button class="arrow">→</button>
+      </div>
+
+      <div class="destination-card">
+        <img src="https://picsum.photos/100?random=5" alt="Lisbon">
+        <div class="info">
+          <h3>Lisbon</h3>
+          <span>356 Tours</span>
+        </div>
+        <button class="arrow">→</button>
+      </div>
+
+      <div class="destination-card">
+        <img src="https://picsum.photos/100?random=6" alt="London">
+        <div class="info">
+          <h3>London</h3>
+          <span>356 Tours</span>
+        </div>
+        <button class="arrow">→</button>
+      </div>
+
+      <div class="destination-card">
+        <img src="https://picsum.photos/100?random=7" alt="Ottawa">
+        <div class="info">
+          <h3>Ottawa</h3>
+          <span>356 Tours</span>
+        </div>
+        <button class="arrow">→</button>
+      </div>
+
+      <div class="destination-card">
+        <img src="https://picsum.photos/100?random=8" alt="Paris">
+        <div class="info">
+          <h3>Paris</h3>
+          <span>356 Tours</span>
+        </div>
+        <button class="arrow">→</button>
+      </div>
+
+      <div class="destination-card">
+        <img src="https://picsum.photos/100?random=9" alt="Paris">
+        <div class="info">
+          <h3>Paris</h3>
+          <span>356 Tours</span>
+        </div>
+        <button class="arrow">→</button>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="featured-tours">
+    <h2>Our Featured Tours</h2>
+
+    <div class="tours-grid">
+
+      <article class="tour-card">
+        <div class="image-wrapper">
+          <img src="https://picsum.photos/600/400?random=1" alt="">
+          <span class="rating">⭐ 4.96</span>
+        </div>
+
+        <h3>California Sunset/Twilight Boat Cruise</h3>
+
+        <div class="card-footer">
+          <span class="price">$48.25</span>
+          <button>Book Now</button>
+        </div>
+      </article>
+
+      <article class="tour-card">
+        <div class="image-wrapper">
+          <img src="https://picsum.photos/600/400?random=2" alt="">
+          <span class="rating">⭐ 4.96</span>
+        </div>
+
+        <h3>California Sunset/Twilight Boat Cruise</h3>
+
+        <div class="card-footer">
+          <span class="price">$48.25</span>
+          <button>Book Now</button>
+        </div>
+      </article>
+
+      <article class="tour-card">
+        <div class="image-wrapper">
+          <img src="https://picsum.photos/600/400?random=3" alt="">
+          <span class="rating">⭐ 4.96</span>
+        </div>
+
+        <h3>California Sunset/Twilight Boat Cruise</h3>
+
+        <div class="card-footer">
+          <span class="price">$48.25</span>
+          <button>Book Now</button>
+        </div>
+      </article>
+      <article class="tour-card">
+        <div class="image-wrapper">
+          <img src="https://picsum.photos/600/400?random=4" alt="">
+          <span class="rating">⭐ 4.96</span>
+        </div>
+
+        <h3>California Sunset/Twilight Boat Cruise</h3>
+
+        <div class="card-footer">
+          <span class="price">$48.25</span>
+          <button>Book Now</button>
+        </div>
+      </article>
+      <article class="tour-card">
+        <div class="image-wrapper">
+          <img src="https://picsum.photos/600/400?random=5" alt="">
+          <span class="rating">⭐ 4.96</span>
+        </div>
+
+        <h3>California Sunset/Twilight Boat Cruise</h3>
+
+        <div class="card-footer">
+          <span class="price">$48.25</span>
+          <button>Book Now</button>
+        </div>
+      </article>
+      <article class="tour-card">
+        <div class="image-wrapper">
+          <img src="https://picsum.photos/600/400?random=6" alt="">
+          <span class="rating">⭐ 4.96</span>
+        </div>
+
+        <h3>California Sunset/Twilight Boat Cruise</h3>
+
+        <div class="card-footer">
+          <span class="price">$48.25</span>
+          <button>Book Now</button>
+        </div>
+      </article>
+      <article class="tour-card">
+        <div class="image-wrapper">
+          <img src="https://picsum.photos/600/400?random=7" alt="">
+          <span class="rating">⭐ 4.96</span>
+        </div>
+
+        <h3>California Sunset/Twilight Boat Cruise</h3>
+
+        <div class="card-footer">
+          <span class="price">$48.25</span>
+          <button>Book Now</button>
+        </div>
+      </article>
+      <article class="tour-card">
+        <div class="image-wrapper">
+          <img src="https://picsum.photos/600/400?random=8" alt="">
+          <span class="rating">⭐ 4.96</span>
+        </div>
+
+        <h3>California Sunset/Twilight Boat Cruise</h3>
+
+        <div class="card-footer">
+          <span class="price">$48.25</span>
+          <button>Book Now</button>
+        </div>
+      </article>
+    </div>
+  </section>
+<section class="adventure-section">
+  <div class="adventure-grid">
+
+    <!-- LEFT -->
+    <div class="content">
+      <h2>Embracing Adventure<br />Since 2003</h2>
+
+      <p>
+        Choose one style or create a package, fill your passports with
+        adventures together.
+      </p>
+
+      <div class="stats">
+        <div>
+          <strong>45+</strong>
+          <span>Global Branches</span>
+        </div>
+        <div>
+          <strong>29K</strong>
+          <span>Destinations Collaboration</span>
+        </div>
+        <div>
+          <strong>20+</strong>
+          <span>Years Experience</span>
+        </div>
+        <div>
+          <strong>168K</strong>
+          <span>Happy Customers</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="features">
+      <div class="feature-card peach">
+        <div class="icon">🌍</div>
+        <h4>300,000+ Experiences</h4>
+        <p>Make memories around the world.</p>
+      </div>
+
+      <div class="feature-card mint">
+        <div class="icon">⭐</div>
+        <h4>Trusted Reviews</h4>
+        <p>4.8 stars from 160,000+ Trustpilot reviews.</p>
+      </div>
+
+      <div class="feature-card blue">
+        <div class="icon">💳</div>
+        <h4>Reserve now, Pay later</h4>
+        <p>Book your spot first, pay later.</p>
+      </div>
+
+      <div class="feature-card gray">
+        <div class="icon">🔒</div>
+        <h4>Security Assurance</h4>
+        <p>Data security through encryption.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
 </div>
