@@ -3,7 +3,7 @@
     <div class="text-content">
       <h1>Your Gateway to Extraordinary Adventures</h1>
       <p>Pack your bags and let Ready2Go redefine your travel experience. Where
-        every journey is a story waiting to be told.</p>
+      every journey is a story waiting to be told.</p>
     </div>
 
   </section>
@@ -51,14 +51,18 @@
           <input class="name" placeholder="Adults & children" [value]="guestText" readonly>
           <i class="fa-solid fa-chevron-down icon--arrow"></i>
         </div>
-        <div class="guests-dialog" *ngIf="activeDialog === 'guests'" (click)="$event.stopPropagation()">
-          <div class="guest-row" *ngFor="let guest of guests">
-            <span>{{guest.type}}</span>
-            <button (click)="guest.count = guest.count - 1" [disabled]="guest.count === 0">-</button>
-            <span>{{ guest.count }}</span>
-            <button (click)="guest.count = guest.count + 1">+</button>
+        @if (activeDialog === 'guests') {
+          <div class="guests-dialog" (click)="$event.stopPropagation()">
+            @for (guest of guests; track guest) {
+              <div class="guest-row">
+                <span>{{guest.type}}</span>
+                <button (click)="guest.count = guest.count - 1" [disabled]="guest.count === 0">-</button>
+                <span>{{ guest.count }}</span>
+                <button (click)="guest.count = guest.count + 1">+</button>
+              </div>
+            }
           </div>
-        </div>
+        }
       </div>
 
       <div class="search-5">
@@ -266,65 +270,65 @@
       </article>
     </div>
   </section>
-<section class="adventure-section">
-  <div class="adventure-grid">
+  <section class="adventure-section">
+    <div class="adventure-grid">
 
-    <!-- LEFT -->
-    <div class="content">
-      <h2>Embracing Adventure<br />Since 2003</h2>
+      <!-- LEFT -->
+      <div class="content">
+        <h2>Embracing Adventure<br />Since 2003</h2>
 
-      <p>
-        Choose one style or create a package, fill your passports with
-        adventures together.
-      </p>
+        <p>
+          Choose one style or create a package, fill your passports with
+          adventures together.
+        </p>
 
-      <div class="stats">
-        <div>
-          <strong>45+</strong>
-          <span>Global Branches</span>
-        </div>
-        <div>
-          <strong>29K</strong>
-          <span>Destinations Collaboration</span>
-        </div>
-        <div>
-          <strong>20+</strong>
-          <span>Years Experience</span>
-        </div>
-        <div>
-          <strong>168K</strong>
-          <span>Happy Customers</span>
+        <div class="stats">
+          <div>
+            <strong>45+</strong>
+            <span>Global Branches</span>
+          </div>
+          <div>
+            <strong>29K</strong>
+            <span>Destinations Collaboration</span>
+          </div>
+          <div>
+            <strong>20+</strong>
+            <span>Years Experience</span>
+          </div>
+          <div>
+            <strong>168K</strong>
+            <span>Happy Customers</span>
+          </div>
         </div>
       </div>
+
+      <!-- RIGHT -->
+      <div class="features">
+        <div class="feature-card peach">
+          <div class="icon">🌍</div>
+          <h4>300,000+ Experiences</h4>
+          <p>Make memories around the world.</p>
+        </div>
+
+        <div class="feature-card mint">
+          <div class="icon">⭐</div>
+          <h4>Trusted Reviews</h4>
+          <p>4.8 stars from 160,000+ Trustpilot reviews.</p>
+        </div>
+
+        <div class="feature-card blue">
+          <div class="icon">💳</div>
+          <h4>Reserve now, Pay later</h4>
+          <p>Book your spot first, pay later.</p>
+        </div>
+
+        <div class="feature-card gray">
+          <div class="icon">🔒</div>
+          <h4>Security Assurance</h4>
+          <p>Data security through encryption.</p>
+        </div>
+      </div>
+
     </div>
-
-    <!-- RIGHT -->
-    <div class="features">
-      <div class="feature-card peach">
-        <div class="icon">🌍</div>
-        <h4>300,000+ Experiences</h4>
-        <p>Make memories around the world.</p>
-      </div>
-
-      <div class="feature-card mint">
-        <div class="icon">⭐</div>
-        <h4>Trusted Reviews</h4>
-        <p>4.8 stars from 160,000+ Trustpilot reviews.</p>
-      </div>
-
-      <div class="feature-card blue">
-        <div class="icon">💳</div>
-        <h4>Reserve now, Pay later</h4>
-        <p>Book your spot first, pay later.</p>
-      </div>
-
-      <div class="feature-card gray">
-        <div class="icon">🔒</div>
-        <h4>Security Assurance</h4>
-        <p>Data security through encryption.</p>
-      </div>
-    </div>
-
-  </div>
-</section>
+  </section>
 </div>

@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -19,12 +19,11 @@ interface Guest {
   styleUrls: ['./home.component.scss'],
   
   imports: [
-    CommonModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
-    FormsModule,
-  ]
+    FormsModule
+]
 })
 
 export class HomeComponent {
