@@ -1,52 +1,71 @@
-h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
+.login{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 26rem;
+    margin: 5rem auto;
+    padding: 3rem;
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
-form {
-  max-width: 320px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #fff;
-}
+    h2{
+        color: rgb(44, 44, 44);
+        align-self: flex-start;
+    }
+    .form{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+    }
+    .form-group{
+        margin-bottom: 1.5rem;
+        padding-right: 2rem;
+        label{
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgb(163, 163, 163);
+        }
 
-div {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-}
+        input{
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 1rem;
+            font-size: 1rem;
+        }
+    }
+    .button{
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 2rem;
+        background-color: #000000;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
 
-label {
-  margin-bottom: 0.3rem;
-  font-size: 0.9rem;
-  color: #555;
-}
+        &:hover{
+            background-color: #FFD400;
+            color: black;
+        }
+    }
 
-input {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+    .checkbox-group{
+        display: flex;
+        justify-content: flex-start;
+        gap: 0.5rem;
 
-  &:focus {
-    outline: none;
-    border-color: #1976d2;
-  }
-}
+        input[type="checkbox"]{
+            width: 1rem;
+            height: 2rem;
+        }
 
-button {
-  width: 100%;
-  padding: 0.6rem;
-  font-size: 1rem;
-  background-color: #1976d2;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #125ca1;
-  }
+        label{
+            color: rgb(44, 44, 43); 
+            margin-top: 0.6rem;
+        }
+    }
 }
