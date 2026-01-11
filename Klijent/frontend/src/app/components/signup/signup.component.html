@@ -1,0 +1,46 @@
+<div class="sign-up">
+    <h2>Sign up</h2>
+    <form class="form">
+        <div class="form-group">
+            <label for="username">Profile name</label>
+            <input type="text" id="username" name="username" placeholder="Enter profile name" required />
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" placeholder="Enter email" required />
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required />
+            <label for="password" class="pass-info">Use 8 or more characters with a mix of letters, numbers & symbols</label>
+        </div>
+        <div class="gender">
+            <label for="gender">What is your gender?</label>
+            <label for="gender" class="optional">(Optional)</label>
+        </div>
+        <div class="gender-options">
+            <input type="radio" id="male" name="gender" value="male" />
+            <label for="male">Male</label>
+            <input type="radio" id="female" name="gender" value="female" />
+            <label for="female">Female</label>
+        </div>
+        <div class="birth-date">
+            <label for="birth">What is your date of birth?</label>
+            <div class="date">
+                <select name="day" id="day" placeholder="Day" class="choose">
+                    <option value="" disabled selected>Day</option>
+                </select>
+                <select name="month" id="month" placeholder="Month" class="choose">
+                    <option value="" disabled selected>Month</option>
+                </select>
+                <select name="year" id="year" placeholder="Year" class="choose">
+                    <option value="" disabled selected>Year</option>
+                </select>
+            </div>
+        </div>
+        <button class="button" type="submit">Sign up</button>
+    </form>
+    <div class="sign-in">
+        You already have an account? <a href="login">Log in</a>.
+    </div>
+</div>
