@@ -10,16 +10,20 @@
             <input type="text" id="email" name="email" placeholder="Enter email" required />
         </div>
         <div class="form-group">
-            <label for="password">Password</label>
+            <div class="password-label">
+                <label for="password">Password</label>
+                <i class="fa-solid" [class.fa-eye]="!isOpen" [class.fa-eye-slash]="isOpen" (click)="toggle()">
+                </i>
+            </div>
             <input type="password" id="password" name="password" placeholder="Enter your password" required />
-            <label for="password" class="pass-info">Use 8 or more characters with a mix of letters, numbers & symbols</label>
+            <label for="password" class="pass-info">Use 8 or more characters with a mix of letters, numbers &
+                symbols</label>
         </div>
         <div class="gender">
             <label for="gender">What is your gender?</label>
-            <label for="gender" class="optional">(Optional)</label>
         </div>
         <div class="gender-options">
-            <input type="radio" id="male" name="gender" value="male" />
+            <input type="radio" id="male" name="gender" value="male"/>
             <label for="male">Male</label>
             <input type="radio" id="female" name="gender" value="female" />
             <label for="female">Female</label>

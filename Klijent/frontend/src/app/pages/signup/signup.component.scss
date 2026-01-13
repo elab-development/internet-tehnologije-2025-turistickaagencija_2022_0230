@@ -41,6 +41,13 @@
             color: rgb(100, 100, 100);
             margin-top: 0.3rem;
         }
+        .password-label{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            color: rgb(163, 163, 163);
+        }
     }
     .button{
         padding: 1rem 2rem;

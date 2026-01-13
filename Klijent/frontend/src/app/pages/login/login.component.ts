@@ -11,7 +11,18 @@ import { FormsModule } from '@angular/forms';
 export class LoginComponent {
   username = '';
   password = '';
+  isOpen = false;
 
+  toggle() {
+    this.isOpen = !this.isOpen;
+      const passwordInput = document.getElementById('password') as HTMLInputElement;
+      if (this.isOpen) {
+          passwordInput.type = 'text';
+      } else {
+          passwordInput.type = 'password';
+      }
+  }
+  
   onSubmit() {
     console.log('Username:', this.username);
     console.log('Password:', this.password);

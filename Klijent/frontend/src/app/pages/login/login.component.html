@@ -6,8 +6,18 @@
       <input type="text" id="username" name="username" placeholder="Enter your email or profile name" required />
     </div>
     <div class="form-group">
-      <label for="password">Password</label>
+      <div class="password-label">
+        <label for="password">Password</label>
+        <i class="fa-solid"
+          [class.fa-eye]="!isOpen"
+          [class.fa-eye-slash]="isOpen"
+          (click)="toggle()">
+        </i>
+      </div>
       <input type="password" id="password" name="password" placeholder="Enter your password" required />
+        <div class="options-links reset-password">
+      Forgot password? <a href="#">Reset password</a>.
+  </div>
     </div>
     <button class="button" type="submit">Sign in</button>
     <div class="checkbox-group">
@@ -15,7 +25,8 @@
       <label for="remember">Remember me</label>
     </div>
   </form>
-  <div class="sign-up">
+  <div class="options-links sign-up">
       Don't have an account? <a href="signup">Sign up</a>.
   </div>
+
 </div>

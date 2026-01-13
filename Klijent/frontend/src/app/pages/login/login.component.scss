@@ -36,6 +36,13 @@
             border-radius: 1rem;
             font-size: 1rem;
         }
+        .password-label{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            color: rgb(163, 163, 163);
+        }
     }
     .button{
         padding: 1rem 2rem;
@@ -68,7 +75,7 @@
             margin-top: 0.6rem;
         }
     }
-    .sign-up{
+    .options-links{
         margin-top: 5rem;
         font-size: 0.9rem;
         color: rgb(100, 100, 100);
@@ -81,6 +88,9 @@
             &:hover{
                 text-decoration: underline;
             }
+        }
+        &.reset-password{
+            margin-top: 0.5rem;
         }
     }
 }
