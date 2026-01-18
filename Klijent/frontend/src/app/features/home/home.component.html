@@ -10,13 +10,26 @@
 
   <section class="search-section">
     <div class="search-container">
-      <div class="search-1">
+      <div class="search-1" (click)="$event.stopPropagation(); openLocation()">
         <p class="label">Location</p>
         <div class="func">
           <i class="fa-solid fa-location-dot icon"></i>
           <input class="name" placeholder="Where are you going?" readonly>
           <i class="fa-solid fa-chevron-down icon--arrow"></i>
         </div>
+        @if (activeDialog === 'location') {
+        <div class="location-dialog" (click)="$event.stopPropagation()">
+          <input type="text" class="search-location-input" placeholder="Search location"/>
+          <div class="location-scroll">
+            @for (location of locations; track location) {
+            <div class="location-row">
+              <span>{{location.name}}</span>
+              <button>+</button>
+            </div>
+            }
+          </div>
+        </div>
+        }
       </div>
       <div class="separator"></div>
       <div class="search-2" (click)="openCheckIn()">

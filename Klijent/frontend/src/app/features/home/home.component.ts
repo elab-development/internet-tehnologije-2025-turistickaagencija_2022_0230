@@ -11,6 +11,9 @@ interface Guest {
   type: 'Adults' | 'Children';
   count: number;
 }
+interface Location {
+  name: string;
+}
 
 @Component({
   selector: 'app-home',
@@ -33,6 +36,13 @@ export class HomeComponent {
   guests: Guest[] = [
     { type: 'Adults', count: 0 },
     { type: 'Children', count: 0 }
+  ];
+  locations: Location[] = [
+    { name: 'New York' },
+    { name: 'Los Angeles' },
+    { name: 'Chicago' },
+    { name: 'Houston' },
+    { name: 'Miami' }
   ];
   checkInDate: Date | null = null;
   checkOutDate: Date | null = null;
@@ -89,11 +99,16 @@ export class HomeComponent {
     document.addEventListener('click', () => {
       if(this.activeDialog === 'guests')
         this.closeGuests();
+      if(this.activeDialog === 'location')
+        this.closeLocation();
     });
   }
 
     openGuests() {
     this.activeDialog = 'guests';
+  }
+    openLocation() {
+    this.activeDialog = 'location';
   }
     getGuestCounts(): string {
     return this.guests
@@ -102,9 +117,13 @@ export class HomeComponent {
       .join(', ');
   }
     closeGuests() {
-    this.activeDialog = null;
-    this.guestText = this.getGuestCounts();
+      this.activeDialog = null;
+      this.guestText = this.getGuestCounts();
   } 
+    closeLocation() {
+      this.activeDialog = null;
+    }
+
     closeDialog() {
       this.activeDialog = null;
     }

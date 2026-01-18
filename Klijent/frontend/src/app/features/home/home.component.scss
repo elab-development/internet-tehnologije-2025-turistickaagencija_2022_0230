@@ -134,6 +134,83 @@
         background-color: #d6d5d5;
       }
 
+      .search-1 {
+        position: relative;
+
+        .location-dialog {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          margin-top: 4px;
+          background: #050606;
+          color: #ffffff;
+          border-radius: 1rem;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          padding: 12px;
+          width: 15rem;
+          height: 15rem;
+          z-index: 50;
+          display: flex;
+          flex-direction: column;
+          
+          .search-location-input {
+            width: 95%;
+            padding: 0.3rem;
+            border: solid #8e8e8e 0.1rem;
+            border-radius: 0.8rem;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+
+                    &:focus{
+          outline: none;
+          box-shadow: 0 0 3px #FFD400;
+          border: solid  #FFD400 0.1rem;
+        }
+            }
+          .location-scroll {
+            flex: 1;
+            overflow-y: auto; 
+            margin-top: 0.5rem;
+
+          }
+          .location-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.5rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            span {
+              flex: 1;
+              text-align: flex-start;
+            }
+
+            button {
+              background-color: transparent;
+              border: 1px solid #ffffff55;
+              border-radius: 0.25rem;
+              color: #ffffff;
+              width: 2rem;
+              height: 2rem;
+              font-weight: bold;
+              cursor: pointer;
+              transition: all 0.15s ease-in-out;
+
+              &:hover {
+                background-color: #FFD400;
+                color: #050606;
+                border-color: #FFD400;
+              }
+            }
+          }
+        }
+      }
+
       .search-5 {
         padding: 1rem;
       }
