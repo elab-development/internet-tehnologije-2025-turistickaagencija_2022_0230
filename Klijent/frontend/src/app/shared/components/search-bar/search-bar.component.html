@@ -4,7 +4,7 @@
       <p class="label">Location</p>
       <div class="func">
         <i class="fa-solid fa-location-dot icon"></i>
-        <input class="name" placeholder="Where are you going?" readonly>
+        <input class="name" [value]="selectedLocationText" placeholder="Where are you going?" readonly>
         <i class="fa-solid fa-chevron-down icon--arrow"></i>
       </div>
       @if (activeDialog === 'location') {
@@ -32,7 +32,7 @@
               @for (city of location.cities; track city) {
                 <div class="location-row">
                   <span>{{city}}</span>
-                  <button>→</button>
+                  <button (click)="selectCity(city); $event.stopPropagation()">→</button>
                 </div>
               }
               </div>

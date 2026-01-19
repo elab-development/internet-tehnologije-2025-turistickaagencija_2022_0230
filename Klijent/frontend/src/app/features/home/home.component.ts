@@ -2,14 +2,6 @@ import { Component } from '@angular/core';
 import { SearchBarComponent } from '../../shared/components/search-bar/search-bar.component'; 
 
 
-interface Guest {
-  type: 'Adults' | 'Children';
-  count: number;
-}
-interface Location {
-  country: string;
-  cities: string[];
-}
 
 @Component({
   selector: 'app-home',

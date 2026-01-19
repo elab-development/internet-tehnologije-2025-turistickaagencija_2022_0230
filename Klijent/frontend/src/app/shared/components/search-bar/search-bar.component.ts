@@ -3,7 +3,8 @@ import { Component, ViewChild } from '@angular/core';
 import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
+import { FilterCheckInDatePipe, FilterCheckOutDatePipe, FormatDatePipe, FormatGuestsPipe, FormatLocationPipe } from '../../pipes'; 
 
 
 interface Guest {
@@ -31,6 +32,8 @@ interface Location {
 
 export class SearchBarComponent {
   guestText: string = '';
+  selectedCity: string = '';
+  selectedLocationText: string = '';
 
   guests: Guest[] = [
     { type: 'Adults', count: 0 },
@@ -78,24 +81,11 @@ export class SearchBarComponent {
   }
 
   checkInFilter = (date: Date | null): boolean => {
-    if (!date) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date >= today;
+    return new FilterCheckInDatePipe().transform(date);
   }
 
   checkOutFilter = (date: Date | null): boolean => {
-    if (!date) return false;
-
-    if (!this.checkInDate) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return date >= today;
-    }
-
-    const minDate = new Date(this.checkInDate);
-    minDate.setHours(0, 0, 0, 0);
-    return date >= minDate;
+    return new FilterCheckOutDatePipe().transform(date, this.checkInDate);
   }
 
   ngOnInit() {
@@ -122,19 +112,22 @@ export class SearchBarComponent {
   }
 
   getGuestCounts(): string {
-    return this.guests
-      .filter(g => g.count > 0)
-      .map(g => `${g.count} ${g.type}`)
-      .join(', ');
+    return new FormatGuestsPipe().transform(this.guests);
   }
 
   closeGuests() {
     this.activeDialog = null;
-    this.guestText = this.getGuestCounts();
+    this.guestText = new FormatGuestsPipe().transform(this.guests);
   } 
 
   closeLocation() {
     this.activeDialog = null;
+  }
+
+  selectCity(city: string) {
+    this.selectedCity = city;
+    this.selectedLocationText = new FormatLocationPipe().transform(city, this.selectedCountry);
+    this.closeLocation();
   }
 
   closeDialog() {
