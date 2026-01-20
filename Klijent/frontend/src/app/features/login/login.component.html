@@ -1,32 +1,50 @@
 <div class="login">
   <h2>Sign in</h2>
-  <form class="form">
+  <form class="form" (ngSubmit)="onSubmit()">
     <div class="form-group">
       <label for="username">Email or profile name</label>
-      <input type="text" id="username" name="username" placeholder="Enter your email or profile name" required />
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="Enter your email or profile name"
+        required
+        [(ngModel)]="username"
+      />
     </div>
+
     <div class="form-group">
       <div class="password-label">
         <label for="password">Password</label>
-        <i class="fa-solid"
+        <i
+          class="fa-solid"
           [class.fa-eye]="!isOpen"
           [class.fa-eye-slash]="isOpen"
-          (click)="toggle()">
-        </i>
+          (click)="toggle()"
+        ></i>
       </div>
-      <input type="password" id="password" name="password" placeholder="Enter your password" required />
-        <div class="options-links reset-password">
-      Forgot password? <a href="#">Reset password</a>.
-  </div>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Enter your password"
+        required
+        [(ngModel)]="password"
+      />
+      <div class="options-links reset-password">
+        Forgot password? <a href="#">Reset password</a>.
+      </div>
     </div>
+
     <button class="button" type="submit">Sign in</button>
+
     <div class="checkbox-group">
-      <input type="checkbox" id="remember">
+      <input type="checkbox" id="remember" />
       <label for="remember">Remember me</label>
     </div>
   </form>
-  <div class="options-links sign-up">
-      Don't have an account? <a href="signup">Sign up</a>.
-  </div>
 
+  <div class="options-links sign-up">
+    Don't have an account? <a href="signup">Sign up</a>.
+  </div>
 </div>

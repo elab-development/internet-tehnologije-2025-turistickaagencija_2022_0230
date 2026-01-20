@@ -4,7 +4,7 @@ import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
-import { FilterCheckInDatePipe, FilterCheckOutDatePipe, FormatDatePipe, FormatGuestsPipe, FormatLocationPipe } from '../../pipes'; 
+import { FilterCheckInDatePipe, FilterCheckOutDatePipe, FormatGuestsPipe, FormatLocationPipe } from '../../pipes'; 
 
 
 interface Guest {

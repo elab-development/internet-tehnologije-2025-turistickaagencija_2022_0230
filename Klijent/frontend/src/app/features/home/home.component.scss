@@ -83,7 +83,7 @@
       display: flex;
       align-items: center;
       background: #fff;
-      border: 0.0625rem solid #eee;
+      border: 1px solid #c2c2c2;
       border-radius: 0.875rem;
       padding: 1rem;
       gap: 0.875rem;
@@ -121,14 +121,16 @@
       height: 2rem;
       border-radius: 50%;
       border: none;
-      background: #f5f5f5;
+      background: #000000;
+      color: #ffffff;
       cursor: pointer;
       font-size: 1rem;
       transition: background 0.2s ease;
     }
 
     .arrow:hover {
-      background: #eaeaea;
+      background: #FFD400;
+      color: #000000;
     }
   }
 
@@ -155,7 +157,7 @@
       padding: 1.25rem;
       box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.06);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px rgb(221, 220, 220) solid;
+      border: 1px #c2c2c2 solid;
 
       &:hover {
         transform: translateY(-0.25rem);
@@ -208,8 +210,9 @@
       }
 
       button {
-        border: none;
-        background: #f2f2f2;
+        border:none;
+        background: #000000;
+        color:#e5e5e5;
         padding: 0.5rem 1.25rem;
         border-radius: 2rem;
         font-size: 0.75rem;
@@ -217,7 +220,8 @@
         transition: background 0.2s ease;
 
         &:hover {
-          background: #e5e5e5;
+          background: #FFD400;
+          color: #000000;
         }
       }
     }

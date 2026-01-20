@@ -15,6 +15,5 @@ import { SearchBarComponent } from '../../shared/components/search-bar/search-ba
 })
 
 export class HomeComponent {
-  title = 'Home page';
   ngOnInit() {}
 }

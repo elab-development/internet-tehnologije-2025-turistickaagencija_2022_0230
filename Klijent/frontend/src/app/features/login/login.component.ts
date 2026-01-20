@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth/auth.service';
+
 
 @Component({
   selector: 'app-login',
@@ -12,6 +15,12 @@ export class LoginComponent {
   username = '';
   password = '';
   isOpen = false;
+  errorMessage: string | null = null;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   toggle() {
     this.isOpen = !this.isOpen;
@@ -24,7 +33,21 @@ export class LoginComponent {
   }
   
   onSubmit() {
-    console.log('Username:', this.username);
-    console.log('Password:', this.password);
+    if (!this.username || !this.password) {
+      this.errorMessage = 'Username and password are required';
+      return;
+    }
+    this.errorMessage = null;
+
+    this.authService.login(this.username, this.password).subscribe({
+      next: () => {
+        console.log('LOGIN RESPONSE IN COMPONENT:', this.authService.user$);
+        this.router.navigate(['/home']);
+      },
+      error: err => {
+        this.errorMessage = err.error?.message ?? 'Login failed';
+      }
+    });
+  
   }
 }
