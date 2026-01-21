@@ -4,12 +4,36 @@
   </div>
   <nav class="navigation">
     <ul>
-      <li><a href="/">Home</a></li>
+      <li><a routerLink="/">Home</a></li>
       <li><a href="#">Something</a></li>
       <li><a href="#">Something</a></li>
       <li><a href="#">Something</a></li>
-      <li><a href="login">Login</a></li>
-      <li><a href="signup">Sign Up</a></li>
+      <!-- Kada NEMA usera: login/sign up -->
+
+      <ng-container class="auth-menu" *ngIf="!(user$ | async)">
+        <li><a routerLink="login" class="login-link">Login</a></li>
+        <li><a routerLink="signup">Sign Up</a></li>
+      </ng-container>
+      
+
+      <ng-container class="auth-menu" *ngIf="user$ | async as user">
+        <li class="user-menu">
+          <button class="user-button" (click)="toggleUserMenu()">
+            <span>{{user.username}}</span>
+            <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <svg class="arrow-icon" [class.open]="userMenuOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          
+          <div class="user-dropdown" *ngIf="userMenuOpen">
+            <button class="logout-btn" (click)="logout()">Logout</button>
+          </div>
+        </li>
+      </ng-container>
     </ul>
   </nav>
 </header>

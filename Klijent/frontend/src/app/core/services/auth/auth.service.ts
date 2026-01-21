@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { LoginApiService } from '../auth/login-api.service';
+import { LoginApiService } from '../component-api/login-api.service';
 import { User } from '../../models/user.model';
 
 
@@ -16,18 +16,22 @@ export class AuthService {
     this.restoreUser();
   }
 
-  login(username: string, password: string) {
-    return this.loginApi.login({ username, password }).pipe(
-      tap(response => {
-        const { user, token } = response.data;
+login(username: string, password: string) {
+  return this.loginApi.login({ username, password }).pipe(
+    tap(response => {
+      if (!response.success) {
+        console.error('Login failed:', response.message);
+        throw new Error(response.message || 'Invalid credentials');
+      }
 
-        console.log('LOGGED USER:', user);
+      const { user, token } = response.data;
 
-        this.userSubject.next(user);
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-      })
-    );
+      console.log('LOGGED USER:', user);
+      this.userSubject.next(user);
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+    })
+  );
   }
 
   logout() {
@@ -42,4 +46,9 @@ export class AuthService {
       this.userSubject.next(JSON.parse(user));
     }
   }
+
+  isLoggedIn(): boolean {
+    return this.userSubject.value !== null;
+  }
+
 }

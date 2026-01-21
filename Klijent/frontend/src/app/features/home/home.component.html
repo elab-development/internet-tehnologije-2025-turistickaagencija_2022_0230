@@ -15,193 +15,37 @@
     <p class="subtitle">Favorite destinations of professional tourists</p>
 
     <div class="destination-grid">
-
-      <div class="destination-card">
-        <img src="https://picsum.photos/100?random=2" alt="Venice">
+      <div class="destination-card" *ngFor="let dest of topDestinations">
+        <img [src]="dest.imageUrl" [alt]="dest.name">
         <div class="info">
-          <h3>Venice</h3>
-          <span>356 Tours</span>
+          <h3>{{ dest.name }}</h3>
+          <span>{{ dest.toursCount }} Tours</span>
         </div>
         <button class="arrow">→</button>
       </div>
-
-      <div class="destination-card">
-        <img src="https://picsum.photos/100?random=3" alt="Amsterdam">
-        <div class="info">
-          <h3>Amsterdam</h3>
-          <span>356 Tours</span>
-        </div>
-        <button class="arrow">→</button>
-      </div>
-
-      <div class="destination-card">
-        <img src="https://picsum.photos/100?random=4" alt="Budapest">
-        <div class="info">
-          <h3>Budapest</h3>
-          <span>356 Tours</span>
-        </div>
-        <button class="arrow">→</button>
-      </div>
-
-      <div class="destination-card">
-        <img src="https://picsum.photos/100?random=5" alt="Lisbon">
-        <div class="info">
-          <h3>Lisbon</h3>
-          <span>356 Tours</span>
-        </div>
-        <button class="arrow">→</button>
-      </div>
-
-      <div class="destination-card">
-        <img src="https://picsum.photos/100?random=6" alt="London">
-        <div class="info">
-          <h3>London</h3>
-          <span>356 Tours</span>
-        </div>
-        <button class="arrow">→</button>
-      </div>
-
-      <div class="destination-card">
-        <img src="https://picsum.photos/100?random=7" alt="Ottawa">
-        <div class="info">
-          <h3>Ottawa</h3>
-          <span>356 Tours</span>
-        </div>
-        <button class="arrow">→</button>
-      </div>
-
-      <div class="destination-card">
-        <img src="https://picsum.photos/100?random=8" alt="Paris">
-        <div class="info">
-          <h3>Paris</h3>
-          <span>356 Tours</span>
-        </div>
-        <button class="arrow">→</button>
-      </div>
-
-      <div class="destination-card">
-        <img src="https://picsum.photos/100?random=9" alt="Paris">
-        <div class="info">
-          <h3>Paris</h3>
-          <span>356 Tours</span>
-        </div>
-        <button class="arrow">→</button>
-      </div>
-
     </div>
   </section>
+
 
   <section class="featured-tours">
     <h2>Our Featured Tours</h2>
 
     <div class="tours-grid">
 
-      <article class="tour-card">
+      <article class="tour-card" *ngFor="let hotel of topHotels">
         <div class="image-wrapper">
-          <img src="https://picsum.photos/600/400?random=1" alt="">
-          <span class="rating">⭐ 4.96</span>
+          <img [src]="hotel.imageUrl" [alt]="hotel.name">
+          <span class="rating">⭐ {{hotel.rating}}</span>
         </div>
 
-        <h3>California Sunset/Twilight Boat Cruise</h3>
+        <h3>{{hotel.name}}</h3>
 
         <div class="card-footer">
-          <span class="price">$48.25</span>
+          <span class="price">{{hotel.pricePerNight}}$</span>
           <button>Book Now</button>
         </div>
       </article>
 
-      <article class="tour-card">
-        <div class="image-wrapper">
-          <img src="https://picsum.photos/600/400?random=2" alt="">
-          <span class="rating">⭐ 4.96</span>
-        </div>
-
-        <h3>California Sunset/Twilight Boat Cruise</h3>
-
-        <div class="card-footer">
-          <span class="price">$48.25</span>
-          <button>Book Now</button>
-        </div>
-      </article>
-
-      <article class="tour-card">
-        <div class="image-wrapper">
-          <img src="https://picsum.photos/600/400?random=3" alt="">
-          <span class="rating">⭐ 4.96</span>
-        </div>
-
-        <h3>California Sunset/Twilight Boat Cruise</h3>
-
-        <div class="card-footer">
-          <span class="price">$48.25</span>
-          <button>Book Now</button>
-        </div>
-      </article>
-      <article class="tour-card">
-        <div class="image-wrapper">
-          <img src="https://picsum.photos/600/400?random=4" alt="">
-          <span class="rating">⭐ 4.96</span>
-        </div>
-
-        <h3>California Sunset/Twilight Boat Cruise</h3>
-
-        <div class="card-footer">
-          <span class="price">$48.25</span>
-          <button>Book Now</button>
-        </div>
-      </article>
-      <article class="tour-card">
-        <div class="image-wrapper">
-          <img src="https://picsum.photos/600/400?random=5" alt="">
-          <span class="rating">⭐ 4.96</span>
-        </div>
-
-        <h3>California Sunset/Twilight Boat Cruise</h3>
-
-        <div class="card-footer">
-          <span class="price">$48.25</span>
-          <button>Book Now</button>
-        </div>
-      </article>
-      <article class="tour-card">
-        <div class="image-wrapper">
-          <img src="https://picsum.photos/600/400?random=6" alt="">
-          <span class="rating">⭐ 4.96</span>
-        </div>
-
-        <h3>California Sunset/Twilight Boat Cruise</h3>
-
-        <div class="card-footer">
-          <span class="price">$48.25</span>
-          <button>Book Now</button>
-        </div>
-      </article>
-      <article class="tour-card">
-        <div class="image-wrapper">
-          <img src="https://picsum.photos/600/400?random=7" alt="">
-          <span class="rating">⭐ 4.96</span>
-        </div>
-
-        <h3>California Sunset/Twilight Boat Cruise</h3>
-
-        <div class="card-footer">
-          <span class="price">$48.25</span>
-          <button>Book Now</button>
-        </div>
-      </article>
-      <article class="tour-card">
-        <div class="image-wrapper">
-          <img src="https://picsum.photos/600/400?random=8" alt="">
-          <span class="rating">⭐ 4.96</span>
-        </div>
-
-        <h3>California Sunset/Twilight Boat Cruise</h3>
-
-        <div class="card-footer">
-          <span class="price">$48.25</span>
-          <button>Book Now</button>
-        </div>
-      </article>
     </div>
   </section>
   <section class="adventure-section">
