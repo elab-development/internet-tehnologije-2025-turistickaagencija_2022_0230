@@ -50,6 +50,34 @@ def login(request):
         }
     }, status=status.HTTP_200_OK)
 
+#--------------------------------------------------
+# REGISTER
+@api_view(['POST'])
+def register(request):
+    serializer = RegisterSerializer(data=request.data)
+    
+    if not serializer.is_valid():
+        return Response({
+            "success": False,
+            "data": None,
+            "message": "Validation error",
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+        
+    user = serializer.save()
+    
+    return Response({
+        "success": True,
+        "data": {
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email
+            }
+        },
+        "message": "User registered successfully"
+    }, status=status.HTTP_201_CREATED)
+
 #---------------------------------------------------
 # /ME ENDPOINT
 @api_view(['GET'])
