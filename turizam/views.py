@@ -10,6 +10,8 @@ from .models import Destinacija, Aranzman
 from .serializers import *
 
 # Create your views here.
+
+# LOGIN
 @api_view(['POST'])
 def login(request):
     serializer = LoginSerializer(data=request.data)
@@ -48,6 +50,25 @@ def login(request):
         }
     }, status=status.HTTP_200_OK)
 
+#---------------------------------------------------
+# /ME ENDPOINT
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def me(request):
+    user = request.user
+    return Response({
+        "success": True,
+        "data": {
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email
+            }
+        }
+    })
+
+#------------------------------------------------
+# ZAHTEVI ZA DESTINACIJE
 @api_view(['GET','POST'])
 def destinacije(request):
     if request.method == 'GET':
@@ -62,6 +83,8 @@ def destinacije(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+#---------------------------------------------------------------------------------
+# ZAHTEVI SA PROSLEDJENIM ID-EM DESTINACIJE
 @api_view(['GET','PUT','DELETE'])
 def destinacija_detail(request, id):
     destinacija = get_object_or_404(Destinacija,id=id)
@@ -78,9 +101,11 @@ def destinacija_detail(request, id):
         destinacija.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+# -----------------------------------------------------------
+# ZAHTEVI ZA ARANZMANE
 
 @api_view(['GET','POST'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def aranzmani(request):
     if request.method == 'GET':
         aranzmani = Aranzman.objects.all()
@@ -94,9 +119,11 @@ def aranzmani(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
+#---------------------------------------------------------------------------------
+# ZAHTEVI SA PROSLEDJENIM ID-EM ARANZMANA   
+     
 @api_view(['GET','PUT','DELETE'])
-@permission_classes([IsAuthenticated])    
+#@permission_classes([IsAuthenticated])    
 def aranzman_detail(request, id):
     aranzman = get_object_or_404(Aranzman,id=id)
     
