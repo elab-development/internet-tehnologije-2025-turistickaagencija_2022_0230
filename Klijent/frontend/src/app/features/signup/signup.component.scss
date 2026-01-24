@@ -145,7 +145,37 @@
                 color: rgb(73, 72, 72);
             }
         }
+    }
 
+    .error-text{
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        display: block;
+    }
 
+    .success-message{
+        width: 100%;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 0.5rem;
+        color: #155724;
+        font-size: 0.95rem;
+
+        strong{
+            font-weight: bold;
+        }
+    }
+
+    .button:disabled{
+        background-color: #ccc;
+        cursor: not-allowed;
+        
+        &:hover{
+            background-color: #ccc;
+            color: white;
+        }
     }
 }

@@ -1,0 +1,3 @@
+interface SignupResponse {
+  message: string;
+}

@@ -1,8 +1,11 @@
 <div class="login">
   <h2>Sign in</h2>
+  <div *ngIf="failureMessage" class="error-message">
+    <strong>Error!</strong> {{ failureMessage }}
+  </div>
   <form class="form" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <label for="username">Email or profile name</label>
+      <label for="username">Email or profile names</label>
       <input
         type="text"
         id="username"
@@ -11,6 +14,7 @@
         required
         [(ngModel)]="username"
       />
+      <span *ngIf="usernameFieldRequiredErrors" class="error-text">{{ usernameFieldRequiredErrors }}</span>
     </div>
 
     <div class="form-group">
@@ -31,6 +35,7 @@
         required
         [(ngModel)]="password"
       />
+      <span *ngIf="passwordFieldRequiredErrors" class="error-text">{{ passwordFieldRequiredErrors }}</span>
       <div class="options-links reset-password">
         Forgot password? <a href="#">Reset password</a>.
       </div>

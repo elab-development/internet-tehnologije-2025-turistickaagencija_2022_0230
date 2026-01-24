@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '../api.service';
 import { ApiResponse } from '../../models/api-response.model';
-import { LoginRequest } from '../../models/auth/login-request.model';
-import { LoginResponse } from '../../models/auth/login-response.model';
+import { LoginRequest } from '../api-message/login-request.model';
+import { LoginResponse } from '../api-message/login-response.model';
+
 
 
 @Injectable({ providedIn: 'root' })
 export class LoginApiService {
 
-  private readonly endpoint = 'auth/login';
+  private readonly endpoint = 'api/auth/login/';
 
   constructor(private api: ApiService) {}
 

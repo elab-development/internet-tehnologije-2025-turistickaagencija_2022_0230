@@ -1,0 +1,68 @@
+<section class="container">
+<section class="hero">
+  <div class="container">
+    <span class="badge">✨ Discover Your Next Adventure</span>
+
+    <h1>
+      Explore the world<br />
+      <span class="highlight">one journey</span> at a time.
+    </h1>
+
+    <p>
+      From the peaks of the Swiss Alps to the beaches of Bali, we curate the
+      world's most breathtaking experiences with Ready2Go.
+    </p>
+  </div>
+</section>
+
+
+  <app-search-bar></app-search-bar>
+  <header class="header">
+    <h1>Active Travel Packages</h1>
+    <span>Result: {{ offers.length }}</span>
+  </header>
+
+  <article class="card" *ngFor="let offer of paginatedOffers">
+
+    <div class="image-wrapper">
+      <img [src]="offer.image" [alt]="offer.title" />
+    </div>
+
+    <div class="content">
+      <span class="badge">{{ offer.country }}</span>
+
+      <div class="title-row">
+        <h2>{{ offer.title }}</h2>
+        <span class="rating">⭐ {{ offer.rating }}</span>
+      </div>
+
+      <p>{{ offer.description }}</p>
+
+      <div class="tags">
+        <span *ngFor="let tag of offer.tags">{{ tag }}</span>
+      </div>
+
+      <div class="footer">
+        <div>
+          <small>DURATION</small>
+          <strong>{{ offer.duration }}</strong>
+        </div>
+
+        <div>
+          <small>PRICE</small>
+          <strong class="price">{{ offer.price }} €</strong>
+        </div>
+
+        <button (click)="showDetails(offer)">Details</button>
+      </div>
+
+    </div>
+  </article>
+
+  <div class="pagination">
+    <button class="arrow" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">&lt;</button>
+    <span class="page-number">{{ currentPage }}</span>
+    <button class="arrow" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">&gt;</button>
+  </div>
+
+</section>

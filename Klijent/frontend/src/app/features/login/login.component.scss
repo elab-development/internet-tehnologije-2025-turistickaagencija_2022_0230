@@ -93,4 +93,25 @@
             margin-top: 0.5rem;
         }
     }
+
+    .error-message{
+        width: 100%;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background-color: #fd4e4eab;
+        border: 1px solid #c3e6cb;
+        border-radius: 0.5rem;
+        color: #670f05;
+        font-size: 0.95rem;
+
+        strong{
+            font-weight: bold;
+        }
+    }
+    .error-text{
+        color: red;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        display: block;
+    }
 }
