@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
@@ -13,12 +13,13 @@ from .serializers import *
 
 # LOGIN
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login(request):
     serializer = LoginSerializer(data=request.data)
     
     if not serializer.is_valid():
         return Response({
-         "succes": False,
+         "success": False,
          "data": None,
          "message": "Validation error",
          "errors": serializer.errors  
@@ -53,6 +54,7 @@ def login(request):
 #--------------------------------------------------
 # REGISTER
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register(request):
     serializer = RegisterSerializer(data=request.data)
     
@@ -69,13 +71,8 @@ def register(request):
     return Response({
         "success": True,
         "data": {
-            "user": {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email
-            }
+            "message": "User registered successfully"
         },
-        "message": "User registered successfully"
     }, status=status.HTTP_201_CREATED)
 
 #---------------------------------------------------
@@ -84,13 +81,22 @@ def register(request):
 @permission_classes([IsAuthenticated])
 def me(request):
     user = request.user
+    
+    if user.is_superuser:
+        role = 'ADMIN'
+    elif user.is_staff:
+        role = 'AGENT'
+    else:
+        role = 'CLIENT'
+    
     return Response({
         "success": True,
         "data": {
             "user": {
                 "id": user.id,
                 "username": user.username,
-                "email": user.email
+                "email": user.email,
+                "role": role
             }
         }
     })
@@ -105,6 +111,18 @@ def destinacije(request):
         return Response(serializer.data)
     
     elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return Response(
+                {"success": False, "message": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         serializer = DestinacijaSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -120,12 +138,32 @@ def destinacija_detail(request, id):
     if request.method == 'GET':
         serializer = DestinacijaSerializer(destinacija)
         return Response(serializer.data)
-    elif request.method == 'PUT':
+    
+    if not request.user.is_authenticated:
+        return Response(
+            {"success": False, "message": "Authentication required"}, 
+            status=status.HTTP_401_UNAUTHORIZED
+            )
+
+    if request.method == 'PUT':
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         serializer = DestinacijaSerializer(destinacija, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
+        
     elif request.method == 'DELETE':
+        if not request.user.is_superuser:
+            return Response(
+                {"success": False, "message": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         destinacija.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -141,6 +179,18 @@ def aranzmani(request):
         return Response(serializer.data)
     
     elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return Response(
+                {"success": False, "message": "Authentication required"},
+                  status=status.HTTP_401_UNAUTHORIZED
+                )
+
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"}, 
+                status=status.HTTP_403_FORBIDDEN
+            )        
+        
         serializer = AranzmanSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -159,12 +209,30 @@ def aranzman_detail(request, id):
         serializer = AranzmanSerializer(aranzman)
         return Response(serializer.data)
     
+    if not request.user.is_authenticated:
+            return Response(
+                {"success": False, "message": "Authentication required"},
+                  status=status.HTTP_401_UNAUTHORIZED
+                )
+    
     elif request.method == 'PUT':
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"}, 
+                status=status.HTTP_403_FORBIDDEN
+            ) 
+        
         serializer = AranzmanSerializer(aranzman, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
     
     elif request.method == 'DELETE':
+        if not (request.user.is_staff or request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"}, 
+                status=status.HTTP_403_FORBIDDEN
+            ) 
+        
         aranzman.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
