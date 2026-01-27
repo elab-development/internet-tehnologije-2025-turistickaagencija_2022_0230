@@ -117,7 +117,7 @@ def destinacije(request):
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        if not (request.user.is_staff or request.user.is_superuser):
+        if not (request.user.is_superuser):
             return Response(
                 {"success": False, "message": "Permission denied"},
                 status=status.HTTP_403_FORBIDDEN
@@ -146,7 +146,7 @@ def destinacija_detail(request, id):
             )
 
     if request.method == 'PUT':
-        if not (request.user.is_staff or request.user.is_superuser):
+        if not (request.user.is_superuser):
             return Response(
                 {"success": False, "message": "Permission denied"},
                 status=status.HTTP_403_FORBIDDEN
