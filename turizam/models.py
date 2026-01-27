@@ -1,10 +1,19 @@
 from django.db import models
 
 # Create your models here.
+class Drzava(models.Model):
+    naziv = models.CharField(max_length=100, unique=True)
+    
+    def __str__(self):
+        return self.naziv
 
 class Destinacija(models.Model):
     naziv = models.CharField(max_length=100)
-    drzava = models.CharField(max_length=100)
+    drzava = models.ForeignKey(
+        Drzava,
+        on_delete=models.PROTECT,
+        related_name='aranzmani'
+    )
     
     def __str__(self):
         return f"{self.naziv} ({self.drzava})"

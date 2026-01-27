@@ -1,8 +1,15 @@
 from rest_framework import serializers
-from .models import Destinacija, Aranzman
+from .models import *
 from django.contrib.auth.models import User
 
+class DrzavaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Drzava
+        fields = '__all__'
+
 class DestinacijaSerializer(serializers.ModelSerializer):
+    drzava = DrzavaSerializer(read_only=True)
+    
     class Meta:
         model = Destinacija
         fields = '__all__'
