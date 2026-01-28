@@ -260,3 +260,70 @@ def aranzman_detail(request, id):
         
         aranzman.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+#------------------------------------------------
+# ZAHTEVI ZA DRZAVE
+@api_view(['GET','POST'])
+def drzave(request):
+    if request.method == 'GET':
+        data = Destinacija.objects.all()
+        serializer = DrzavaSerializer(data, many=True)
+        return Response({"success": True, "data": serializer.data})
+    
+    elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return Response(
+                {"success": False, "message": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if not (request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = DrzavaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#---------------------------------------------------------------------------------
+# ZAHTEVI SA PROSLEDJENIM ID-EM DRZAVE
+@api_view(['GET','PUT','DELETE'])
+def drzava_detail(request, id):
+    drzava = get_object_or_404(Drzava,id=id)
+    
+    if request.method == 'GET':
+        serializer = DrzavaSerializer(drzava)
+        return Response(serializer.data)
+    
+    if not request.user.is_authenticated:
+        return Response(
+            {"success": False, "message": "Authentication required"}, 
+              status=status.HTTP_401_UNAUTHORIZED
+            )
+
+    if request.method == 'PUT':
+        if not (request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = DrzavaSerializer(drzava, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+    elif request.method == 'DELETE':
+        if not request.user.is_superuser:
+            return Response(
+                {"success": False, "message": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        drzava.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

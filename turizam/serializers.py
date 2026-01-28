@@ -34,7 +34,6 @@ class DestinacijaSerializer(serializers.ModelSerializer):
         
         drzava, created = Drzava.objects.get_or_create(
             naziv=drzava_data['naziv'],
-            defaults={'oznaka': drzava_data.get('oznaka')}
         )
 
         destinacija = Destinacija.objects.create(

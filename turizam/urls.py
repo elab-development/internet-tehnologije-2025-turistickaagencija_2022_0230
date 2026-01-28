@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('drzave/', views.drzave),
+    path('drzave/<int:id>/', views.drzava_detail),
+    
     path('destinacije/', views.destinacije),
     path('destinacije/<int:id>/', views.destinacija_detail),
     
