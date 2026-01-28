@@ -101,6 +101,30 @@ def me(request):
         }
     })
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def users(request):
+    if not request.user.is_superuser:
+        return Response({
+            "success": False,
+            "message": "Admin only"
+        }, status=403)
+
+    admins = User.objects.filter(is_superuser=True)
+    agents = User.objects.filter(is_staff=True, is_superuser=False)
+    clients = User.objects.filter(is_staff=False, is_superuser=False)
+
+    return Response({
+        "success": True,
+        "data": {
+            "admins": UserSerializer(admins, many=True).data,
+            "agents": UserSerializer(agents, many=True).data,
+            "clients": UserSerializer(clients, many=True).data
+        }
+    })
+
+
 #------------------------------------------------
 # ZAHTEVI ZA DESTINACIJE
 @api_view(['GET','POST'])
@@ -108,7 +132,7 @@ def destinacije(request):
     if request.method == 'GET':
         data = Destinacija.objects.all()
         serializer = DestinacijaSerializer(data, many=True)
-        return Response(serializer.data)
+        return Response({"success": True, "data": serializer.data})
     
     elif request.method == 'POST':
         if not request.user.is_authenticated:

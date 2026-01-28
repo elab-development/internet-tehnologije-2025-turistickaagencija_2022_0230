@@ -2,6 +2,21 @@ from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
 
+class UserSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'role']
+
+    def get_role(self, obj):
+        if obj.is_superuser:
+            return 'ADMIN'
+        if obj.is_staff:
+            return 'AGENT'
+        return 'CLIENT'
+
+
 class DrzavaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drzava
@@ -12,7 +27,22 @@ class DestinacijaSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Destinacija
-        fields = '__all__'
+        fields = ['id','naziv','drzava']
+    
+    def create(self, validated_data):
+        drzava_data = validated_data.pop('drzava')
+        
+        drzava, created = Drzava.objects.get_or_create(
+            naziv=drzava_data['naziv'],
+            defaults={'oznaka': drzava_data.get('oznaka')}
+        )
+
+        destinacija = Destinacija.objects.create(
+            drzava=drzava,
+            **validated_data
+        )
+
+        return destinacija
         
 class AranzmanSerializer(serializers.ModelSerializer):
     class Meta:
