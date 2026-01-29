@@ -267,7 +267,7 @@ def aranzman_detail(request, id):
 @api_view(['GET','POST'])
 def drzave(request):
     if request.method == 'GET':
-        data = Destinacija.objects.all()
+        data = Drzava.objects.all()
         serializer = DrzavaSerializer(data, many=True)
         return Response({"success": True, "data": serializer.data})
     

@@ -15,6 +15,12 @@ class Destinacija(models.Model):
         related_name='aranzmani'
     )
     
+    slika = models.ImageField(
+        upload_to='destinacije/',
+        null=True,
+        blank=True,
+    )
+    
     def __str__(self):
         return f"{self.naziv} ({self.drzava})"
     

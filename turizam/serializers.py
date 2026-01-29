@@ -23,25 +23,17 @@ class DrzavaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DestinacijaSerializer(serializers.ModelSerializer):
+    drzava_id = serializers.PrimaryKeyRelatedField(
+        queryset=Drzava.objects.all(),
+        source='drzava',
+        write_only=True
+    )
     drzava = DrzavaSerializer(read_only=True)
     
     class Meta:
         model = Destinacija
-        fields = ['id','naziv','drzava']
+        fields = ['id','naziv','drzava','drzava_id','slika']
     
-    def create(self, validated_data):
-        drzava_data = validated_data.pop('drzava')
-        
-        drzava, created = Drzava.objects.get_or_create(
-            naziv=drzava_data['naziv'],
-        )
-
-        destinacija = Destinacija.objects.create(
-            drzava=drzava,
-            **validated_data
-        )
-
-        return destinacija
         
 class AranzmanSerializer(serializers.ModelSerializer):
     class Meta:
