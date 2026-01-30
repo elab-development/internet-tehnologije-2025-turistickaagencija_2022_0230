@@ -39,6 +39,14 @@ class AranzmanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Aranzman
         fields = '__all__'
+    
+    def validate(self, data):
+        if data['datum_zavrsetka'] <= data['datum_pocetka']:
+            raise serializers.ValidationError(
+                "Datum završetka mora biti posle datuma početka."
+            )
+        return data
+
         
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
