@@ -327,3 +327,66 @@ def drzava_detail(request, id):
         
         drzava.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+#-----------------------------------------------------------------------
+# ZAHTEVI ZA HOTELE
+@api_view(['GET', 'POST'])
+def hoteli(request):
+    if request.method == 'GET':
+        hoteli = Hotel.objects.all()
+        serializer = HotelSerializer(hoteli, many=True)
+        return Response(serializer.data)
+
+    if not request.user.is_authenticated:
+        return Response(
+            {"success": False, "message": "Authentication required"}, 
+              status=status.HTTP_401_UNAUTHORIZED
+            )
+
+    if request.method == 'POST':
+        if not (request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = HotelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#--------------------------------------------------------------------------------
+# ZAHTEVI SA PROSLEDJENIM ID-JEM HOTELA
+@api_view(['GET', 'PUT', 'DELETE'])
+def hotel_detail(request, id):
+    hotel = get_object_or_404(Hotel, id=id)
+
+    if request.method == 'GET':
+        serializer = HotelSerializer(hotel)
+        return Response(serializer.data)
+    
+    if not request.user.is_authenticated:
+        return Response(
+            {"success": False, "message": "Authentication required"}, 
+              status=status.HTTP_401_UNAUTHORIZED
+            )
+    
+    if not (request.user.is_superuser):
+            return Response(
+                {"success": False, "message": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+    if request.method == 'PUT':
+        serializer = HotelSerializer(hotel, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        hotel.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -66,3 +66,25 @@ class RegisterSerializer(serializers.Serializer):
             password=validated_data['password']
         )
         return user
+    
+
+class HotelSerializer(serializers.ModelSerializer):
+    destinacija_id = serializers.PrimaryKeyRelatedField(
+        queryset=Destinacija.objects.all(),
+        source='destinacija',
+        write_only=True
+    )
+    
+    destinacija = DestinacijaSerializer(read_only=True)
+    
+    class Meta:
+        model = Hotel
+        fields = [
+            'id',
+            'naziv',
+            'slika',
+            'ocena',
+            'cena_nocenja',
+            'destinacija',
+            'destinacija_id'
+        ]

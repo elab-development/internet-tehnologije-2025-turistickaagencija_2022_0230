@@ -2,14 +2,17 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('drzave/', views.drzave),
-    path('drzave/<int:id>/', views.drzava_detail),
+    path('countries/', views.drzave),
+    path('countries/<int:id>/', views.drzava_detail),
     
-    path('destinacije/', views.destinacije),
-    path('destinacije/<int:id>/', views.destinacija_detail),
+    path('destinations/', views.destinacije),
+    path('destinations/<int:id>/', views.destinacija_detail),
     
-    path('aranzmani/', views.aranzmani),
-    path('aranzmani/<int:id>/', views.aranzman_detail),
+    path('arangements/', views.aranzmani),
+    path('arangements/<int:id>/', views.aranzman_detail),
+    
+    path('hotels/', views.hoteli),
+    path('hotels/<int:id>/', views.hotel_detail),
     
     path('users/', views.users),
     

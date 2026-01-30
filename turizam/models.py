@@ -39,3 +39,19 @@ class Aranzman(models.Model):
     
     def __str__(self):
         return f"{self.naziv} - {self.destinacija.naziv}"
+    
+
+class Hotel(models.Model):
+    naziv = models.CharField(max_length=200)
+    slika = models.ImageField(upload_to='hoteli/',null=True,blank=True)
+    ocena = models.DecimalField(max_digits=2,decimal_places=1)
+    cena_nocenja = models.DecimalField(max_digits=8,decimal_places=2)
+    
+    destinacija = models.ForeignKey(
+        Destinacija,
+        on_delete=models.CASCADE,
+        related_name='hoteli'
+    )
+    
+    def __str__(self):
+        return self.name
