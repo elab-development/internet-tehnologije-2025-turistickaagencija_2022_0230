@@ -195,7 +195,6 @@ def destinacija_detail(request, id):
 # ZAHTEVI ZA ARANZMANE
 
 @api_view(['GET','POST'])
-#@permission_classes([IsAuthenticated])
 def aranzmani(request):
     if request.method == 'GET':
         aranzmani = Aranzman.objects.all()
@@ -261,6 +260,18 @@ def aranzman_detail(request, id):
         aranzman.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+
+@api_view(['GET'])
+def top_aranzmani(request):
+    aranzmani = (
+        Aranzman.objects.order_by('-hotel__ocena')[:8]
+    )
+    
+    serializer = AranzmanSerializer(aranzmani, many=True)
+    return Response({
+        "success": True,
+        "data": serializer.data
+    })
 
 #------------------------------------------------
 # ZAHTEVI ZA DRZAVE
@@ -390,3 +401,5 @@ def hotel_detail(request, id):
     if request.method == 'DELETE':
         hotel.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+

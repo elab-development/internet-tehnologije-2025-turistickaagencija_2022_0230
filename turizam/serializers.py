@@ -35,17 +35,7 @@ class DestinacijaSerializer(serializers.ModelSerializer):
         fields = ['id','naziv','drzava','drzava_id','slika']
     
         
-class AranzmanSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Aranzman
-        fields = '__all__'
-    
-    def validate(self, data):
-        if data['datum_zavrsetka'] <= data['datum_pocetka']:
-            raise serializers.ValidationError(
-                "Datum završetka mora biti posle datuma početka."
-            )
-        return data
+
 
         
 class LoginSerializer(serializers.Serializer):
@@ -96,3 +86,43 @@ class HotelSerializer(serializers.ModelSerializer):
             'destinacija',
             'destinacija_id'
         ]
+        
+class AranzmanSerializer(serializers.ModelSerializer):
+    destinacija_id = serializers.PrimaryKeyRelatedField(
+        queryset=Destinacija.objects.all(),
+        source='destinacija',
+        write_only=True
+    )
+    
+    hotel_id = serializers.PrimaryKeyRelatedField(
+        queryset=Hotel.objects.all(),
+        source='hotel',
+        write_only=True
+    )
+
+    destinacija = DestinacijaSerializer(read_only=True)
+    hotel = HotelSerializer(read_only=True)
+    
+    class Meta:
+        model = Aranzman
+        fields = [
+            'id',
+            'naziv',
+            'destinacija',
+            'destinacija_id',
+            'hotel',
+            'hotel_id',
+            'datum_pocetka',
+            'datum_zavrsetka',
+            'broj_nocenja',
+            'cena',
+            'broj_mesta',
+            'opis'
+        ]
+    
+    def validate(self, data):
+        if data['datum_zavrsetka'] <= data['datum_pocetka']:
+            raise serializers.ValidationError(
+                "Datum završetka mora biti posle datuma početka."
+            )
+        return data

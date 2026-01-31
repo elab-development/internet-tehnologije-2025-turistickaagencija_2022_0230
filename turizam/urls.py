@@ -8,8 +8,9 @@ urlpatterns = [
     path('destinations/', views.destinacije),
     path('destinations/<int:id>/', views.destinacija_detail),
     
-    path('arangements/', views.aranzmani),
-    path('arangements/<int:id>/', views.aranzman_detail),
+    path('arrangements/', views.aranzmani),
+    path('arrangements/<int:id>/', views.aranzman_detail),
+    path('arrangements/top/', views.top_aranzmani),
     
     path('hotels/', views.hoteli),
     path('hotels/<int:id>/', views.hotel_detail),

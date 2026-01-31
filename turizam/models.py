@@ -38,7 +38,7 @@ class Hotel(models.Model):
     )
     
     def __str__(self):
-        return self.name
+        return self.naziv
     
     
 class Aranzman(models.Model):
@@ -53,12 +53,13 @@ class Aranzman(models.Model):
     hotel = models.ForeignKey(
         Hotel,
         on_delete=models.PROTECT,
-        related_name='aranzmani'
+        related_name='aranzmani',
+        null=True,
     )
     
     datum_pocetka = models.DateField()
     datum_zavrsetka = models.DateField()
-    broj_nocenja = models.PositiveIntegerField()
+    broj_nocenja = models.PositiveIntegerField(default=3)
     
     cena = models.DecimalField(max_digits=10,decimal_places=2)
     
