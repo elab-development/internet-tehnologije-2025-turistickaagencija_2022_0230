@@ -11,6 +11,7 @@ urlpatterns = [
     path('arrangements/', views.aranzmani),
     path('arrangements/<int:id>/', views.aranzman_detail),
     path('arrangements/top/', views.top_aranzmani),
+    path('arrangements/filter/', views.aranzmani_filter),
     
     path('hotels/', views.hoteli),
     path('hotels/<int:id>/', views.hotel_detail),

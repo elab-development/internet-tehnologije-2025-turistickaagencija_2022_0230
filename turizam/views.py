@@ -8,6 +8,8 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Destinacija, Aranzman
 from .serializers import *
+from datetime import timedelta
+from django.utils.dateparse import parse_date
 
 # Create your views here.
 
@@ -260,7 +262,8 @@ def aranzman_detail(request, id):
         aranzman.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-
+#------------------------------------------------------------------------
+# ZAHTEV ZA TOP ARANZMANE
 @api_view(['GET'])
 def top_aranzmani(request):
     aranzmani = (
@@ -268,6 +271,52 @@ def top_aranzmani(request):
     )
     
     serializer = AranzmanSerializer(aranzmani, many=True)
+    return Response({
+        "success": True,
+        "data": serializer.data
+    })
+
+#---------------------------------------------------------------
+# ZAHTEVI ZA FILTRIRANE ARANZMANE
+@api_view(['POST'])
+def aranzmani_filter(request):
+    queryset = Aranzman.objects.all()
+    
+    destinacija_id = request.data.get('destinacija_id')
+    datum_pocetka = request.data.get('datum_pocetka')
+    datum_zavrsetka = request.data.get('datum_zavrsetka')
+    broj_mesta = request.data.get('broj_mesta')
+    
+    if destinacija_id:
+        queryset = queryset.filter(destinacija_id=destinacija_id)
+        
+    if datum_pocetka and datum_zavrsetka:
+        queryset = queryset.filter(
+            datum_pocetka__gte=datum_pocetka,
+            datum_zavrsetka__lte=datum_zavrsetka
+        )
+    elif datum_pocetka:
+        start = parse_date(datum_pocetka)
+        end = start + timedelta(days=30)
+        
+        queryset = queryset.filter(
+            datum_pocetka__gte=start,
+            datum_zavrsetka__lte=end
+        )
+    if datum_zavrsetka:
+        end = parse_date(datum_zavrsetka)
+        start = end - timedelta(days=30)
+        
+        queryset = queryset.filter(
+            datum_zavrsetka__lte=end,
+            datum_pocetka__gte=start
+        )
+    
+    if broj_mesta:
+        queryset = queryset.filter(broj_mesta__gte=broj_mesta)
+    
+    serializer = AranzmanSerializer(queryset, many=True)
+    
     return Response({
         "success": True,
         "data": serializer.data
