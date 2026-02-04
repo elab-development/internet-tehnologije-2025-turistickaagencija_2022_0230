@@ -7,6 +7,7 @@ urlpatterns = [
     
     path('destinations/', views.destinacije),
     path('destinations/<int:id>/', views.destinacija_detail),
+    path('destinations/top/', views.top_destinacije),
     
     path('arrangements/', views.aranzmani),
     path('arrangements/<int:id>/', views.aranzman_detail),
