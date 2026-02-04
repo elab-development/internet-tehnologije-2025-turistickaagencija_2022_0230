@@ -10,6 +10,7 @@ from .models import Destinacija, Aranzman
 from .serializers import *
 from datetime import timedelta
 from django.utils.dateparse import parse_date
+from django.db.models import Count
 
 # Create your views here.
 
@@ -193,6 +194,23 @@ def destinacija_detail(request, id):
         destinacija.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+# -----------------------------------------------------------   
+# ZAHTEVI ZA TOP DESTINACIJE
+
+@api_view(['GET'])
+def top_destinacije(request):
+    destinacije = (
+        Destinacija.objects
+        .annotate(broj_aranzmana=Count('aranzmani'))
+        .order_by('-broj_aranzmana')[:8]
+    )
+
+    serializer = DestinacijaSerializer(destinacije, many=True)
+    return Response({
+        "success": True,
+        "data": serializer.data
+    })
+
 # -----------------------------------------------------------
 # ZAHTEVI ZA ARANZMANE
 
@@ -303,7 +321,7 @@ def aranzmani_filter(request):
             datum_pocetka__gte=start,
             datum_zavrsetka__lte=end
         )
-    if datum_zavrsetka:
+    elif datum_zavrsetka:
         end = parse_date(datum_zavrsetka)
         start = end - timedelta(days=30)
         
