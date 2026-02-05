@@ -199,16 +199,24 @@ def destinacija_detail(request, id):
 
 @api_view(['GET'])
 def top_destinacije(request):
-    destinacije = (
+    queryset = (
         Destinacija.objects
         .annotate(broj_aranzmana=Count('aranzmani'))
         .order_by('-broj_aranzmana')[:8]
     )
+    
+    data = [
+        {
+            "destinacija": destinacija,
+            "broj_aranzmana": destinacija.broj_aranzmana
+        }
+        for destinacija in queryset
+    ]
 
-    serializer = DestinacijaSerializer(destinacije, many=True)
+    serializer = TopDestinacijaSerializer(data, many=True)
     return Response({
         "success": True,
-        "data": serializer.data
+        "data": serializer.data,
     })
 
 # -----------------------------------------------------------

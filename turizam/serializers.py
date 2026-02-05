@@ -34,8 +34,10 @@ class DestinacijaSerializer(serializers.ModelSerializer):
         model = Destinacija
         fields = ['id','naziv','drzava','drzava_id','slika']
     
-        
-
+    
+class TopDestinacijaSerializer(serializers.Serializer):
+    destinacija = DestinacijaSerializer()      
+    broj_aranzmana = serializers.IntegerField()
 
         
 class LoginSerializer(serializers.Serializer):
