@@ -16,10 +16,10 @@
 
     <div class="destination-grid">
       <div class="destination-card" *ngFor="let dest of topDestinations">
-        <img [src]="dest.imageUrl" [alt]="dest.name">
+        <img [src]="apiUrl+dest.destinacija.slika" [alt]="dest.destinacija.naziv">
         <div class="info">
-          <h3>{{ dest.name }}</h3>
-          <span>{{ dest.toursCount }} Tours</span>
+          <h3>{{dest.destinacija.naziv}}</h3>
+          <span>Tours {{dest.broj_aranzmana}}</span>
         </div>
         <button class="arrow">→</button>
       </div>
@@ -32,16 +32,16 @@
 
     <div class="tours-grid">
 
-      <article class="tour-card" *ngFor="let hotel of topHotels">
+      <article class="tour-card" *ngFor="let arragement of topArrangements">
         <div class="image-wrapper">
-          <img [src]="hotel.imageUrl" [alt]="hotel.name">
-          <span class="rating">⭐ {{hotel.rating}}</span>
+          <img [src]="apiUrl + arragement.hotel.slika" [alt]="arragement.naziv">
+          <span class="rating">⭐ {{arragement.hotel.ocena}}</span>
         </div>
 
-        <h3>{{hotel.name}}</h3>
+        <h3>{{arragement.naziv}}</h3>
 
         <div class="card-footer">
-          <span class="price">{{hotel.pricePerNight}}$</span>
+          <span class="price">{{arragement.cena}}$</span>
           <button>Book Now</button>
         </div>
       </article>

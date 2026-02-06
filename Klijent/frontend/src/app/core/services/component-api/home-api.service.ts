@@ -3,6 +3,10 @@ import { Observable } from 'rxjs';
 import { Destination } from '../../models/destination.model';
 import { Hotel } from '../../models/hotel.model';
 import { ApiService } from '../api.service';
+import { Arrangement } from '../../models/arrangement.model';
+import { ApiResponse } from '../../models/api-response.model';
+import { map } from 'rxjs/operators';
+import { TopDestResponse } from '../api-message/top_dest-response.mode';
 
 
 
@@ -14,12 +18,17 @@ export class HomeApiService {
   constructor(private apiService: ApiService) {}
 
 
-  getTopDestinations(): Observable<Destination[]> {
-    return this.apiService.get<Destination[]>('destinations/top');
+  getTopDestinations(): Observable<TopDestResponse[]> {
+    return this.apiService.get<ApiResponse<TopDestResponse[]>>('api/destinations/top/').pipe(map(res => res.data));
   }
 
 
-  getTopRatedHotels(): Observable<Hotel[]> {
-    return this.apiService.get<Hotel[]>('hotels/top-rated');
+getTopRatedHotels(): Observable<Arrangement[]> {
+  return this.apiService
+    .get<ApiResponse<Arrangement[]>>('api/arrangements/top/')
+    .pipe(map(res => res.data));
   }
-}
+} 
+
+
+

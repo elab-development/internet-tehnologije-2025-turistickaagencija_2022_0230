@@ -5,6 +5,10 @@ import { Hotel } from '../../core/models/hotel.model';
 import { HomeApiService } from '../../core/services/component-api/home-api.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Arrangement } from '../../core/models/arrangement.model';
+import { environment } from '../../../environments/environment';
+import { TopDestResponse } from '../../core/services/api-message/top_dest-response.mode';
+
 
 
 @Component({
@@ -21,8 +25,9 @@ import { CommonModule } from '@angular/common';
 })
 
 export class HomeComponent {
-  topDestinations: Destination[] = [];
-  topHotels: Hotel[] = [];
+  apiUrl = environment.apiUrl;
+  topDestinations: TopDestResponse[] = [];
+  topArrangements: Arrangement[] = [];
 
   constructor(private homeApi: HomeApiService) {}
 
@@ -32,8 +37,9 @@ export class HomeComponent {
       console.log(this.topDestinations);
     });
 
-    this.homeApi.getTopRatedHotels().subscribe(hotels => {
-      this.topHotels = hotels;
+    this.homeApi.getTopRatedHotels().subscribe(response => {
+      this.topArrangements = response;
+      console.log(this.topArrangements);
     });
   }
 }

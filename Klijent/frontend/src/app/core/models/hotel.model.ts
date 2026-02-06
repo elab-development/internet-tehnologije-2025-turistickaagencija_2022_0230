@@ -1,7 +1,10 @@
+import { Destination } from "./destination.model";
+
 export interface Hotel {
   id: number;
-  name: string;
-  imageUrl: string;
-  rating: number;    
-  pricePerNight: number;
+  naziv: string;
+  slika: string;
+  ocena: number;    
+  cena_nocenja: number;
+  destinacija:Destination;
 }

@@ -19,41 +19,38 @@
   <app-search-bar></app-search-bar>
   <header class="header">
     <h1>Active Travel Packages</h1>
-    <span>Result: {{ offers.length }}</span>
+    <span>Result: {{ arragements.length }}</span>
   </header>
 
-  <article class="card" *ngFor="let offer of paginatedOffers">
+  <article class="card" *ngFor="let arragement of arragements">
 
     <div class="image-wrapper">
-      <img [src]="offer.image" [alt]="offer.title" />
+      <img [src]="environment+arragement.destinacija.slika" [alt]="arragement.naziv" />
     </div>
 
     <div class="content">
-      <span class="badge">{{ offer.country }}</span>
+      <span class="badge">{{ arragement.destinacija.drzava.naziv }}</span>
 
       <div class="title-row">
-        <h2>{{ offer.title }}</h2>
-        <span class="rating">⭐ {{ offer.rating }}</span>
+        <h2>{{ arragement.naziv }}</h2>
+        <span class="rating">⭐ {{ arragement.hotel.ocena }}</span>
       </div>
 
-      <p>{{ offer.description }}</p>
+      <p>{{ arragement.opis }}</p>
 
-      <div class="tags">
-        <span *ngFor="let tag of offer.tags">{{ tag }}</span>
-      </div>
 
       <div class="footer">
         <div>
           <small>DURATION</small>
-          <strong>{{ offer.duration }}</strong>
+          <strong>{{ arragement.broj_nocenja }}</strong>
         </div>
 
         <div>
           <small>PRICE</small>
-          <strong class="price">{{ offer.price }} €</strong>
+          <strong class="price">{{ arragement.cena }} €</strong>
         </div>
 
-        <button (click)="showDetails(offer)">Details</button>
+        <button (click)="showDetails(arragement)">Details</button>
       </div>
 
     </div>

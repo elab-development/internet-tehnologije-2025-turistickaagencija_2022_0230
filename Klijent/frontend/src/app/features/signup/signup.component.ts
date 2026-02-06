@@ -20,13 +20,13 @@ export class SignupComponent implements OnInit {
 
 
   fieldErrors: {
-    profileName: string;
+    username: string;
     email: string;
     password: string;
     gender: string;
     dateOfBirth: string;
   } = {
-    profileName: '',
+    username: '',
     email: '',
     password: '',
     gender: '',
@@ -108,7 +108,7 @@ export class SignupComponent implements OnInit {
   }
 
   getFormData(): SignupRequest | null {
-    const profileName = (document.getElementById('username') as HTMLInputElement).value.trim();
+    const username = (document.getElementById('username') as HTMLInputElement).value.trim();
     const email = (document.getElementById('email') as HTMLInputElement).value.trim();
     const password = (document.getElementById('password') as HTMLInputElement).value;
     const gender = (document.querySelector('input[name="gender"]:checked') as HTMLInputElement)?.value;
@@ -117,7 +117,7 @@ export class SignupComponent implements OnInit {
     const year = (document.getElementById('year') as HTMLSelectElement).value;
 
     this.fieldErrors = {
-      profileName: '',
+      username: '',
       email: '',
       password: '',
       gender: '',
@@ -126,11 +126,11 @@ export class SignupComponent implements OnInit {
 
     let isValid = true;
 
-    if (!profileName) {
-      this.fieldErrors.profileName = 'Profile name is required!';
+    if (!username) {
+      this.fieldErrors.username = 'Profile name is required!';
       isValid = false;
-    } else if (profileName.length < 3) {
-      this.fieldErrors.profileName = 'Profile name must contain at least 3 characters!';
+    } else if (username.length < 3) {
+      this.fieldErrors.username = 'Profile name must contain at least 3 characters!';
       isValid = false;
     }
 
@@ -170,11 +170,9 @@ export class SignupComponent implements OnInit {
     const dateOfBirth = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
     return {
-      profileName,
+      username,
       email,
-      password,
-      gender: gender.toUpperCase() as 'MALE' | 'FEMALE',
-      dateOfBirth
+      password
     };
   }
 
@@ -184,11 +182,11 @@ export class SignupComponent implements OnInit {
     switch (fieldName) {
       case 'username':
         if (!value) {
-          this.fieldErrors.profileName = 'Profile name is required!';
+          this.fieldErrors.username = 'Profile name is required!';
         } else if (value.length < 3) {
-          this.fieldErrors.profileName = 'Profile name must contain at least 3 characters!';
+          this.fieldErrors.username = 'Profile name must contain at least 3 characters!';
         } else {
-          this.fieldErrors.profileName = '';
+          this.fieldErrors.username = '';
         }
         break;
 

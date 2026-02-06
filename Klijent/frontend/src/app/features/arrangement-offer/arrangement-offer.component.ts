@@ -2,18 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchBarComponent } from '../../shared/components/search-bar/search-bar.component';
 import { FormsModule } from '@angular/forms';
-
-interface Offer {
-  id: number;
-  title: string;
-  country: string;
-  image: string;
-  description: string;
-  rating: number;
-  tags: string[];
-  duration: string;
-  price: number;
-}
+import { ActivatedRoute, Router } from '@angular/router';
+import { SearchApiService } from '../../core/services/component-api/search-api.service';
+import { SearchRequest } from '../../core/services/api-message/search-request.model';
+import { __param } from 'tslib';
+import { Arrangement } from '../../core/models/arrangement.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-arrangement-offer',
@@ -26,76 +20,52 @@ interface Offer {
   styleUrl: './arrangement-offer.component.scss'
 })
 export class ArrangementOfferComponent {
-  offers: Offer[] = [
+  
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private apiService:SearchApiService
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;  
+   }
+  arragements:Arrangement[] = [];
+  environment = environment.apiUrl;
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const payload: SearchRequest = {
+        destinacija_id: params['destinacija_id'] ? Number(params['destinacija_id']) : null,
+        datum_pocetka: params['datum_pocetka'] || null,
+        datum_zavrsetka: params['datum_zavrsetka'] || null,
+        broj_mesta: params['broj_mesta'] ? Number(params['broj_mesta']) : null
+      }
+      this.executeSearch(payload);
+    });
 
-  {
-    "id": 1,
-    "title": "Summer Vacation in Spain",
-    "country": "Spain",
-    "image": "https://picsum.photos/300/200?random=31",
-    "description": "Enjoy beautiful beaches and authentic Spanish food.",
-    "rating": 4.8,
-    "tags": ["Beach", "Vacation", "Gastronomy"],
-    "duration": "7 days",
-    "price": 899
-  },
-  {
-    "id": 2,
-    "title": "Winter Alps",
-    "country": "Switzerland",
-    "image": "https://picsum.photos/300/200?random=32",
-    "description": "A skiing paradise with world-class ski slopes.",
-    "rating": 4.9,
-    "tags": ["Ski", "Mountain", "Luxury"],
-    "duration": "5 days",
-    "price": 1299
-  },
-  {
-    "id": 3,
-    "title": "Cultural Tour of Italy",
-    "country": "Italy",
-    "image": "https://picsum.photos/300/200?random=33",
-    "description": "Discover the history, art, and nature of Italy.",
-    "rating": 4.7,
-    "tags": ["Culture", "History", "Architecture"],
-    "duration": "10 days",
-    "price": 1099
-  },
-  {
-    "id": 4,
-    "title": "Adventure in Costa Rica",
-    "country": "Costa Rica",
-    "image": "https://picsum.photos/300/200?random=34",
-    "description": "Experience rainforests, volcanoes, and exotic wildlife.",
-    "rating": 4.6,
-    "tags": ["Adventure", "Nature", "Wildlife"],
-    "duration": "8 days",
-    "price": 999
-  },
-  {
-    "id": 5,
-    "title": "City Break in New York",
-    "country": "USA",
-    "image": "https://picsum.photos/300/200?random=35",
-    "description": "Explore the city that never sleeps with its iconic landmarks.",
-    "rating": 4.5,
-    "tags": ["City", "Shopping", "Entertainment"],
-    "duration": "4 days",
-    "price": 799
   }
-  ];
+  executeSearch(payload: SearchRequest): void {
+    this.apiService.search(payload).subscribe(response => {
+      if (response.success) {
+        console.log('Search results:', response.data);
+        this.arragements = response.data;
+        console.log('Arrangements set in component:', this.arragements);
+      } else {
+        console.error('Search failed:', response.message);
+      }
+    });
+  }
+
 
   currentPage = 1;
   itemsPerPage = 3;
 
   get totalPages(): number {
-    return Math.ceil(this.offers.length / this.itemsPerPage);
+    return Math.ceil(this.arragements.length / this.itemsPerPage);
   }
 
-  get paginatedOffers(): Offer[] {
+  get paginatedOffers(): Arrangement[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
-    return this.offers.slice(start, end);
+    return this.arragements.slice(start, end);
   }
 
   goToPage(page: number): void {
@@ -105,8 +75,8 @@ export class ArrangementOfferComponent {
     }
   }
 
-  showDetails(offer: Offer): void {
-    console.log('Prikazujem detalje za:', offer);
+  showDetails(ar:Arrangement): void {
+    console.log('Prikazujem detalje za:', ar);
     // TODO: Navigacija na stranicu sa detaljima
   }
 }

@@ -1,7 +1,7 @@
 export interface SignupRequest {
-  profileName: string;
+  username: string;
   email: string;
   password: string;
-  gender: 'MALE' | 'FEMALE';
-  dateOfBirth: string;
+  //gender: 'MALE' | 'FEMALE';
+  //dateOfBirth: string;
 }
