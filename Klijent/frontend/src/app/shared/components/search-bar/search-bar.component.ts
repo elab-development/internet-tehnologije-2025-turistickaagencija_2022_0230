@@ -7,6 +7,7 @@ import { FilterCheckInDatePipe, FilterCheckOutDatePipe, FormatGuestsPipe, Format
 import { Router } from '@angular/router';
 import { SearchApiService } from '../../../core/services/component-api/search-api.service';
 import { Destination } from '../../../core/models/destination.model';
+import { ButtonHoverDirective } from '../../directives/button-hover-dir';
 
 interface Guest {
   type: 'Adults' | 'Children';
@@ -28,7 +29,8 @@ interface Location {
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
+    ButtonHoverDirective
   ]
 })
 export class SearchBarComponent implements OnInit {

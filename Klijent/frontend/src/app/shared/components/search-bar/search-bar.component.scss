@@ -208,21 +208,14 @@
           }
 
           button {
-            background-color: transparent;
             border: 1px solid #ffffff55;
             border-radius: 0.25rem;
-            color: #ffffff;
             width: 2rem;
             height: 2rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.15s ease-in-out;
 
-            &:hover {
-              background-color: #FFD400;
-              color: #050606;
-              border-color: #FFD400;
-            }
           }
         }
       }
