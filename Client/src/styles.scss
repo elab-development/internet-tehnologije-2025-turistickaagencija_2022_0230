@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;   
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.custom-datepicker {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  border-radius: 12px !important;
+}
+
+.custom-datepicker .mat-datepicker-content {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  border-radius: 12px !important;
+}
+
+.custom-datepicker .mat-calendar-body-cell {
+  color: #ffffff !important;
+}
+
+.custom-datepicker .mat-calendar-body-selected {
+  background-color: #FFD400 !important;
+  color: #000000 !important;
+}
+
+.custom-datepicker .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: #FFD400 !important;
+}
+
+
