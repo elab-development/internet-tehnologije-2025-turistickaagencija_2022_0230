@@ -28,4 +28,8 @@ export class HeaderComponent {
     this.userMenuOpen = false;
     this.authService.logout();
   }
+
+  isAdmin(user: User | null): boolean {
+    return user?.role === 'ADMIN';
+  }
 }

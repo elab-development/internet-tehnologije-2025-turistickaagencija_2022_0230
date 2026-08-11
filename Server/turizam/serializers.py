@@ -128,3 +128,34 @@ class AranzmanSerializer(serializers.ModelSerializer):
                 "Datum završetka mora biti posle datuma početka."
             )
         return data
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    aranzman = AranzmanSerializer(read_only=True)
+    aranzman_id = serializers.PrimaryKeyRelatedField(
+        queryset=Aranzman.objects.all(),
+        source='aranzman',
+        write_only=True
+    )
+
+    class Meta:
+        model = Booking
+        fields = [
+            'id',
+            'user',
+            'aranzman',
+            'aranzman_id',
+            'guests',
+            'total_price',
+            'status',
+            'payment_status',
+            'booked_at'
+        ]
+        read_only_fields = ['id', 'user', 'total_price', 'status', 'payment_status', 'booked_at']
+
+    def create(self, validated_data):
+        aranzman = validated_data['aranzman']
+        guests = validated_data.get('guests', 1)
+        validated_data['total_price'] = aranzman.cena * guests
+        return super().create(validated_data)

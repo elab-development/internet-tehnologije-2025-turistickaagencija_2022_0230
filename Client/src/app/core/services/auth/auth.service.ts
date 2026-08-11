@@ -43,12 +43,17 @@ login(username: string, password: string) {
   private restoreUser() {
     const user = localStorage.getItem('user');
     if (user) {
-      this.userSubject.next(JSON.parse(user));
+      const parsedUser = JSON.parse(user);
+      this.userSubject.next(parsedUser);
     }
   }
 
   isLoggedIn(): boolean {
     return this.userSubject.value !== null;
+  }
+
+  isAdmin(): boolean {
+    return this.userSubject.value?.role === 'ADMIN';
   }
 
 }

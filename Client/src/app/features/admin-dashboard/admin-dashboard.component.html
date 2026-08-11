@@ -1,0 +1,71 @@
+<section class="dashboard-shell">
+  <div class="dashboard-header">
+    <div>
+      <p class="eyebrow">Administration</p>
+      <h1>Admin dashboard</h1>
+    </div>
+    <p class="subtitle">Manage the core travel platform entities from one place.</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Users</h3>
+      <p>{{ stats.users }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Countries</h3>
+      <p>{{ stats.countries }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Destinations</h3>
+      <p>{{ stats.destinations }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Hotels</h3>
+      <p>{{ stats.hotels }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Arrangements</h3>
+      <p>{{ stats.arrangements }}</p>
+    </div>
+  </div>
+
+  <div class="management-cards-grid">
+    <div class="management-card" (click)="navigateTo('users')">
+      <div class="card-icon">👥</div>
+      <h2>Users</h2>
+      <p>Manage users, roles, and permissions</p>
+      <div class="card-count">{{ stats.users }} users</div>
+    </div>
+
+    <div class="management-card" (click)="navigateTo('countries')">
+      <div class="card-icon">🌍</div>
+      <h2>Countries</h2>
+      <p>Add, edit, or remove countries</p>
+      <div class="card-count">{{ stats.countries }} countries</div>
+    </div>
+
+    <div class="management-card" (click)="navigateTo('destinations')">
+      <div class="card-icon">📍</div>
+      <h2>Destinations</h2>
+      <p>Manage travel destinations</p>
+      <div class="card-count">{{ stats.destinations }} destinations</div>
+    </div>
+
+    <div class="management-card" (click)="navigateTo('hotels')">
+      <div class="card-icon">🏨</div>
+      <h2>Hotels</h2>
+      <p>Manage hotel listings</p>
+      <div class="card-count">{{ stats.hotels }} hotels</div>
+    </div>
+
+    <div class="management-card" (click)="navigateTo('arrangements')">
+      <div class="card-icon">✈️</div>
+      <h2>Arrangements</h2>
+      <p>Manage travel packages</p>
+      <div class="card-count">{{ stats.arrangements }} arrangements</div>
+    </div>
+  </div>
+</section>

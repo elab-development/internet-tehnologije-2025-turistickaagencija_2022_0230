@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import Destinacija, Aranzman
+from .models import Destinacija, Aranzman, Drzava, Hotel, Booking
 from .serializers import *
 from datetime import timedelta
 from django.utils.dateparse import parse_date
@@ -41,14 +42,22 @@ def login(request):
         }, status=status.HTTP_401_UNAUTHORIZED)
         
     refresh = RefreshToken.for_user(user)
+
+    if user.is_superuser:
+        role = 'ADMIN'
+    elif user.is_staff:
+        role = 'AGENT'
+    else:
+        role = 'CLIENT'
     
     return Response({
         "success": True,
         "data": {
             "user": {
-                "id": 1,
+                "id": user.id,
                 "username": user.username,
                 "email": user.email,
+                "role": role,
             },
             "token": str(refresh.access_token)
         }
@@ -128,6 +137,96 @@ def users(request):
     })
 
 
+@api_view(['PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def user_detail(request, id):
+    if not request.user.is_superuser:
+        return Response({
+            "success": False,
+            "message": "Admin only"
+        }, status=403)
+    
+    user = get_object_or_404(User, id=id)
+    
+    if request.method == 'PUT':
+        # Update user username, email, password, and role
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        role = request.data.get('role')
+        
+        if username:
+            # Check if username is already taken by another user
+            if User.objects.filter(username=username).exclude(id=id).exists():
+                return Response({
+                    "success": False,
+                    "message": "Username already in use"
+                }, status=status.HTTP_400_BAD_REQUEST)
+            user.username = username
+        
+        if email:
+            # Check if email is already taken by another user
+            if User.objects.filter(email=email).exclude(id=id).exists():
+                return Response({
+                    "success": False,
+                    "message": "Email already in use"
+                }, status=status.HTTP_400_BAD_REQUEST)
+            user.email = email
+        
+        if password:
+            # Use set_password to properly hash the password
+            user.set_password(password)
+        
+        if role:
+            if role == 'ADMIN':
+                user.is_superuser = True
+                user.is_staff = True
+            elif role == 'AGENT':
+                user.is_superuser = False
+                user.is_staff = True
+            elif role == 'CLIENT':
+                user.is_superuser = False
+                user.is_staff = False
+        
+        user.save()
+        return Response({
+            "success": True,
+            "data": UserSerializer(user).data
+        })
+    
+    elif request.method == 'DELETE':
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_dashboard(request):
+    if not request.user.is_superuser:
+        return Response({
+            "success": False,
+            "message": "Admin only"
+        }, status=403)
+
+    return Response({
+        "success": True,
+        "data": {
+            "stats": {
+                "countries": Drzava.objects.count(),
+                "destinations": Destinacija.objects.count(),
+                "hotels": Hotel.objects.count(),
+                "arrangements": Aranzman.objects.count(),
+                "users": User.objects.count(),
+            },
+            "users": UserSerializer(User.objects.order_by('username'), many=True).data,
+            "countries": DrzavaSerializer(Drzava.objects.order_by('naziv'), many=True).data,
+            "destinations": DestinacijaSerializer(Destinacija.objects.select_related('drzava').order_by('naziv'), many=True).data,
+            "hotels": HotelSerializer(Hotel.objects.select_related('destinacija').order_by('naziv'), many=True).data,
+            "arrangements": AranzmanSerializer(Aranzman.objects.select_related('destinacija', 'hotel').order_by('naziv'), many=True).data,
+        }
+    })
+
+
 #------------------------------------------------
 # ZAHTEVI ZA DESTINACIJE
 @api_view(['GET','POST'])
@@ -198,6 +297,7 @@ def destinacija_detail(request, id):
 # ZAHTEVI ZA TOP DESTINACIJE
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def top_destinacije(request):
     queryset = (
         Destinacija.objects
@@ -291,6 +391,7 @@ def aranzman_detail(request, id):
 #------------------------------------------------------------------------
 # ZAHTEV ZA TOP ARANZMANE
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def top_aranzmani(request):
     aranzmani = (
         Aranzman.objects.order_by('-hotel__ocena')[:8]
@@ -414,6 +515,50 @@ def drzava_detail(request, id):
         drzava.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+
+
+# ---------------------------------------------------------------
+# ZAHTEVI ZA BOOKINGE
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
+def bookings(request):
+    if request.method == 'GET':
+        bookings = Booking.objects.filter(user=request.user).select_related('aranzman__destinacija', 'aranzman__hotel')
+        serializer = BookingSerializer(bookings, many=True)
+        return Response({"success": True, "data": serializer.data})
+
+    if request.method == 'POST':
+        serializer = BookingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response({"success": True, "data": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def booking_detail(request, id):
+    booking = get_object_or_404(Booking, id=id, user=request.user)
+
+    if request.data.get('action') == 'pay':
+        if booking.payment_status == 'PAID':
+            return Response({"success": False, "message": "Booking is already paid."}, status=status.HTTP_400_BAD_REQUEST)
+        booking.payment_status = 'PAID'
+        booking.status = 'CONFIRMED'
+        booking.save()
+        serializer = BookingSerializer(booking)
+        return Response({"success": True, "data": serializer.data})
+
+    if request.data.get('action') == 'cancel':
+        if booking.status == 'CANCELLED':
+            return Response({"success": False, "message": "Booking is already cancelled."}, status=status.HTTP_400_BAD_REQUEST)
+        booking.status = 'CANCELLED'
+        booking.save()
+        serializer = BookingSerializer(booking)
+        return Response({"success": True, "data": serializer.data})
+
+    return Response({"success": False, "message": "Invalid action."}, status=status.HTTP_400_BAD_REQUEST)
+
 
 #-----------------------------------------------------------------------
 # ZAHTEVI ZA HOTELE

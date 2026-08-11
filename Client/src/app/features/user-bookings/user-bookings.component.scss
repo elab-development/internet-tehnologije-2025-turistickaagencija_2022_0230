@@ -1,0 +1,108 @@
+.bookings-page {
+  padding: 2rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.status-message {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #f7f7f7;
+}
+
+.status-message.error {
+  border: 1px solid #d9534f;
+  color: #a94442;
+}
+
+.status-message.success {
+  border: 1px solid #5cb85c;
+  color: #3c763d;
+}
+
+.empty-state {
+  padding: 2rem;
+  background: #fff9e6;
+  border-radius: 0.75rem;
+}
+
+.booking-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.booking-card {
+  border: 1px solid #e1e1e1;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  background: white;
+}
+
+.booking-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.status-pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #333;
+  background: #f0f0f0;
+}
+
+.status-pill.paid {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-pill.cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.booking-info p {
+  margin: 0.25rem 0;
+}
+
+.booking-actions {
+  margin-top: 1.25rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.booking-actions button {
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.booking-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.booking-actions button:first-child {
+  background: #007bff;
+  color: white;
+}
+
+.booking-actions button:last-child {
+  background: #dc3545;
+  color: white;
+}
