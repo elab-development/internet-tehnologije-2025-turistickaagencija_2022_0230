@@ -33,7 +33,7 @@
 
       <div class="title-row">
         <h2>{{ arragement.naziv }}</h2>
-        <span class="rating">⭐ {{ arragement.hotel.ocena }}</span>
+        <span class="rating">⭐ {{ arragement.hotel?.ocena }}</span>
       </div>
 
       <p>{{ arragement.opis }}</p>
@@ -50,16 +50,8 @@
           <strong class="price">{{ arragement.cena }} €</strong>
         </div>
 
-        <button (click)="showDetails(arragement)">Details</button>
+        <button type="button" (click)="showDetails(arragement)">Details</button>
       </div>
-
     </div>
   </article>
-
-  <div class="pagination">
-    <button class="arrow" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">&lt;</button>
-    <span class="page-number">{{ currentPage }}</span>
-    <button class="arrow" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">&gt;</button>
-  </div>
-
 </section>

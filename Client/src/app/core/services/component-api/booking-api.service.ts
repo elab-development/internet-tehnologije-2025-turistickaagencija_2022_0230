@@ -20,4 +20,8 @@ export class BookingApiService {
   updateBooking(id: number, payload: any) {
     return this.api.put<ApiResponse<Booking>>(`${this.endpoint}${id}/`, payload);
   }
+
+  deleteBooking(id: number) {
+    return this.api.delete<void>(`${this.endpoint}${id}/`);
+  }
 }

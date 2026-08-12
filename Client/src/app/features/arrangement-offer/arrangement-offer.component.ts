@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SearchApiService } from '../../core/services/component-api/search-api.service';
 import { SearchRequest } from '../../core/services/api-message/search-request.model';
-import { __param } from 'tslib';
 import { Arrangement } from '../../core/models/arrangement.model';
 import { environment } from '../../../environments/environment';
 
@@ -24,7 +23,7 @@ export class ArrangementOfferComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private apiService:SearchApiService
+    private apiService: SearchApiService
   ) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;  
    }
@@ -75,8 +74,7 @@ export class ArrangementOfferComponent {
     }
   }
 
-  showDetails(ar:Arrangement): void {
-    console.log('Prikazujem detalje za:', ar);
-    // TODO: Navigacija na stranicu sa detaljima
+  showDetails(ar: Arrangement): void {
+    this.router.navigate(['/booking', ar.id]);
   }
 }

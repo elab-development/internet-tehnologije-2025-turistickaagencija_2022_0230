@@ -358,7 +358,7 @@ def aranzman_detail(request, id):
     
     if request.method == 'GET':
         serializer = AranzmanSerializer(aranzman)
-        return Response(serializer.data)
+        return Response({"success": True, "data": serializer.data})
     
     if not request.user.is_authenticated:
             return Response(
@@ -535,10 +535,16 @@ def bookings(request):
         return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['PUT'])
+@api_view(['PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def booking_detail(request, id):
     booking = get_object_or_404(Booking, id=id, user=request.user)
+
+    if request.method == 'DELETE':
+        if booking.status != 'CANCELLED':
+            return Response({"success": False, "message": "Only cancelled bookings can be removed."}, status=status.HTTP_400_BAD_REQUEST)
+        booking.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     if request.data.get('action') == 'pay':
         if booking.payment_status == 'PAID':
