@@ -33,39 +33,39 @@
   </div>
 
   <div class="management-cards-grid">
-    <div class="management-card" (click)="navigateTo('users')">
+    <a class="management-card" routerLink="/admin/users">
       <div class="card-icon">👥</div>
       <h2>Users</h2>
       <p>Manage users, roles, and permissions</p>
       <div class="card-count">{{ stats.users }} users</div>
-    </div>
+    </a>
 
-    <div class="management-card" (click)="navigateTo('countries')">
+    <a class="management-card" routerLink="/admin/countries">
       <div class="card-icon">🌍</div>
       <h2>Countries</h2>
       <p>Add, edit, or remove countries</p>
       <div class="card-count">{{ stats.countries }} countries</div>
-    </div>
+    </a>
 
-    <div class="management-card" (click)="navigateTo('destinations')">
+    <a class="management-card" routerLink="/admin/destinations">
       <div class="card-icon">📍</div>
       <h2>Destinations</h2>
       <p>Manage travel destinations</p>
       <div class="card-count">{{ stats.destinations }} destinations</div>
-    </div>
+    </a>
 
-    <div class="management-card" (click)="navigateTo('hotels')">
+    <a class="management-card" routerLink="/admin/hotels">
       <div class="card-icon">🏨</div>
       <h2>Hotels</h2>
       <p>Manage hotel listings</p>
       <div class="card-count">{{ stats.hotels }} hotels</div>
-    </div>
+    </a>
 
-    <div class="management-card" (click)="navigateTo('arrangements')">
+    <a class="management-card" routerLink="/admin/arrangements">
       <div class="card-icon">✈️</div>
       <h2>Arrangements</h2>
       <p>Manage travel packages</p>
       <div class="card-count">{{ stats.arrangements }} arrangements</div>
-    </div>
+    </a>
   </div>
 </section>

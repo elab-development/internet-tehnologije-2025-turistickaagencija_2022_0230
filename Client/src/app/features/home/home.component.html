@@ -34,15 +34,15 @@
 
       <article class="tour-card" *ngFor="let arragement of topArrangements">
         <div class="image-wrapper">
-          <img [src]="apiUrl + arragement.hotel.slika" [alt]="arragement.naziv">
-          <span class="rating">⭐ {{arragement.hotel.ocena}}</span>
+          <img [src]="apiUrl + arragement.hotel?.slika" [alt]="arragement.naziv">
+          <span class="rating">⭐ {{arragement.hotel?.ocena}}</span>
         </div>
 
         <h3>{{arragement.naziv}}</h3>
 
         <div class="card-footer">
           <span class="price">{{arragement.cena}}$</span>
-          <button>Book Now</button>
+          <button (click)="bookNow(arragement)">Book Now</button>
         </div>
       </article>
 

@@ -8,8 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Arrangement } from '../../core/models/arrangement.model';
 import { environment } from '../../../environments/environment';
 import { TopDestResponse } from '../../core/services/api-message/top_dest-response.mode';
-
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +28,7 @@ export class HomeComponent {
   topDestinations: TopDestResponse[] = [];
   topArrangements: Arrangement[] = [];
 
-  constructor(private homeApi: HomeApiService) {}
+  constructor(private homeApi: HomeApiService, private router: Router) {}
 
   ngOnInit(): void {
     this.homeApi.getTopDestinations().subscribe(destinations => {
@@ -41,5 +40,9 @@ export class HomeComponent {
       this.topArrangements = response;
       console.log(this.topArrangements);
     });
+  }
+
+  bookNow(arrangement: Arrangement): void {
+    this.router.navigate(['/booking', arrangement.id]);
   }
 }
