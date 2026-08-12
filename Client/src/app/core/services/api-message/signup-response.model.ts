@@ -1,3 +1,0 @@
-interface SignupResponse {
-  message: string;
-}
