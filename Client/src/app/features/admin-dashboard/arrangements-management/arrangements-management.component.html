@@ -1,0 +1,151 @@
+<div class="management-container">
+  <div class="header">
+    <div>
+      <h1>Arrangements Management</h1>
+      <p>Manage tour packages and their hotels/destinations.</p>
+    </div>
+    <button class="btn-add" (click)="toggleAddForm()">+ Add Arrangement</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
+
+  <div *ngIf="showAddForm" class="add-form">
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="newArrangement.naziv" placeholder="Arrangement name" />
+    </div>
+    <div class="form-group">
+      <label>Destination</label>
+      <select [(ngModel)]="newArrangement.destinacija_id">
+        <option value="0">Select destination</option>
+        <option *ngFor="let destination of destinations" [value]="destination.id">{{ destination.naziv }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Hotel</label>
+      <select [(ngModel)]="newArrangement.hotel_id">
+        <option value="0">Select hotel</option>
+        <option *ngFor="let hotel of hotels" [value]="hotel.id">{{ hotel.naziv }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Start date</label>
+      <input type="date" [(ngModel)]="newArrangement.datum_pocetka" />
+    </div>
+    <div class="form-group">
+      <label>End date</label>
+      <input type="date" [(ngModel)]="newArrangement.datum_zavrsetka" />
+    </div>
+    <div class="form-group">
+      <label>Nights</label>
+      <input type="number" [(ngModel)]="newArrangement.broj_nocenja" />
+    </div>
+    <div class="form-group">
+      <label>Price</label>
+      <input type="number" [(ngModel)]="newArrangement.cena" />
+    </div>
+    <div class="form-group">
+      <label>Seats</label>
+      <input type="number" [(ngModel)]="newArrangement.broj_mesta" />
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea [(ngModel)]="newArrangement.opis"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" (click)="addArrangement()">Save</button>
+      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Destination</th>
+          <th>Hotel</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Price</th>
+          <th>Seats</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let arrangement of arrangements">
+          <tr *ngIf="editingArrangementId !== arrangement.id">
+            <td>{{ arrangement.naziv }}</td>
+            <td>{{ arrangement.destinacija.naziv }}</td>
+            <td>{{ arrangement.hotel.naziv }}</td>
+            <td>{{ arrangement.datum_pocetka }}</td>
+            <td>{{ arrangement.datum_zavrsetka }}</td>
+            <td>{{ arrangement.cena }}</td>
+            <td>{{ arrangement.broj_mesta }}</td>
+            <td class="actions">
+              <button class="btn-edit" (click)="startEdit(arrangement)">Edit</button>
+              <button class="btn-delete" (click)="deleteArrangement(arrangement.id, arrangement.naziv)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="editingArrangementId === arrangement.id" class="edit-row">
+            <td colspan="8">
+              <div class="edit-form">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input type="text" [(ngModel)]="editFormData.naziv" />
+                </div>
+                <div class="form-group">
+                  <label>Destination</label>
+                  <select [(ngModel)]="editFormData.destinacija_id">
+                    <option value="0">Select destination</option>
+                    <option *ngFor="let destination of destinations" [value]="destination.id">{{ destination.naziv }}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Hotel</label>
+                  <select [(ngModel)]="editFormData.hotel_id">
+                    <option value="0">Select hotel</option>
+                    <option *ngFor="let hotel of hotels" [value]="hotel.id">{{ hotel.naziv }}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Start date</label>
+                  <input type="date" [(ngModel)]="editFormData.datum_pocetka" />
+                </div>
+                <div class="form-group">
+                  <label>End date</label>
+                  <input type="date" [(ngModel)]="editFormData.datum_zavrsetka" />
+                </div>
+                <div class="form-group">
+                  <label>Nights</label>
+                  <input type="number" [(ngModel)]="editFormData.broj_nocenja" />
+                </div>
+                <div class="form-group">
+                  <label>Price</label>
+                  <input type="number" [(ngModel)]="editFormData.cena" />
+                </div>
+                <div class="form-group">
+                  <label>Seats</label>
+                  <input type="number" [(ngModel)]="editFormData.broj_mesta" />
+                </div>
+                <div class="form-group">
+                  <label>Description</label>
+                  <textarea [(ngModel)]="editFormData.opis"></textarea>
+                </div>
+                <div class="form-actions">
+                  <button class="btn-save" (click)="saveEdit(arrangement.id)">Save</button>
+                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="arrangements.length === 0 && !errorMessage" class="empty-state">
+    <p>No arrangements found.</p>
+  </div>
+</div>
