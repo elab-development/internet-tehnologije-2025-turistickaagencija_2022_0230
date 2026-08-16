@@ -32,11 +32,11 @@ export class ArrangementOfferComponent {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       const payload: SearchRequest = {
-        destinacija_id: params['destinacija_id'] ? Number(params['destinacija_id']) : null,
-        datum_pocetka: params['datum_pocetka'] || null,
-        datum_zavrsetka: params['datum_zavrsetka'] || null,
-        broj_mesta: params['broj_mesta'] ? Number(params['broj_mesta']) : null
-      }
+        destination_id: params['destination_id'] ? Number(params['destination_id']) : null,
+        start_date: params['start_date'] || null,
+        end_date: params['end_date'] || null,
+        capacity: params['capacity'] ? Number(params['capacity']) : null
+      };
       this.executeSearch(payload);
     });
 
@@ -72,6 +72,15 @@ export class ArrangementOfferComponent {
       this.currentPage = page;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }
+
+  getArrangementImage(arrangement: Arrangement): string {
+    const imagePath = arrangement.hotel?.image || arrangement.destination?.image || '';
+    if (!imagePath) {
+      return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop';
+    }
+
+    return imagePath.startsWith('http') ? imagePath : `${environment.apiUrl}${imagePath}`;
   }
 
   showDetails(ar: Arrangement): void {

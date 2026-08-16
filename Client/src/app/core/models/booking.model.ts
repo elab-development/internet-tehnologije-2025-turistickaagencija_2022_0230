@@ -4,7 +4,7 @@ import { Arrangement } from './arrangement.model';
 export interface Booking {
   id: number;
   user: User;
-  aranzman: Arrangement;
+  arrangement: Arrangement;
   guests: number;
   total_price: number;
   status: string;

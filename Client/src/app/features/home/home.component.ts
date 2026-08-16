@@ -28,6 +28,8 @@ export class HomeComponent {
   topDestinations: TopDestResponse[] = [];
   topArrangements: Arrangement[] = [];
 
+  readonly fallbackImage = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop';
+
   constructor(private homeApi: HomeApiService, private router: Router) {}
 
   ngOnInit(): void {
@@ -40,6 +42,14 @@ export class HomeComponent {
       this.topArrangements = response;
       console.log(this.topArrangements);
     });
+  }
+
+  buildImageUrl(path: string | null | undefined): string {
+    if (!path) {
+      return this.fallbackImage;
+    }
+
+    return path.startsWith('http') ? path : `${this.apiUrl}${path}`;
   }
 
   bookNow(arrangement: Arrangement): void {

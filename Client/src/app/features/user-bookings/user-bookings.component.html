@@ -26,7 +26,7 @@
       <header class="booking-card-header">
         <div>
           <p class="booking-ref">Booking #{{ booking.id }}</p>
-          <h2>{{ booking.aranzman.naziv }}</h2>
+          <h2>{{ booking.arrangement.name }}</h2>
         </div>
         <div class="status-group">
           <span class="status-pill" [class.paid]="booking.payment_status === 'PAID'" [class.cancelled]="booking.status === 'CANCELLED'" [class.pending]="booking.payment_status !== 'PAID' && booking.status !== 'CANCELLED'">
@@ -37,9 +37,9 @@
       </header>
 
       <div class="booking-info">
-        <p><strong>Destination:</strong> {{ booking.aranzman.destinacija.naziv }}</p>
-        <p><strong>Hotel:</strong> {{ booking.aranzman.hotel?.naziv || 'No hotel selected' }}</p>
-        <p><strong>Travel dates:</strong> {{ booking.aranzman.datum_pocetka | date:'mediumDate' }} – {{ booking.aranzman.datum_zavrsetka | date:'mediumDate' }}</p>
+        <p><strong>Destination:</strong> {{ booking.arrangement.destination.name }}</p>
+        <p><strong>Hotel:</strong> {{ booking.arrangement.hotel?.name || 'No hotel selected' }}</p>
+        <p><strong>Travel dates:</strong> {{ booking.arrangement.start_date | date:'mediumDate' }} – {{ booking.arrangement.end_date | date:'mediumDate' }}</p>
         <p><strong>Guests:</strong> {{ booking.guests }}</p>
         <p><strong>Total price:</strong> {{ booking.total_price | number:'1.2-2' }} €</p>
       </div>
@@ -58,7 +58,7 @@
 
       <ng-container *ngIf="selectedBookingToCancel">
         <h2>Cancel booking</h2>
-        <p>Are you sure you want to cancel the booking for <strong>{{ selectedBookingToCancel.aranzman.naziv }}</strong>?</p>
+        <p>Are you sure you want to cancel the booking for <strong>{{ selectedBookingToCancel.arrangement.name }}</strong>?</p>
         <p class="modal-note">This action will mark the reservation as cancelled and you will no longer be able to pay for it.</p>
         <div class="modal-actions">
           <button type="button" class="btn btn-outline" (click)="closeModal()">Keep booking</button>
@@ -68,7 +68,7 @@
 
       <ng-container *ngIf="selectedBookingToPay">
         <h2>Complete payment</h2>
-        <p>Finish payment for <strong>{{ selectedBookingToPay.aranzman.naziv }}</strong> and secure your reservation.</p>
+        <p>Finish payment for <strong>{{ selectedBookingToPay.arrangement.name }}</strong> and secure your reservation.</p>
         <p *ngIf="savedCard" class="saved-card-note">Saved card ending {{ savedCard.last4 }} will be used for faster checkout.</p>
 
         <form class="payment-form" (ngSubmit)="confirmPayment()">

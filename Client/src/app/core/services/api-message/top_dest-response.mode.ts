@@ -1,6 +1,6 @@
-import { Destination } from "../../models/destination.model";
+import { Destination } from '../../models/destination.model';
 
 export interface TopDestResponse {
-    destinacija: Destination,
-    broj_aranzmana: number
+  destination: Destination;
+  arrangement_count: number;
 }
