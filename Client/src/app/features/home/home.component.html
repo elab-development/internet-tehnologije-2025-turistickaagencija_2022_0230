@@ -16,10 +16,10 @@
 
     <div class="destination-grid">
       <div class="destination-card" *ngFor="let dest of topDestinations">
-        <img [src]="apiUrl+dest.destinacija.slika" [alt]="dest.destinacija.naziv">
+        <img [src]="buildImageUrl(dest.destination.image)" [alt]="dest.destination.name">
         <div class="info">
-          <h3>{{dest.destinacija.naziv}}</h3>
-          <span>Tours {{dest.broj_aranzmana}}</span>
+          <h3>{{ dest.destination.name }}</h3>
+          <span>Tours {{ dest.arrangement_count }}</span>
         </div>
         <button class="arrow">→</button>
       </div>
@@ -32,17 +32,17 @@
 
     <div class="tours-grid">
 
-      <article class="tour-card" *ngFor="let arragement of topArrangements">
+      <article class="tour-card" *ngFor="let arrangement of topArrangements">
         <div class="image-wrapper">
-          <img [src]="apiUrl + arragement.hotel?.slika" [alt]="arragement.naziv">
-          <span class="rating">⭐ {{arragement.hotel?.ocena}}</span>
+          <img [src]="buildImageUrl(arrangement.hotel?.image)" [alt]="arrangement.name">
+          <span class="rating">⭐ {{ arrangement.hotel?.rating ?? 0 }}</span>
         </div>
 
-        <h3>{{arragement.naziv}}</h3>
+        <h3>{{ arrangement.name }}</h3>
 
         <div class="card-footer">
-          <span class="price">{{arragement.cena}}$</span>
-          <button (click)="bookNow(arragement)">Book Now</button>
+          <span class="price">{{ arrangement.price }}$</span>
+          <button (click)="bookNow(arrangement)">Book Now</button>
         </div>
       </article>
 

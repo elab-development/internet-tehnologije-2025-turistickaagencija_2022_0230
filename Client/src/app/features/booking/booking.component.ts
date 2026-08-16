@@ -148,7 +148,7 @@ export class BookingComponent {
     this.bookingMessage = null;
 
     this.bookingApi.createBooking({
-      aranzman_id: this.arrangementId,
+      arrangement_id: this.arrangementId,
       guests: this.totalGuests()
     }).subscribe({
       next: response => {
@@ -166,25 +166,25 @@ export class BookingComponent {
   }
 
   private updatePackage(arrangement: Arrangement): void {
-    const imagePath = arrangement.hotel?.slika || arrangement.destinacija.slika || '';
+    const imagePath = arrangement.hotel?.image || arrangement.destination?.image || '';
     this.package.set({
       id: arrangement.id.toString(),
-      name: arrangement.naziv,
-      country: arrangement.destinacija.drzava.naziv,
-      image: imagePath ? `${environment.apiUrl}${imagePath}` : '',
-      rating: arrangement.hotel?.ocena ? Number(arrangement.hotel.ocena) : 0,
-      description: arrangement.opis || '',
-      longDescription: arrangement.opis || '',
-      durationDays: arrangement.broj_nocenja,
-      pricePerAdult: Number(arrangement.cena),
-      pricePerChild: Number(arrangement.cena),
-      totalCapacity: arrangement.broj_mesta,
-      remainingCapacity: arrangement.broj_mesta,
-      availableDates: [this.formatDate(arrangement.datum_pocetka)],
+      name: arrangement.name,
+      country: arrangement.destination?.country?.name || 'Unknown',
+      image: imagePath ? (imagePath.startsWith('http') ? imagePath : `${environment.apiUrl}${imagePath}`) : '',
+      rating: arrangement.hotel?.rating ? Number(arrangement.hotel.rating) : 0,
+      description: arrangement.description || '',
+      longDescription: arrangement.description || '',
+      durationDays: arrangement.number_of_nights,
+      pricePerAdult: Number(arrangement.price),
+      pricePerChild: Number(arrangement.price),
+      totalCapacity: arrangement.capacity,
+      remainingCapacity: arrangement.capacity,
+      availableDates: [this.formatDate(arrangement.start_date)],
       includes: [
-        `Hotel: ${arrangement.hotel?.naziv ?? 'Not available'}`,
-        `Destination: ${arrangement.destinacija.naziv}`,
-        `Nights: ${arrangement.broj_nocenja}`
+        `Hotel: ${arrangement.hotel?.name ?? 'Not available'}`,
+        `Destination: ${arrangement.destination?.name ?? 'Unknown'}`,
+        `Nights: ${arrangement.number_of_nights}`
       ]
     });
     this.selectedDateIndex.set(0);

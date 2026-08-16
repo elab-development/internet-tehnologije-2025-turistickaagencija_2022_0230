@@ -196,7 +196,7 @@ export class UserBookingsComponent {
   }
 
   removeBooking(booking: Booking): void {
-    if (!confirm(`Remove cancelled booking for ${booking.aranzman.naziv}?`)) {
+    if (!confirm(`Remove cancelled booking for ${booking.arrangement.name}?`)) {
       return;
     }
 
