@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
 import { LoginComponent } from './features/login/login.component';
 import { SignupComponent } from './features/signup/signup.component';
+import { ForgotPasswordComponent } from './features/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { ActivateComponent } from './features/activate/activate.component';
 import { AuthGuard } from './core/services/auth/auth.guard';
 import { ArrangementOfferComponent } from './features/arrangement-offer/arrangement-offer.component';
 import { BookingComponent } from './features/booking/booking.component';
@@ -29,8 +32,20 @@ export const routes: Routes = [
         component: LoginComponent,
     },
     {
+        path: 'forgot-password',
+        component: ForgotPasswordComponent
+    },
+    {
         path: 'signup',
         component: SignupComponent
+    },
+    {
+        path: 'activate/:uid/:token',
+        component: ActivateComponent
+    },
+    {
+        path: 'password-reset/:uid/:token',
+        component: ResetPasswordComponent
     },
     {
         path: 'arrangement-offer',
