@@ -255,9 +255,8 @@ export class SignupComponent implements OnInit {
     this.signupApiService.signup(formData).subscribe({
       next: (response: any) => {
         this.isLoading = false;
-        this.successMessage = 'Registration successful!';
-        
-
+        // For Djoser-backed registration, instruct user to check email for activation
+        this.successMessage = 'Registration successful! Check your email to activate your account.';
       },
       error: (error: any) => {
         this.isLoading = false;

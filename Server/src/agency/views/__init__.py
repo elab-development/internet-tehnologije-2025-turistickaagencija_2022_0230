@@ -1,4 +1,4 @@
-from .auth import login, register, me
+from .auth import login, register, me, activate, request_password_reset, confirm_password_reset
 from .user import users, user_detail
 from .admin import admin_dashboard
 from .country import countries, country_detail
@@ -11,6 +11,9 @@ __all__ = [
     'login',
     'register',
     'me',
+    'activate',
+    'request_password_reset',
+    'confirm_password_reset',
     'users',
     'user_detail',
     'admin_dashboard',

@@ -26,5 +26,8 @@ urlpatterns = [
 
     path('auth/signup/', views.register),
     path('auth/login/', views.login),
+    path('auth/users/activation/', views.activate),
+    path('auth/users/reset_password/', views.request_password_reset),
+    path('auth/users/reset_password_confirm/', views.confirm_password_reset),
     path('auth/me/', views.me),
 ]
