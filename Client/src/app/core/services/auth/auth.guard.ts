@@ -20,7 +20,11 @@ export class AuthGuard implements CanActivate {
       return this.router.createUrlTree(['/login']);
     }
 
-    if (requiredRole && requiredRole === 'ADMIN' && !this.authService.isAdmin()) {
+    if (requiredRole === 'ADMIN' && !this.authService.isAdmin()) {
+      return this.router.createUrlTree(['/home']);
+    }
+
+    if (requiredRole === 'AGENT' && !this.authService.isAgent() && !this.authService.isAdmin()) {
       return this.router.createUrlTree(['/home']);
     }
 

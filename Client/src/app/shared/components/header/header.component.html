@@ -32,6 +32,7 @@
           <div class="user-dropdown" *ngIf="userMenuOpen">
             <a routerLink="/my-bookings" class="logout-btn" (click)="userMenuOpen = false">My Bookings</a>
             <a *ngIf="isAdmin(user)" routerLink="/admin/dashboard" class="logout-btn" (click)="userMenuOpen = false">Dashboard</a>
+            <a *ngIf="isAgent(user)" routerLink="/agent/dashboard" class="logout-btn" (click)="userMenuOpen = false">Agent Dashboard</a>
             <button class="logout-btn" (click)="logout()">Logout</button>
           </div>
         </li>
