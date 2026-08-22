@@ -42,13 +42,46 @@ login(username: string, password: string) {
 
   private restoreUser() {
     const user = localStorage.getItem('user');
-    if (user) {
-      this.userSubject.next(JSON.parse(user));
+    const token = localStorage.getItem('token');
+
+    if (user && token && !this.isTokenExpired(token)) {
+      try {
+        this.userSubject.next(JSON.parse(user));
+      } catch {
+        this.logout();
+      }
+    } else {
+      this.logout();
     }
   }
 
   isLoggedIn(): boolean {
+    const token = localStorage.getItem('token');
+    if (!token || this.isTokenExpired(token)) {
+      if (this.userSubject.value !== null) {
+        this.logout();
+      }
+      return false;
+    }
+
     return this.userSubject.value !== null;
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now();
+    } catch {
+      return true;
+    }
+  }
+
+  isAdmin(): boolean {
+    return this.userSubject.value?.role === 'ADMIN';
+  }
+
+  isAgent(): boolean {
+    return this.userSubject.value?.role === 'AGENT';
   }
 
 }

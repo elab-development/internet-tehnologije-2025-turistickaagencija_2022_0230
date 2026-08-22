@@ -22,44 +22,36 @@
     <span>Result: {{ arragements.length }}</span>
   </header>
 
-  <article class="card" *ngFor="let arragement of arragements">
+  <article class="card" *ngFor="let arrangement of arragements">
 
     <div class="image-wrapper">
-      <img [src]="environment+arragement.destinacija.slika" [alt]="arragement.naziv" />
+      <img [src]="getArrangementImage(arrangement)" [alt]="arrangement.name" />
     </div>
 
     <div class="content">
-      <span class="badge">{{ arragement.destinacija.drzava.naziv }}</span>
+      <span class="badge">{{ arrangement.destination.country.name }}</span>
 
       <div class="title-row">
-        <h2>{{ arragement.naziv }}</h2>
-        <span class="rating">⭐ {{ arragement.hotel.ocena }}</span>
+        <h2>{{ arrangement.name }}</h2>
+        <span class="rating">⭐ {{ arrangement.hotel?.rating ?? 0 }}</span>
       </div>
 
-      <p>{{ arragement.opis }}</p>
+      <p>{{ arrangement.description }}</p>
 
 
       <div class="footer">
         <div>
           <small>DURATION</small>
-          <strong>{{ arragement.broj_nocenja }}</strong>
+          <strong>{{ arrangement.number_of_nights }}</strong>
         </div>
 
         <div>
           <small>PRICE</small>
-          <strong class="price">{{ arragement.cena }} €</strong>
+          <strong class="price">{{ arrangement.price }} €</strong>
         </div>
 
-        <button (click)="showDetails(arragement)">Details</button>
+        <button type="button" (click)="showDetails(arrangement)">Details</button>
       </div>
-
     </div>
   </article>
-
-  <div class="pagination">
-    <button class="arrow" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">&lt;</button>
-    <span class="page-number">{{ currentPage }}</span>
-    <button class="arrow" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">&gt;</button>
-  </div>
-
 </section>

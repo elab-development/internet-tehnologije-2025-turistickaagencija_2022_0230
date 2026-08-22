@@ -1,0 +1,63 @@
+<div class="management-container">
+  <div class="header">
+    <div>
+      <h1>Countries Management</h1>
+      <p>Manage the list of available countries.</p>
+    </div>
+    <button class="btn-add" (click)="toggleAddForm()">+ Add Country</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
+
+  <div *ngIf="showAddForm" class="add-form">
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="newCountry.name" placeholder="Country name" />
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" (click)="addCountry()">Save</button>
+      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let country of countries">
+          <tr *ngIf="editingCountryId !== country.id">
+            <td>{{ country.name }}</td>
+            <td class="actions">
+              <button class="btn-edit" (click)="startEdit(country)">Edit</button>
+              <button class="btn-delete" (click)="deleteCountry(country.id, country.name)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="editingCountryId === country.id" class="edit-row">
+            <td colspan="2">
+              <div class="edit-form">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input type="text" [(ngModel)]="editFormData.name" />
+                </div>
+                <div class="form-actions">
+                  <button class="btn-save" (click)="saveEdit(country.id)">Save</button>
+                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="countries.length === 0 && !errorMessage" class="empty-state">
+    <p>No countries found.</p>
+  </div>
+</div>

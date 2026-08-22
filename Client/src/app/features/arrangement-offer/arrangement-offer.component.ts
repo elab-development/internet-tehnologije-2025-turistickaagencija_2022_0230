@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SearchApiService } from '../../core/services/component-api/search-api.service';
 import { SearchRequest } from '../../core/services/api-message/search-request.model';
-import { __param } from 'tslib';
 import { Arrangement } from '../../core/models/arrangement.model';
 import { environment } from '../../../environments/environment';
 
@@ -24,7 +23,7 @@ export class ArrangementOfferComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private apiService:SearchApiService
+    private apiService: SearchApiService
   ) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;  
    }
@@ -33,11 +32,11 @@ export class ArrangementOfferComponent {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       const payload: SearchRequest = {
-        destinacija_id: params['destinacija_id'] ? Number(params['destinacija_id']) : null,
-        datum_pocetka: params['datum_pocetka'] || null,
-        datum_zavrsetka: params['datum_zavrsetka'] || null,
-        broj_mesta: params['broj_mesta'] ? Number(params['broj_mesta']) : null
-      }
+        destination_id: params['destination_id'] ? Number(params['destination_id']) : null,
+        start_date: params['start_date'] || null,
+        end_date: params['end_date'] || null,
+        capacity: params['capacity'] ? Number(params['capacity']) : null
+      };
       this.executeSearch(payload);
     });
 
@@ -75,8 +74,16 @@ export class ArrangementOfferComponent {
     }
   }
 
-  showDetails(ar:Arrangement): void {
-    console.log('Prikazujem detalje za:', ar);
-    // TODO: Navigacija na stranicu sa detaljima
+  getArrangementImage(arrangement: Arrangement): string {
+    const imagePath = arrangement.hotel?.image || arrangement.destination?.image || '';
+    if (!imagePath) {
+      return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop';
+    }
+
+    return imagePath.startsWith('http') ? imagePath : `${environment.apiUrl}${imagePath}`;
+  }
+
+  showDetails(ar: Arrangement): void {
+    this.router.navigate(['/booking', ar.id]);
   }
 }

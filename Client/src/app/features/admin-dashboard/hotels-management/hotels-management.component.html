@@ -1,0 +1,107 @@
+<div class="management-container">
+  <div class="header">
+    <div>
+      <h1>Hotels Management</h1>
+      <p>Manage hotel properties and linked destinations.</p>
+    </div>
+    <button class="btn-add" (click)="toggleAddForm()">+ Add Hotel</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
+
+  <div *ngIf="showAddForm" class="add-form">
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="newHotel.name" placeholder="Hotel name" />
+    </div>
+    <div class="form-group">
+      <label>Image URL</label>
+      <input type="text" [(ngModel)]="newHotel.image" placeholder="Image URL" />
+    </div>
+    <div class="form-group">
+      <label>Rating</label>
+      <input type="number" [(ngModel)]="newHotel.rating" placeholder="Rating" min="0" max="5" step="0.1" />
+    </div>
+    <div class="form-group">
+      <label>Nightly Price</label>
+      <input type="number" [(ngModel)]="newHotel.price_per_night" placeholder="Price per night" />
+    </div>
+    <div class="form-group">
+      <label>Destination</label>
+      <select [(ngModel)]="newHotel.destination_id">
+        <option value="0">Select destination</option>
+        <option *ngFor="let destination of destinations" [value]="destination.id">{{ destination.name }}</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" (click)="addHotel()">Save</button>
+      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Destination</th>
+          <th>Rating</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let hotel of hotels">
+          <tr *ngIf="editingHotelId !== hotel.id">
+            <td>{{ hotel.name }}</td>
+            <td>{{ hotel.destination.name }}</td>
+            <td>{{ hotel.rating }}</td>
+            <td>{{ hotel.price_per_night }}</td>
+            <td class="actions">
+              <button class="btn-edit" (click)="startEdit(hotel)">Edit</button>
+              <button class="btn-delete" (click)="deleteHotel(hotel.id, hotel.name)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="editingHotelId === hotel.id" class="edit-row">
+            <td colspan="5">
+              <div class="edit-form">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input type="text" [(ngModel)]="editFormData.name" />
+                </div>
+                <div class="form-group">
+                  <label>Image URL</label>
+                  <input type="text" [(ngModel)]="editFormData.image" />
+                </div>
+                <div class="form-group">
+                  <label>Rating</label>
+                  <input type="number" [(ngModel)]="editFormData.rating" min="0" max="5" step="0.1" />
+                </div>
+                <div class="form-group">
+                  <label>Nightly Price</label>
+                  <input type="number" [(ngModel)]="editFormData.price_per_night" />
+                </div>
+                <div class="form-group">
+                  <label>Destination</label>
+                  <select [(ngModel)]="editFormData.destination_id">
+                    <option value="0">Select destination</option>
+                    <option *ngFor="let destination of destinations" [value]="destination.id">{{ destination.name }}</option>
+                  </select>
+                </div>
+                <div class="form-actions">
+                  <button class="btn-save" (click)="saveEdit(hotel.id)">Save</button>
+                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="hotels.length === 0 && !errorMessage" class="empty-state">
+    <p>No hotels found.</p>
+  </div>
+</div>

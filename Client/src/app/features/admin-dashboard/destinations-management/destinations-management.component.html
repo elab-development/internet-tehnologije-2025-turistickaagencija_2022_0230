@@ -1,0 +1,89 @@
+<div class="management-container">
+  <div class="header">
+    <div>
+      <h1>Destinations Management</h1>
+      <p>Manage destinations and their country assignments.</p>
+    </div>
+    <button class="btn-add" (click)="toggleAddForm()">+ Add Destination</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
+
+  <div *ngIf="showAddForm" class="add-form">
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="newDestination.name" placeholder="Destination name" />
+    </div>
+    <div class="form-group">
+      <label>Image URL</label>
+      <input type="text" [(ngModel)]="newDestination.image" placeholder="Image URL" />
+    </div>
+    <div class="form-group">
+      <label>Country</label>
+      <select [(ngModel)]="newDestination.country_id">
+        <option value="0">Select country</option>
+        <option *ngFor="let country of countries" [value]="country.id">{{ country.name }}</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" (click)="addDestination()">Save</button>
+      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Country</th>
+          <th>Image</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let destination of destinations">
+          <tr *ngIf="editingDestinationId !== destination.id">
+            <td>{{ destination.name }}</td>
+            <td>{{ destination.country.name }}</td>
+            <td>{{ destination.image }}</td>
+            <td class="actions">
+              <button class="btn-edit" (click)="startEdit(destination)">Edit</button>
+              <button class="btn-delete" (click)="deleteDestination(destination.id, destination.name)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="editingDestinationId === destination.id" class="edit-row">
+            <td colspan="4">
+              <div class="edit-form">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input type="text" [(ngModel)]="editFormData.name" />
+                </div>
+                <div class="form-group">
+                  <label>Image URL</label>
+                  <input type="text" [(ngModel)]="editFormData.image" />
+                </div>
+                <div class="form-group">
+                  <label>Country</label>
+                  <select [(ngModel)]="editFormData.country_id">
+                    <option value="0">Select country</option>
+                    <option *ngFor="let country of countries" [value]="country.id">{{ country.name }}</option>
+                  </select>
+                </div>
+                <div class="form-actions">
+                  <button class="btn-save" (click)="saveEdit(destination.id)">Save</button>
+                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="destinations.length === 0 && !errorMessage" class="empty-state">
+    <p>No destinations found.</p>
+  </div>
+</div>

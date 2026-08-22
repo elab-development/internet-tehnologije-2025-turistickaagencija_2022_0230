@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { AuthService } from './auth.service';
 
 
@@ -13,11 +13,21 @@ export class AuthGuard implements CanActivate {
     private router: Router
   ) {}
 
-  canActivate(): boolean | UrlTree {
-    if (this.authService.isLoggedIn()) {
-      return true;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
+    const requiredRole = route.data['requiredRole'];
+
+    if (!this.authService.isLoggedIn()) {
+      return this.router.createUrlTree(['/login']);
     }
 
-    return this.router.createUrlTree(['/login']);
+    if (requiredRole === 'ADMIN' && !this.authService.isAdmin()) {
+      return this.router.createUrlTree(['/home']);
+    }
+
+    if (requiredRole === 'AGENT' && !this.authService.isAgent() && !this.authService.isAdmin()) {
+      return this.router.createUrlTree(['/home']);
+    }
+
+    return true;
   }
 }

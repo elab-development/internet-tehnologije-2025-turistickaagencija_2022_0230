@@ -106,17 +106,19 @@ export class SearchBarComponent implements OnInit {
 
   convertDestinationsToLocations(destinations: Destination[]): Location[] {
     const locationMap: { [key: string]: Location } = {};
-  
+
     destinations.forEach(dest => {
-      if (!locationMap[dest.drzava.naziv]) {
-        locationMap[dest.drzava.naziv] = {
-          id: dest.drzava.id,
-          country: dest.drzava.naziv,
+      const countryName = dest.country?.name ?? 'Unknown';
+
+      if (!locationMap[countryName]) {
+        locationMap[countryName] = {
+          id: dest.country?.id ?? 0,
+          country: countryName,
           cities: []
         };
       }
-      if (!locationMap[dest.drzava.naziv].cities.includes(dest.naziv)) {
-        locationMap[dest.drzava.naziv].cities.push(dest.naziv);
+      if (!locationMap[countryName].cities.includes(dest.name)) {
+        locationMap[countryName].cities.push(dest.name);
       }
     });
 
@@ -176,10 +178,10 @@ export class SearchBarComponent implements OnInit {
 
   search() {
     const queryParams = {
-        destinacija_id: this.getDestinationId(this.selectedCity),
-        datum_pocetka: this.checkInDate ? this.checkInDate.toISOString().split('T')[0] : null,
-        datum_zavrsetka: this.checkOutDate ? this.checkOutDate.toISOString().split('T')[0] : null,
-        broj_mesta: this.getTotalGuests() > 0 ? this.getTotalGuests() : null
+        destination_id: this.getDestinationId(this.selectedCity),
+        start_date: this.checkInDate ? this.checkInDate.toISOString().split('T')[0] : null,
+        end_date: this.checkOutDate ? this.checkOutDate.toISOString().split('T')[0] : null,
+        capacity: this.getTotalGuests() > 0 ? this.getTotalGuests() : null
     };
 
     // Navigacija sa čuvanjem trenutnog stanja u 'state' objektu

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { User } from '../../../core/models/user.model';
 @Component({
@@ -16,7 +16,7 @@ export class HeaderComponent {
   user$: Observable<User | null>;
   userMenuOpen = false;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private router: Router) {
     this.user$ = this.authService.user$;
   }
 
@@ -27,5 +27,14 @@ export class HeaderComponent {
   logout(): void {
     this.userMenuOpen = false;
     this.authService.logout();
+    this.router.navigate(['/']).then(() => window.location.reload());
+  }
+
+  isAdmin(user: User | null): boolean {
+    return user?.role === 'ADMIN';
+  }
+
+  isAgent(user: User | null): boolean {
+    return user?.role === 'AGENT';
   }
 }

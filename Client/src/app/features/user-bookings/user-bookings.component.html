@@ -1,0 +1,127 @@
+<section class="bookings-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Your travel plan</p>
+      <h1>My Bookings</h1>
+      <p class="subtitle">Review upcoming trips, complete payment, or cancel any pending reservation.</p>
+    </div>
+    <a routerLink="/" class="back-link">← Home</a>
+  </div>
+
+  <div *ngIf="loading" class="status-message">Loading your bookings...</div>
+  <div *ngIf="error" class="status-message error">{{ error }}</div>
+  <div *ngIf="message" class="status-message success">{{ message }}</div>
+
+  <div class="page-summary" *ngIf="!loading && bookings.length > 0">
+    <span class="total-count">Total bookings: {{ bookings.length }}</span>
+  </div>
+
+  <div *ngIf="!loading && bookings.length === 0" class="empty-state">
+    <p>You have no booked arrangements yet.</p>
+    <p>Explore the homepage to find your next adventure.</p>
+  </div>
+
+  <div class="booking-list">
+    <article class="booking-card" *ngFor="let booking of bookings">
+      <header class="booking-card-header">
+        <div>
+          <p class="booking-ref">Booking #{{ booking.id }}</p>
+          <h2>{{ booking.arrangement.name }}</h2>
+        </div>
+        <div class="status-group">
+          <span class="status-pill" [class.paid]="booking.payment_status === 'PAID'" [class.cancelled]="booking.status === 'CANCELLED'" [class.pending]="booking.payment_status !== 'PAID' && booking.status !== 'CANCELLED'">
+            {{ booking.status }} / {{ booking.payment_status }}
+          </span>
+          <span class="due-pill" *ngIf="booking.payment_status !== 'PAID' && booking.status !== 'CANCELLED'">Amount due</span>
+        </div>
+      </header>
+
+      <div class="booking-info">
+        <p><strong>Destination:</strong> {{ booking.arrangement.destination.name }}</p>
+        <p><strong>Hotel:</strong> {{ booking.arrangement.hotel?.name || 'No hotel selected' }}</p>
+        <p><strong>Travel dates:</strong> {{ booking.arrangement.start_date | date:'mediumDate' }} – {{ booking.arrangement.end_date | date:'mediumDate' }}</p>
+        <p><strong>Guests:</strong> {{ booking.guests }}</p>
+        <p><strong>Total price:</strong> {{ booking.total_price | number:'1.2-2' }} €</p>
+      </div>
+
+      <div class="booking-actions">
+        <button type="button" class="btn btn-primary" (click)="pay(booking)" [disabled]="booking.payment_status === 'PAID' || booking.status === 'CANCELLED'">Pay Now</button>
+        <button type="button" class="btn btn-outline" (click)="cancel(booking)" [disabled]="booking.status === 'CANCELLED'">Cancel Booking</button>
+        <button type="button" class="btn btn-danger" *ngIf="booking.status === 'CANCELLED'" (click)="removeBooking(booking)">Remove</button>
+      </div>
+    </article>
+  </div>
+
+  <div class="modal-overlay" *ngIf="selectedBookingToCancel || selectedBookingToPay">
+    <div class="modal-panel">
+      <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">×</button>
+
+      <ng-container *ngIf="selectedBookingToCancel">
+        <h2>Cancel booking</h2>
+        <p>Are you sure you want to cancel the booking for <strong>{{ selectedBookingToCancel.arrangement.name }}</strong>?</p>
+        <p class="modal-note">This action will mark the reservation as cancelled and you will no longer be able to pay for it.</p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" (click)="closeModal()">Keep booking</button>
+          <button type="button" class="btn btn-danger" (click)="confirmCancel(selectedBookingToCancel)">Yes, cancel booking</button>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="selectedBookingToPay">
+        <h2>Complete payment</h2>
+        <p>Finish payment for <strong>{{ selectedBookingToPay.arrangement.name }}</strong> and secure your reservation.</p>
+        <p *ngIf="savedCard" class="saved-card-note">Saved card ending {{ savedCard.last4 }} will be used for faster checkout.</p>
+
+        <form class="payment-form" (ngSubmit)="confirmPayment()">
+          <div class="field-row">
+            <label>
+              <span>Cardholder name</span>
+              <input type="text" name="cardName" [(ngModel)]="paymentForm.cardName" required />
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label>
+              <span>Card number</span>
+              <input type="text" name="cardNumber" [(ngModel)]="paymentForm.cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" required />
+            </label>
+          </div>
+
+          <div class="grid-two">
+            <label>
+              <span>Expiry</span>
+              <input type="text" name="expiry" [(ngModel)]="paymentForm.expiry" placeholder="MM/YY" maxlength="5" required />
+            </label>
+            <label>
+              <span>CVC</span>
+              <input type="text" name="cvc" [(ngModel)]="paymentForm.cvc" maxlength="4" placeholder="123" required />
+            </label>
+          </div>
+
+          <label class="save-card">
+            <input type="checkbox" name="saveCard" [(ngModel)]="paymentForm.saveCard" />
+            <span>Save card for next time</span>
+          </label>
+
+          <div *ngIf="savedCard" class="saved-card-footer">
+            <p>
+              Saved card ending <strong>{{ savedCard.last4 }}</strong>.
+              <button type="button" class="link-button" (click)="useSavedCard()">Use saved details</button>
+            </p>
+          </div>
+
+          <div *ngIf="paymentErrors.length" class="validation-errors">
+            <p>Please fix the following issues:</p>
+            <ul>
+              <li *ngFor="let error of paymentErrors">{{ error }}</li>
+            </ul>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Pay {{ selectedBookingToPay.total_price | number:'1.2-2' }} €</button>
+          </div>
+        </form>
+      </ng-container>
+    </div>
+  </div>
+</section>
