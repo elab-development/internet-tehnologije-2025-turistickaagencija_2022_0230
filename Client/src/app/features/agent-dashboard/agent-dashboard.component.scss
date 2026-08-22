@@ -1,0 +1,123 @@
+.dashboard-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  color: #1f2937;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  color: #4f46e5;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: #6b7280;
+  max-width: 320px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.stat-card h3 {
+  margin: 0 0 0.25rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.management-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.management-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    border-color: #4f46e5;
+  }
+
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.3rem;
+    color: #111827;
+  }
+
+  p {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .card-count {
+    display: inline-block;
+    background: #f3f4f6;
+    color: #4f46e5;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.error-box {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .management-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

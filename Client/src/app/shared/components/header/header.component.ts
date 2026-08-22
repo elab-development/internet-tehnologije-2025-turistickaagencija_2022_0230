@@ -33,4 +33,8 @@ export class HeaderComponent {
   isAdmin(user: User | null): boolean {
     return user?.role === 'ADMIN';
   }
+
+  isAgent(user: User | null): boolean {
+    return user?.role === 'AGENT';
+  }
 }

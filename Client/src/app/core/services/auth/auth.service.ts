@@ -56,4 +56,8 @@ login(username: string, password: string) {
     return this.userSubject.value?.role === 'ADMIN';
   }
 
+  isAgent(): boolean {
+    return this.userSubject.value?.role === 'AGENT';
+  }
+
 }

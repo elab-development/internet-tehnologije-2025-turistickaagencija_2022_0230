@@ -1,0 +1,27 @@
+<section class="dashboard-shell">
+  <div class="dashboard-header">
+    <div>
+      <p class="eyebrow">Agent</p>
+      <h1>Agent dashboard</h1>
+    </div>
+    <p class="subtitle">Manage travel arrangements offered to clients.</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Arrangements</h3>
+      <p>{{ arrangementsCount }}</p>
+    </div>
+  </div>
+
+  <div class="management-cards-grid">
+    <a class="management-card" routerLink="/agent/arrangements">
+      <div class="card-icon">✈️</div>
+      <h2>Arrangements</h2>
+      <p>Add, edit, or remove travel packages</p>
+      <div class="card-count">{{ arrangementsCount }} arrangements</div>
+    </a>
+  </div>
+</section>
