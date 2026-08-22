@@ -172,7 +172,9 @@ export class SignupComponent implements OnInit {
     return {
       username,
       email,
-      password
+      password,
+      gender,
+      date_of_birth: dateOfBirth
     };
   }
 

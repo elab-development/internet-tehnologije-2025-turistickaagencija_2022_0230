@@ -13,7 +13,7 @@ export class BookingApiService {
     return this.api.get<ApiResponse<Booking[]>>(this.endpoint);
   }
 
-  createBooking(payload: { arrangement_id: number; guests: number }) {
+  createBooking(payload: { arrangement_id: number; adults: number; children: number }) {
     return this.api.post<ApiResponse<Booking>>(this.endpoint, payload);
   }
 

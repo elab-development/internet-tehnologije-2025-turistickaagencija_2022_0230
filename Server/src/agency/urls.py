@@ -20,6 +20,9 @@ urlpatterns = [
     path('hotels/', views.hotels),
     path('hotels/<int:id>/', views.hotel_detail),
 
+    path('transports/', views.transports),
+    path('transports/<int:id>/', views.transport_detail),
+
     path('users/', views.users),
     path('users/<int:id>/', views.user_detail, name='user-detail'),
     path('admin/dashboard/', views.admin_dashboard),

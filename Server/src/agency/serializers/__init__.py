@@ -5,6 +5,7 @@ from .destination import DestinationSerializer, TopDestinationSerializer
 from .hotel import HotelSerializer
 from .arrangement import ArrangementSerializer
 from .booking import BookingSerializer
+from .transport import TransportSerializer
 
 __all__ = [
     'UserSerializer',
@@ -16,4 +17,5 @@ __all__ = [
     'HotelSerializer',
     'ArrangementSerializer',
     'BookingSerializer',
+    'TransportSerializer',
 ]
