@@ -27,7 +27,7 @@ export class HeaderComponent {
   logout(): void {
     this.userMenuOpen = false;
     this.authService.logout();
-    this.router.navigate(['/']);
+    this.router.navigate(['/']).then(() => window.location.reload());
   }
 
   isAdmin(user: User | null): boolean {

@@ -11,13 +11,22 @@ export class ApiService {
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
-    if (!token) {
+    if (!token || this.isTokenExpired(token)) {
       return new HttpHeaders();
     }
 
     return new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now();
+    } catch {
+      return true;
+    }
   }
 
   get<T>(endpoint: string) {

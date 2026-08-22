@@ -5,7 +5,7 @@ import { ApiService } from '../../../core/services/api.service';
 
 interface Country {
   id: number;
-  naziv: string;
+  name: string;
 }
 
 interface CountriesResponse {
@@ -26,8 +26,8 @@ export class CountriesManagementComponent implements OnInit {
   successMessage = '';
   editingCountryId: number | null = null;
   showAddForm = false;
-  editFormData: { naziv: string } = { naziv: '' };
-  newCountry: { naziv: string } = { naziv: '' };
+  editFormData: { name: string } = { name: '' };
+  newCountry: { name: string } = { name: '' };
 
   constructor(private api: ApiService) {}
 
@@ -58,7 +58,7 @@ export class CountriesManagementComponent implements OnInit {
   }
 
   addCountry(): void {
-    if (!this.newCountry.naziv.trim()) {
+    if (!this.newCountry.name.trim()) {
       this.errorMessage = 'Country name is required.';
       return;
     }
@@ -66,7 +66,7 @@ export class CountriesManagementComponent implements OnInit {
     this.api.post('api/countries/', this.newCountry).subscribe({
       next: () => {
         this.successMessage = 'Country added successfully.';
-        this.newCountry = { naziv: '' };
+        this.newCountry = { name: '' };
         this.showAddForm = false;
         this.loadCountries();
         setTimeout(() => this.successMessage = '', 3000);
@@ -79,18 +79,18 @@ export class CountriesManagementComponent implements OnInit {
 
   startEdit(country: Country): void {
     this.editingCountryId = country.id;
-    this.editFormData = { naziv: country.naziv };
+    this.editFormData = { name: country.name };
     this.errorMessage = '';
     this.successMessage = '';
   }
 
   cancelEdit(): void {
     this.editingCountryId = null;
-    this.editFormData = { naziv: '' };
+    this.editFormData = { name: '' };
   }
 
   saveEdit(countryId: number): void {
-    if (!this.editFormData.naziv.trim()) {
+    if (!this.editFormData.name.trim()) {
       this.errorMessage = 'Country name is required.';
       return;
     }
@@ -108,14 +108,14 @@ export class CountriesManagementComponent implements OnInit {
     });
   }
 
-  deleteCountry(id: number, naziv: string): void {
-    if (!confirm(`Delete country "${naziv}"?`)) {
+  deleteCountry(id: number, name: string): void {
+    if (!confirm(`Delete country "${name}"?`)) {
       return;
     }
 
     this.api.delete(`api/countries/${id}/`).subscribe({
       next: () => {
-        this.successMessage = `Country "${naziv}" deleted.`;
+        this.successMessage = `Country "${name}" deleted.`;
         this.loadCountries();
         setTimeout(() => this.successMessage = '', 3000);
       },

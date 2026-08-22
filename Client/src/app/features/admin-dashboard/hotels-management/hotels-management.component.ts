@@ -3,23 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
 
-interface Country {
-  id: number;
-  naziv: string;
-}
-
 interface Destination {
   id: number;
-  naziv: string;
+  name: string;
 }
 
 interface Hotel {
   id: number;
-  naziv: string;
-  slika: string;
-  ocena: number;
-  cena_nocenja: number;
-  destinacija: Destination;
+  name: string;
+  image: string | null;
+  rating: number;
+  price_per_night: number;
+  destination: Destination;
 }
 
 @Component({
@@ -36,8 +31,8 @@ export class HotelsManagementComponent implements OnInit {
   successMessage = '';
   editingHotelId: number | null = null;
   showAddForm = false;
-  editFormData = { naziv: '', slika: '', ocena: 0, cena_nocenja: 0, destinacija_id: 0 };
-  newHotel = { naziv: '', slika: '', ocena: 0, cena_nocenja: 0, destinacija_id: 0 };
+  editFormData = { name: '', image: '', rating: 0, price_per_night: 0, destination_id: 0 };
+  newHotel = { name: '', image: '', rating: 0, price_per_night: 0, destination_id: 0 };
 
   constructor(private api: ApiService) {}
 
@@ -79,7 +74,7 @@ export class HotelsManagementComponent implements OnInit {
   }
 
   addHotel(): void {
-    if (!this.newHotel.naziv.trim() || !this.newHotel.destinacija_id) {
+    if (!this.newHotel.name.trim() || !this.newHotel.destination_id) {
       this.errorMessage = 'Name and destination are required.';
       return;
     }
@@ -87,7 +82,7 @@ export class HotelsManagementComponent implements OnInit {
     this.api.post('api/hotels/', this.newHotel).subscribe({
       next: () => {
         this.successMessage = 'Hotel added successfully.';
-        this.newHotel = { naziv: '', slika: '', ocena: 0, cena_nocenja: 0, destinacija_id: 0 };
+        this.newHotel = { name: '', image: '', rating: 0, price_per_night: 0, destination_id: 0 };
         this.showAddForm = false;
         this.loadHotels();
         setTimeout(() => this.successMessage = '', 3000);
@@ -101,21 +96,21 @@ export class HotelsManagementComponent implements OnInit {
   startEdit(hotel: Hotel): void {
     this.editingHotelId = hotel.id;
     this.editFormData = {
-      naziv: hotel.naziv,
-      slika: hotel.slika,
-      ocena: hotel.ocena,
-      cena_nocenja: hotel.cena_nocenja,
-      destinacija_id: hotel.destinacija.id
+      name: hotel.name,
+      image: hotel.image || '',
+      rating: hotel.rating,
+      price_per_night: hotel.price_per_night,
+      destination_id: hotel.destination.id
     };
   }
 
   cancelEdit(): void {
     this.editingHotelId = null;
-    this.editFormData = { naziv: '', slika: '', ocena: 0, cena_nocenja: 0, destinacija_id: 0 };
+    this.editFormData = { name: '', image: '', rating: 0, price_per_night: 0, destination_id: 0 };
   }
 
   saveEdit(hotelId: number): void {
-    if (!this.editFormData.naziv.trim() || !this.editFormData.destinacija_id) {
+    if (!this.editFormData.name.trim() || !this.editFormData.destination_id) {
       this.errorMessage = 'Name and destination are required.';
       return;
     }
@@ -133,14 +128,14 @@ export class HotelsManagementComponent implements OnInit {
     });
   }
 
-  deleteHotel(id: number, naziv: string): void {
-    if (!confirm(`Delete hotel "${naziv}"?`)) {
+  deleteHotel(id: number, name: string): void {
+    if (!confirm(`Delete hotel "${name}"?`)) {
       return;
     }
 
     this.api.delete(`api/hotels/${id}/`).subscribe({
       next: () => {
-        this.successMessage = `Hotel "${naziv}" deleted.`;
+        this.successMessage = `Hotel "${name}" deleted.`;
         this.loadHotels();
         setTimeout(() => this.successMessage = '', 3000);
       },
