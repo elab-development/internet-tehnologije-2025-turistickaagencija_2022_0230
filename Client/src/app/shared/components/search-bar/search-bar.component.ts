@@ -162,14 +162,46 @@ export class SearchBarComponent implements OnInit {
     this.activeDialog = null;
   }
 
+  clearLocation() {
+    this.selectedCity = '';
+    this.selectedCountry = '';
+    this.selectedLocationText = '';
+  }
+
+  clearCheckIn() {
+    this.checkInDate = null;
+  }
+
+  clearCheckOut() {
+    this.checkOutDate = null;
+  }
+
+  clearGuests() {
+    this.guests.forEach(guest => guest.count = 0);
+    this.updateGuestText();
+  }
+
   closeDialog() {
     this.activeDialog = null;
     this.updateGuestText();
   }
 
   getDestinationId(city: string): number | null {
-    const loc = this.locations.find(l => l.cities.includes(city));
-    return loc ? loc.id : null;
+    const destination = this.destinations.find(dest =>
+      dest.name === city && dest.country?.name === this.selectedCountry
+    );
+    return destination?.id ?? null;
+  }
+
+  formatDate(date: Date | null): string | null {
+    if (!date) {
+      return null;
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   getTotalGuests(): number {
@@ -179,8 +211,8 @@ export class SearchBarComponent implements OnInit {
   search() {
     const queryParams = {
         destination_id: this.getDestinationId(this.selectedCity),
-        start_date: this.checkInDate ? this.checkInDate.toISOString().split('T')[0] : null,
-        end_date: this.checkOutDate ? this.checkOutDate.toISOString().split('T')[0] : null,
+        start_date: this.formatDate(this.checkInDate),
+        end_date: this.formatDate(this.checkOutDate),
         capacity: this.getTotalGuests() > 0 ? this.getTotalGuests() : null
     };
 
