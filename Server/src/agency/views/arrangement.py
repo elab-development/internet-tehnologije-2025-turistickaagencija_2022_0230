@@ -96,24 +96,45 @@ def arrangements_filter(request):
     end_date = request.data.get('end_date')
     capacity = request.data.get('capacity')
 
+    parsed_start_date = parse_date(start_date) if start_date else None
+    parsed_end_date = parse_date(end_date) if end_date else None
+
+    if start_date and not parsed_start_date:
+        return Response(
+            {"success": False, "message": "Invalid start_date."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if end_date and not parsed_end_date:
+        return Response(
+            {"success": False, "message": "Invalid end_date."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if parsed_start_date and parsed_end_date and parsed_start_date > parsed_end_date:
+        return Response(
+            {"success": False, "message": "start_date must be before end_date."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     if destination_id:
         queryset = queryset.filter(destination_id=destination_id)
 
-    if start_date and end_date:
+    if parsed_start_date and parsed_end_date:
         queryset = queryset.filter(
-            start_date__gte=start_date,
-            end_date__lte=end_date,
+            start_date__gte=parsed_start_date,
+            end_date__lte=parsed_end_date,
         )
-    elif start_date:
-        start = parse_date(start_date)
+    elif parsed_start_date:
+        start = parsed_start_date
         end = start + timedelta(days=30)
 
         queryset = queryset.filter(
             start_date__gte=start,
             end_date__lte=end,
         )
-    elif end_date:
-        end = parse_date(end_date)
+    elif parsed_end_date:
+        end = parsed_end_date
         start = end - timedelta(days=30)
 
         queryset = queryset.filter(
