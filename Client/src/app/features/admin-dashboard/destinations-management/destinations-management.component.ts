@@ -5,14 +5,14 @@ import { ApiService } from '../../../core/services/api.service';
 
 interface Country {
   id: number;
-  naziv: string;
+  name: string;
 }
 
 interface Destination {
   id: number;
-  naziv: string;
-  slika: string;
-  drzava: Country;
+  name: string;
+  image: string | null;
+  country: Country;
 }
 
 interface DestinationsResponse {
@@ -34,8 +34,8 @@ export class DestinationsManagementComponent implements OnInit {
   successMessage = '';
   editingDestinationId: number | null = null;
   showAddForm = false;
-  editFormData = { naziv: '', slika: '', drzava_id: 0 };
-  newDestination = { naziv: '', slika: '', drzava_id: 0 };
+  editFormData = { name: '', image: '', country_id: 0 };
+  newDestination = { name: '', image: '', country_id: 0 };
 
   constructor(private api: ApiService) {}
 
@@ -80,7 +80,7 @@ export class DestinationsManagementComponent implements OnInit {
   }
 
   addDestination(): void {
-    if (!this.newDestination.naziv.trim() || !this.newDestination.drzava_id) {
+    if (!this.newDestination.name.trim() || !this.newDestination.country_id) {
       this.errorMessage = 'Name and country are required.';
       return;
     }
@@ -88,7 +88,7 @@ export class DestinationsManagementComponent implements OnInit {
     this.api.post('api/destinations/', this.newDestination).subscribe({
       next: () => {
         this.successMessage = 'Destination added successfully.';
-        this.newDestination = { naziv: '', slika: '', drzava_id: 0 };
+        this.newDestination = { name: '', image: '', country_id: 0 };
         this.showAddForm = false;
         this.loadDestinations();
         setTimeout(() => this.successMessage = '', 3000);
@@ -102,19 +102,19 @@ export class DestinationsManagementComponent implements OnInit {
   startEdit(destination: Destination): void {
     this.editingDestinationId = destination.id;
     this.editFormData = {
-      naziv: destination.naziv,
-      slika: destination.slika,
-      drzava_id: destination.drzava.id
+      name: destination.name,
+      image: destination.image || '',
+      country_id: destination.country.id
     };
   }
 
   cancelEdit(): void {
     this.editingDestinationId = null;
-    this.editFormData = { naziv: '', slika: '', drzava_id: 0 };
+    this.editFormData = { name: '', image: '', country_id: 0 };
   }
 
   saveEdit(destinationId: number): void {
-    if (!this.editFormData.naziv.trim() || !this.editFormData.drzava_id) {
+    if (!this.editFormData.name.trim() || !this.editFormData.country_id) {
       this.errorMessage = 'Name and country are required.';
       return;
     }
@@ -132,14 +132,14 @@ export class DestinationsManagementComponent implements OnInit {
     });
   }
 
-  deleteDestination(id: number, naziv: string): void {
-    if (!confirm(`Delete destination "${naziv}"?`)) {
+  deleteDestination(id: number, name: string): void {
+    if (!confirm(`Delete destination "${name}"?`)) {
       return;
     }
 
     this.api.delete(`api/destinations/${id}/`).subscribe({
       next: () => {
-        this.successMessage = `Destination "${naziv}" deleted.`;
+        this.successMessage = `Destination "${name}" deleted.`;
         this.loadDestinations();
         setTimeout(() => this.successMessage = '', 3000);
       },

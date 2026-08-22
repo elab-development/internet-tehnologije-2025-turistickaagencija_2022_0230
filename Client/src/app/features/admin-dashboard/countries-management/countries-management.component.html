@@ -13,7 +13,7 @@
   <div *ngIf="showAddForm" class="add-form">
     <div class="form-group">
       <label>Name</label>
-      <input type="text" [(ngModel)]="newCountry.naziv" placeholder="Country name" />
+      <input type="text" [(ngModel)]="newCountry.name" placeholder="Country name" />
     </div>
     <div class="form-actions">
       <button class="btn-save" (click)="addCountry()">Save</button>
@@ -32,10 +32,10 @@
       <tbody>
         <ng-container *ngFor="let country of countries">
           <tr *ngIf="editingCountryId !== country.id">
-            <td>{{ country.naziv }}</td>
+            <td>{{ country.name }}</td>
             <td class="actions">
               <button class="btn-edit" (click)="startEdit(country)">Edit</button>
-              <button class="btn-delete" (click)="deleteCountry(country.id, country.naziv)">Delete</button>
+              <button class="btn-delete" (click)="deleteCountry(country.id, country.name)">Delete</button>
             </td>
           </tr>
           <tr *ngIf="editingCountryId === country.id" class="edit-row">
@@ -43,7 +43,7 @@
               <div class="edit-form">
                 <div class="form-group">
                   <label>Name</label>
-                  <input type="text" [(ngModel)]="editFormData.naziv" />
+                  <input type="text" [(ngModel)]="editFormData.name" />
                 </div>
                 <div class="form-actions">
                   <button class="btn-save" (click)="saveEdit(country.id)">Save</button>
