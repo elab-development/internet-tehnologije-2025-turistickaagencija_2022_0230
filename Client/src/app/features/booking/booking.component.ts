@@ -149,7 +149,8 @@ export class BookingComponent {
 
     this.bookingApi.createBooking({
       arrangement_id: this.arrangementId,
-      guests: this.totalGuests()
+      adults: this.adults(),
+      children: this.children()
     }).subscribe({
       next: response => {
         if (response.success) {

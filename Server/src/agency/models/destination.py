@@ -17,6 +17,11 @@ class Destination(models.Model):
         blank=True,
         db_column='slika',
     )
+    city = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'agency_destinacija'

@@ -1,10 +1,11 @@
 from django.shortcuts import get_object_or_404
+from django.db import models, transaction
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import Booking
+from ..models import Arrangement, Booking
 from ..serializers import BookingSerializer
 
 
@@ -19,7 +20,14 @@ def bookings(request):
     if request.method == 'POST':
         serializer = BookingSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            with transaction.atomic():
+                arrangement = Arrangement.objects.select_for_update().get(pk=serializer.validated_data['arrangement'].pk)
+                reserved = arrangement.bookings.exclude(status='CANCELLED').aggregate(total=models.Sum('guests'))['total'] or 0
+                requested = serializer.validated_data['adults'] + serializer.validated_data['children']
+                if reserved + requested > arrangement.capacity:
+                    return Response({"success": False, "message": "Not enough available capacity."}, status=status.HTTP_400_BAD_REQUEST)
+                serializer.validated_data['arrangement'] = arrangement
+                serializer.save(user=request.user)
             return Response({"success": True, "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 

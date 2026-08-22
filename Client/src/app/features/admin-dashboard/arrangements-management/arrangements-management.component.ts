@@ -2,35 +2,37 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
+import { Transport } from '../../../core/models/transport.model';
 
 interface Country {
   id: number;
-  naziv: string;
+  name: string;
 }
 
 interface Destination {
   id: number;
-  naziv: string;
-  drzava: Country;
+  name: string;
+  country: Country;
 }
 
 interface Hotel {
   id: number;
-  naziv: string;
-  destinacija: Destination;
+  name: string;
+  destination: Destination;
 }
 
 interface Arrangement {
   id: number;
-  naziv: string;
-  destinacija: Destination;
-  hotel: Hotel;
-  datum_pocetka: string;
-  datum_zavrsetka: string;
-  broj_nocenja: number;
-  cena: number;
-  broj_mesta: number;
-  opis: string;
+  name: string;
+  destination: Destination;
+  hotel: Hotel | null;
+  transport: Transport | null;
+  start_date: string;
+  end_date: string;
+  number_of_nights: number;
+  price: number;
+  capacity: number;
+  description: string;
 }
 
 @Component({
@@ -44,20 +46,22 @@ export class ArrangementsManagementComponent implements OnInit {
   arrangements: Arrangement[] = [];
   hotels: Hotel[] = [];
   destinations: Destination[] = [];
+  transports: Transport[] = [];
   errorMessage = '';
   successMessage = '';
   editingArrangementId: number | null = null;
   showAddForm = false;
   editFormData = {
-    naziv: '',
-    destinacija_id: 0,
+    name: '',
+    destination_id: 0,
     hotel_id: 0,
-    datum_pocetka: '',
-    datum_zavrsetka: '',
-    broj_nocenja: 0,
-    cena: 0,
-    broj_mesta: 0,
-    opis: ''
+    transport_id: null as number | null,
+    start_date: '',
+    end_date: '',
+    number_of_nights: 0,
+    price: 0,
+    capacity: 0,
+    description: ''
   };
   newArrangement = { ...this.editFormData };
 
@@ -66,6 +70,7 @@ export class ArrangementsManagementComponent implements OnInit {
   ngOnInit(): void {
     this.loadDestinations();
     this.loadHotels();
+    this.loadTransports();
     this.loadArrangements();
   }
 
@@ -91,6 +96,13 @@ export class ArrangementsManagementComponent implements OnInit {
     });
   }
 
+  loadTransports(): void {
+    this.api.get<any>('api/transports/').subscribe({
+      next: response => this.transports = this.resolveData(response),
+      error: () => this.errorMessage = 'Failed to load transports.'
+    });
+  }
+
   loadArrangements(): void {
     this.api.get<any>('api/arrangements/').subscribe({
       next: response => {
@@ -113,7 +125,7 @@ export class ArrangementsManagementComponent implements OnInit {
   }
 
   addArrangement(): void {
-    if (!this.newArrangement.naziv.trim() || !this.newArrangement.destinacija_id || !this.newArrangement.hotel_id) {
+    if (!this.newArrangement.name.trim() || !this.newArrangement.destination_id || !this.newArrangement.hotel_id) {
       this.errorMessage = 'Name, destination, and hotel are required.';
       return;
     }
@@ -135,35 +147,26 @@ export class ArrangementsManagementComponent implements OnInit {
   startEdit(arrangement: Arrangement): void {
     this.editingArrangementId = arrangement.id;
     this.editFormData = {
-      naziv: arrangement.naziv,
-      destinacija_id: arrangement.destinacija.id,
-      hotel_id: arrangement.hotel.id,
-      datum_pocetka: arrangement.datum_pocetka,
-      datum_zavrsetka: arrangement.datum_zavrsetka,
-      broj_nocenja: arrangement.broj_nocenja,
-      cena: arrangement.cena,
-      broj_mesta: arrangement.broj_mesta,
-      opis: arrangement.opis
+      name: arrangement.name,
+      destination_id: arrangement.destination.id,
+      hotel_id: arrangement.hotel?.id ?? 0,
+      transport_id: arrangement.transport?.id ?? null,
+      start_date: arrangement.start_date,
+      end_date: arrangement.end_date,
+      number_of_nights: arrangement.number_of_nights,
+      price: Number(arrangement.price),
+      capacity: arrangement.capacity,
+      description: arrangement.description
     };
   }
 
   cancelEdit(): void {
     this.editingArrangementId = null;
-    this.editFormData = {
-      naziv: '',
-      destinacija_id: 0,
-      hotel_id: 0,
-      datum_pocetka: '',
-      datum_zavrsetka: '',
-      broj_nocenja: 0,
-      cena: 0,
-      broj_mesta: 0,
-      opis: ''
-    };
+    this.editFormData = { ...this.newArrangement };
   }
 
   saveEdit(arrangementId: number): void {
-    if (!this.editFormData.naziv.trim() || !this.editFormData.destinacija_id || !this.editFormData.hotel_id) {
+    if (!this.editFormData.name.trim() || !this.editFormData.destination_id || !this.editFormData.hotel_id) {
       this.errorMessage = 'Name, destination, and hotel are required.';
       return;
     }
@@ -181,14 +184,14 @@ export class ArrangementsManagementComponent implements OnInit {
     });
   }
 
-  deleteArrangement(id: number, naziv: string): void {
-    if (!confirm(`Delete arrangement "${naziv}"?`)) {
+  deleteArrangement(id: number, name: string): void {
+    if (!confirm(`Delete arrangement "${name}"?`)) {
       return;
     }
 
     this.api.delete(`api/arrangements/${id}/`).subscribe({
       next: () => {
-        this.successMessage = `Arrangement "${naziv}" deleted.`;
+        this.successMessage = `Arrangement "${name}" deleted.`;
         this.loadArrangements();
         setTimeout(() => this.successMessage = '', 3000);
       },

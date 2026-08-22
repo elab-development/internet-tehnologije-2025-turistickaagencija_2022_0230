@@ -13,7 +13,10 @@ class DestinationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Destination
-        fields = ['id', 'name', 'country', 'country_id', 'image']
+        fields = [
+            'id', 'name', 'country', 'country_id', 'image', 'city', 'description',
+            'latitude', 'longitude', 'is_active',
+        ]
 
     def get_country(self, obj):
         from .country import CountrySerializer
