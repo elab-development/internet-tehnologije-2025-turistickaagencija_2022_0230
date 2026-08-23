@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 
 from ..models import Arrangement, Destination, Hotel, Transport
 
@@ -52,16 +53,19 @@ class ArrangementSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+    @extend_schema_field(dict)
     def get_destination(self, obj):
         from .destination import DestinationSerializer
 
         return DestinationSerializer(obj.destination).data
 
+    @extend_schema_field(dict)
     def get_hotel(self, obj):
         from .hotel import HotelSerializer
 
         return HotelSerializer(obj.hotel).data
 
+    @extend_schema_field(dict)
     def get_transport(self, obj):
         from .transport import TransportSerializer
 

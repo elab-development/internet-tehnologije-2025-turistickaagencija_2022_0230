@@ -26,8 +26,8 @@ urlpatterns = [
     path('users/', views.users),
     path('users/<int:id>/', views.user_detail, name='user-detail'),
     path('admin/dashboard/', views.admin_dashboard),
-    path('admin/bookings/', views.admin_bookings),
-    path('admin/bookings/<int:id>/', views.admin_bookings),
+    path('admin/bookings/', views.admin_bookings_list),
+    path('admin/bookings/<int:id>/', views.admin_booking_detail),
 
     path('auth/signup/', views.register),
     path('auth/login/', views.login),

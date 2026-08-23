@@ -2,11 +2,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 from ..models import Hotel
 from ..serializers import HotelSerializer
 
 
+@extend_schema(methods=['GET'], summary='List hotels', responses=HotelSerializer(many=True), operation_id='hotels_list')
+@extend_schema(methods=['POST'], summary='Create a hotel', request=HotelSerializer, responses=HotelSerializer, operation_id='hotels_create')
 @api_view(['GET', 'POST'])
 def hotels(request):
     if request.method == 'GET':
@@ -34,6 +37,9 @@ def hotels(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(methods=['GET'], summary='Retrieve a hotel', responses=HotelSerializer, operation_id='hotels_retrieve')
+@extend_schema(methods=['PUT'], summary='Update a hotel', request=HotelSerializer, responses=HotelSerializer, operation_id='hotels_update')
+@extend_schema(methods=['DELETE'], summary='Delete a hotel', responses=None, operation_id='hotels_delete')
 @api_view(['GET', 'PUT', 'DELETE'])
 def hotel_detail(request, id):
     hotel = get_object_or_404(Hotel, id=id)

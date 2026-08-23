@@ -2,12 +2,19 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 from django.shortcuts import get_object_or_404
 
 from ..models import Arrangement, Booking, Country, Destination, Hotel, Transport
 from ..serializers import ArrangementSerializer, BookingSerializer, CountrySerializer, DestinationSerializer, HotelSerializer, UserSerializer
 
 
+@extend_schema(
+    summary='Get admin dashboard statistics',
+    description='Returns aggregate counts and the main admin data collections.',
+    responses=dict,
+    operation_id='admin_dashboard_retrieve',
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def admin_dashboard(request):
@@ -38,6 +45,11 @@ def admin_dashboard(request):
     })
 
 
+@extend_schema(
+    summary='Manage all bookings as an administrator',
+    responses={200: BookingSerializer(many=True), 204: None},
+    operation_id='admin_bookings_list',
+)
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def admin_bookings(request, id=None):
@@ -63,3 +75,23 @@ def admin_bookings(request, id=None):
         setattr(booking, field, request.data[field])
     booking.save(update_fields=allowed_fields)
     return Response({'success': True, 'data': BookingSerializer(booking).data})
+
+
+@extend_schema(
+    summary='List all bookings as an administrator',
+    responses=BookingSerializer(many=True),
+    operation_id='admin_bookings_list',
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_bookings_list(request):
+    return admin_bookings(request)
+
+
+@extend_schema(methods=['GET'], summary='Retrieve an admin booking', responses=BookingSerializer, operation_id='admin_bookings_retrieve')
+@extend_schema(methods=['PUT'], summary='Update an admin booking', request=BookingSerializer, responses=BookingSerializer, operation_id='admin_bookings_update')
+@extend_schema(methods=['DELETE'], summary='Delete an admin booking', responses=None, operation_id='admin_bookings_delete')
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def admin_booking_detail(request, id):
+    return admin_bookings(request, id=id)

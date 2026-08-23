@@ -59,6 +59,16 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Turistička agencija REST API',
     'DESCRIPTION': 'REST API za upravljanje turističkim aranžmanima, destinacijama, rezervacijama i korisnicima.',
     'VERSION': '1.0.0',
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            },
+        },
+    },
+    'SECURITY': [{'BearerAuth': []}],
 }
 
 SIMPLE_JWT = {

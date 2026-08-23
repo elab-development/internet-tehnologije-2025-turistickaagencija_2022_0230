@@ -11,12 +11,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
+from drf_spectacular.utils import extend_schema
 
 from ..serializers import LoginSerializer, RegisterSerializer
 
 logger = logging.getLogger(__name__)
 
 
+@extend_schema(summary='Authenticate a user and issue a JWT', request=LoginSerializer, responses=dict, operation_id='auth_login')
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
@@ -83,6 +85,7 @@ def login(request):
     }, status=status.HTTP_200_OK)
 
 
+@extend_schema(summary='Register a new user account', request=RegisterSerializer, responses=dict, operation_id='auth_register')
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
@@ -130,6 +133,7 @@ def register(request):
     }, status=status.HTTP_201_CREATED)
 
 
+@extend_schema(summary='Activate a user account', request=dict, responses=dict, operation_id='auth_activate')
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def activate(request):
@@ -173,6 +177,7 @@ def activate(request):
     })
 
 
+@extend_schema(summary='Request a password reset email', request=dict, responses=dict, operation_id='auth_password_reset_request')
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def request_password_reset(request):
@@ -213,6 +218,7 @@ def request_password_reset(request):
     })
 
 
+@extend_schema(summary='Confirm a password reset', request=dict, responses=dict, operation_id='auth_password_reset_confirm')
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def confirm_password_reset(request):
@@ -256,6 +262,7 @@ def confirm_password_reset(request):
     })
 
 
+@extend_schema(summary='Get the authenticated user profile', responses=dict, operation_id='auth_me_retrieve')
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def me(request):

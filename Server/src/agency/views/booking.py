@@ -4,11 +4,14 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 from ..models import Arrangement, Booking
 from ..serializers import BookingSerializer
 
 
+@extend_schema(methods=['GET'], summary='List the authenticated user bookings', responses=BookingSerializer(many=True), operation_id='bookings_list')
+@extend_schema(methods=['POST'], summary='Create a booking', request=BookingSerializer, responses=BookingSerializer, operation_id='bookings_create')
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def bookings(request):
@@ -32,6 +35,8 @@ def bookings(request):
         return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(methods=['PUT'], summary='Pay or cancel a booking', request=BookingSerializer, responses=BookingSerializer, operation_id='booking_detail_update')
+@extend_schema(methods=['DELETE'], summary='Delete a cancelled booking', responses=None, operation_id='booking_detail_delete')
 @api_view(['PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def booking_detail(request, id):
