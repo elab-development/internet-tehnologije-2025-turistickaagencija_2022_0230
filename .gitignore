@@ -1,4 +1,8 @@
 .venv
+
+# Local environment variables
+.env
+
 # Node / Angular
 Client/node_modules/
 Client/dist/
