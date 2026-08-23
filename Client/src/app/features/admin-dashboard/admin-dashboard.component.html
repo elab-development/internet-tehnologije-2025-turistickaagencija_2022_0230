@@ -9,63 +9,89 @@
 
   <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <h3>Users</h3>
-      <p>{{ stats.users }}</p>
-    </div>
-    <div class="stat-card">
-      <h3>Countries</h3>
-      <p>{{ stats.countries }}</p>
-    </div>
-    <div class="stat-card">
-      <h3>Destinations</h3>
-      <p>{{ stats.destinations }}</p>
-    </div>
-    <div class="stat-card">
-      <h3>Hotels</h3>
-      <p>{{ stats.hotels }}</p>
-    </div>
-    <div class="stat-card">
-      <h3>Arrangements</h3>
-      <p>{{ stats.arrangements }}</p>
-    </div>
-  </div>
-
   <div class="management-cards-grid">
     <a class="management-card" routerLink="/admin/users">
       <div class="card-icon">👥</div>
-      <h2>Users</h2>
-      <p>Manage users, roles, and permissions</p>
-      <div class="card-count">{{ stats.users }} users</div>
+      <div class="card-body">
+        <h2>Users</h2>
+        <p>Manage users, roles, and permissions</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ stats.users }} users</span>
+        <span class="card-arrow">→</span>
+      </div>
     </a>
 
     <a class="management-card" routerLink="/admin/countries">
       <div class="card-icon">🌍</div>
-      <h2>Countries</h2>
-      <p>Add, edit, or remove countries</p>
-      <div class="card-count">{{ stats.countries }} countries</div>
+      <div class="card-body">
+        <h2>Countries</h2>
+        <p>Add, edit, or remove countries</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ stats.countries }} countries</span>
+        <span class="card-arrow">→</span>
+      </div>
     </a>
 
     <a class="management-card" routerLink="/admin/destinations">
       <div class="card-icon">📍</div>
-      <h2>Destinations</h2>
-      <p>Manage travel destinations</p>
-      <div class="card-count">{{ stats.destinations }} destinations</div>
+      <div class="card-body">
+        <h2>Destinations</h2>
+        <p>Manage travel destinations</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ stats.destinations }} destinations</span>
+        <span class="card-arrow">→</span>
+      </div>
     </a>
 
     <a class="management-card" routerLink="/admin/hotels">
       <div class="card-icon">🏨</div>
-      <h2>Hotels</h2>
-      <p>Manage hotel listings</p>
-      <div class="card-count">{{ stats.hotels }} hotels</div>
+      <div class="card-body">
+        <h2>Hotels</h2>
+        <p>Manage hotel listings</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ stats.hotels }} hotels</span>
+        <span class="card-arrow">→</span>
+      </div>
     </a>
 
     <a class="management-card" routerLink="/admin/arrangements">
       <div class="card-icon">✈️</div>
-      <h2>Arrangements</h2>
-      <p>Manage travel packages</p>
-      <div class="card-count">{{ stats.arrangements }} arrangements</div>
+      <div class="card-body">
+        <h2>Arrangements</h2>
+        <p>Manage travel packages</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ stats.arrangements }} arrangements</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="management-card" routerLink="/admin/transports">
+      <div class="card-icon">🚌</div>
+      <div class="card-body">
+        <h2>Transports</h2>
+        <p>Manage transport providers and routes</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ stats.transports }} transports</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="management-card" routerLink="/admin/bookings">
+      <div class="card-icon">🧾</div>
+      <div class="card-body">
+        <h2>Bookings</h2>
+        <p>Review customer bookings</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ stats.bookings }} bookings</span>
+        <span class="card-arrow">→</span>
+      </div>
     </a>
   </div>
 </section>

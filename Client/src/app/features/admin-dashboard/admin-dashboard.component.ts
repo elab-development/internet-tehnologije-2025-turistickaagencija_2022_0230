@@ -12,6 +12,8 @@ interface DashboardResponse {
       destinations: number;
       hotels: number;
       arrangements: number;
+      bookings: number;
+      transports: number;
       users: number;
     };
     users: any[];
@@ -35,6 +37,8 @@ export class AdminDashboardComponent implements OnInit {
     destinations: 0,
     hotels: 0,
     arrangements: 0,
+    bookings: 0,
+    transports: 0,
     users: 0
   };
 
@@ -83,6 +87,12 @@ export class AdminDashboardComponent implements OnInit {
         break;
       case 'arrangements':
         this.router.navigate(['/admin/arrangements']);
+        break;
+      case 'transports':
+        this.router.navigate(['/admin/transports']);
+        break;
+      case 'bookings':
+        this.router.navigate(['/admin/bookings']);
         break;
     }
   }
