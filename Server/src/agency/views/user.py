@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..serializers import UserSerializer
+from ..models import UserProfile
 
 
 @api_view(['GET'])
@@ -17,9 +18,9 @@ def users(request):
             "message": "Admin only",
         }, status=403)
 
-    admins = User.objects.filter(is_superuser=True)
-    agents = User.objects.filter(is_staff=True, is_superuser=False)
-    clients = User.objects.filter(is_staff=False, is_superuser=False)
+    admins = User.objects.filter(is_superuser=True).select_related('profile')
+    agents = User.objects.filter(is_staff=True, is_superuser=False).select_related('profile')
+    clients = User.objects.filter(is_staff=False, is_superuser=False).select_related('profile')
 
     return Response({
         "success": True,
@@ -79,6 +80,11 @@ def user_detail(request, id):
                 user.is_staff = False
 
         user.save()
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        profile.gender = request.data.get('gender', profile.gender)
+        profile.date_of_birth = request.data.get('date_of_birth') or None
+        profile.phone_number = request.data.get('phone_number', profile.phone_number)
+        profile.save()
         return Response({
             "success": True,
             "data": UserSerializer(user).data,

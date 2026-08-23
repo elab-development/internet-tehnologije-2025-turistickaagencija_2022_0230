@@ -1,0 +1,26 @@
+<div class="management-container">
+  <div class="header"><div><h1>Bookings Management</h1><p>Review and update customer bookings.</p></div></div>
+  <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>ID</th><th>User</th><th>Arrangement</th><th>Guests</th><th>Total</th><th>Status</th><th>Payment</th><th>Booked</th><th>Actions</th></tr></thead>
+      <tbody>
+        <ng-container *ngFor="let booking of bookings">
+          <tr *ngIf="editingBookingId !== booking.id">
+            <td>#{{ booking.id }}</td><td>{{ booking.user.username }}</td><td>{{ booking.arrangement.name }}</td><td>{{ booking.guests }}</td>
+            <td>{{ booking.total_price }}</td><td>{{ booking.status }}</td><td>{{ booking.payment_status }}</td><td>{{ booking.booked_at | date:'mediumDate' }}</td>
+            <td class="actions"><button class="btn-edit" (click)="startEdit(booking)">Edit</button><button class="btn-delete" (click)="deleteBooking(booking.id)">Delete</button></td>
+          </tr>
+          <tr *ngIf="editingBookingId === booking.id" class="edit-row"><td colspan="9"><div class="edit-form">
+            <label>Status<select [(ngModel)]="editFormData.status"><option *ngFor="let status of statuses" [value]="status">{{ status }}</option></select></label>
+            <label>Payment<select [(ngModel)]="editFormData.payment_status"><option *ngFor="let status of paymentStatuses" [value]="status">{{ status }}</option></select></label>
+            <label>Notes<textarea [(ngModel)]="editFormData.notes"></textarea></label>
+            <div class="form-actions"><button class="btn-save" (click)="saveEdit(booking.id)">Save</button><button class="btn-cancel" (click)="cancelEdit()">Cancel</button></div>
+          </div></td></tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="bookings.length === 0 && !errorMessage" class="empty-state">No bookings found.</div>
+</div>

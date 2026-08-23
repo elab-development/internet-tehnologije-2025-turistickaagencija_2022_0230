@@ -17,6 +17,8 @@ import { ArrangementsManagementComponent } from './features/admin-dashboard/arra
 import { UserBookingsComponent } from './features/user-bookings/user-bookings.component';
 import { AgentDashboardComponent } from './features/agent-dashboard/agent-dashboard.component';
 import { AgentArrangementsComponent } from './features/agent-dashboard/agent-arrangements/agent-arrangements.component';
+import { TransportsManagementComponent } from './features/admin-dashboard/transports-management/transports-management.component';
+import { BookingsManagementComponent } from './features/admin-dashboard/bookings-management/bookings-management.component';
 
 export const routes: Routes = [
     {
@@ -96,6 +98,18 @@ export const routes: Routes = [
     {
         path: 'admin/arrangements',
         component: ArrangementsManagementComponent,
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'ADMIN' }
+    },
+    {
+        path: 'admin/transports',
+        component: TransportsManagementComponent,
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'ADMIN' }
+    },
+    {
+        path: 'admin/bookings',
+        component: BookingsManagementComponent,
         canActivate: [AuthGuard],
         data: { requiredRole: 'ADMIN' }
     },

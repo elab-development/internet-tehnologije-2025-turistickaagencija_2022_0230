@@ -1,0 +1,11 @@
+.management-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+.header { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; margin-bottom: 2rem; }
+h1 { margin: 0; color: #111827; }
+.header p { margin: .5rem 0 0; color: #6b7280; }
+.btn-add, .btn-save, .btn-cancel, .btn-edit, .btn-delete { padding: .7rem 1.1rem; border: 0; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.btn-add { background: #4f46e5; color: white; }.btn-save { background: #10b981; color: white; }.btn-cancel { background: #ef4444; color: white; }.btn-edit { background: #dbeafe; color: #1d4ed8; }.btn-delete { background: #fee2e2; color: #b91c1c; }
+.form-panel { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }.form-panel.inline { margin: 0; }
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }label { display: flex; flex-direction: column; gap: .4rem; font-weight: 600; color: #374151; }input, select, textarea { padding: .7rem; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }textarea { min-height: 80px; }.wide { grid-column: span 2; }.checkbox { flex-direction: row; align-items: center; margin-top: 1.8rem; }.checkbox input { width: auto; }.form-actions { display: flex; gap: .75rem; margin-top: 1rem; }
+.error-box, .success-box { padding: 1rem; border-radius: 10px; margin-bottom: 1rem; }.error-box { background: #fee2e2; color: #991b1b; }.success-box { background: #dcfce7; color: #166534; }
+.table-container { overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(15,23,42,.08); }.data-table { width: 100%; border-collapse: collapse; }.data-table th, .data-table td { padding: 1rem; text-align: left; }.data-table thead { background: #f3f4f6; }.data-table tr { border-bottom: 1px solid #e5e7eb; }.actions { display: flex; gap: .5rem; }.empty-state { color: #6b7280; }
+@media (max-width: 768px) { .header { flex-direction: column; align-items: flex-start; }.form-grid { grid-template-columns: 1fr; }.wide { grid-column: auto; }.actions, .form-actions { flex-direction: column; } }
