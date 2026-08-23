@@ -5,7 +5,7 @@ import { Booking } from '../../models/booking.model';
 
 @Injectable({ providedIn: 'root' })
 export class BookingApiService {
-  private readonly endpoint = 'api/bookings/';
+  private readonly endpoint = 'bookings/';
 
   constructor(private api: ApiService) {}
 

@@ -10,15 +10,15 @@ export class AuthApiService {
 
   // Djoser endpoints
   requestPasswordReset(email: { email: string }): Observable<any> {
-    return this.api.post<any>('api/auth/users/reset_password/', email);
+    return this.api.post<any>('auth/users/reset_password/', email);
   }
 
   confirmPasswordReset(payload: { uid: string; token: string; new_password: string }): Observable<any> {
-    return this.api.post<any>('api/auth/users/reset_password_confirm/', payload);
+    return this.api.post<any>('auth/users/reset_password_confirm/', payload);
   }
 
   activateAccount(payload: { uid: string; token: string }): Observable<any> {
-    return this.api.post<any>('api/auth/users/activation/', payload);
+    return this.api.post<any>('auth/users/activation/', payload);
   }
 
 }

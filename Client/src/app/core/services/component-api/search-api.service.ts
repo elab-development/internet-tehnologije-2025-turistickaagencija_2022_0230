@@ -10,8 +10,8 @@ import { Destination } from '../../models/destination.model';
 @Injectable({ providedIn: 'root' })
 export class SearchApiService {
 
-  private readonly endpointSearch = 'api/arrangements/filter/';
-  private readonly endpointDestinations = 'api/destinations/';
+  private readonly endpointSearch = 'arrangements/filter/';
+  private readonly endpointDestinations = 'destinations/';
   constructor(private api: ApiService) {}
 
   search(payload: SearchRequest) {
