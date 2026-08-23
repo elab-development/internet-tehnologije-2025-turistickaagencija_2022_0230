@@ -19,6 +19,9 @@ COPY src/ ./src
 
 WORKDIR /app/src
 
+# Collect static assets into STATIC_ROOT for WhiteNoise to serve in production.
+RUN python manage.py collectstatic --noinput
+
 # Expose the Django development server port
 EXPOSE 8000
 

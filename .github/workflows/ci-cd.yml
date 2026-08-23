@@ -1,0 +1,85 @@
+name: CI/CD
+
+on:
+  # Proverava svaki push i pull request koji cilja main ili develop.
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: Test Django backend
+    runs-on: ubuntu-latest
+    steps:
+      # Preuzima kod repozitorijuma na GitHub runner.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Instalira Python verziju koju koristi backend Docker image.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: Server/src/requirements.txt
+
+      # Instalira Django i ostale backend zavisnosti.
+      - name: Install dependencies
+        working-directory: Server/src
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+
+      # Django test runner automatski pronalazi agency/tests/tests.py.
+      - name: Run Django tests
+        working-directory: Server/src
+        env:
+          ALLOWED_HOSTS: localhost,127.0.0.1
+          CORS_ALLOWED_ORIGINS: http://localhost:4200
+        run: python manage.py test
+
+  build:
+    name: Build and publish Docker image
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      # Preuzima kod koji će biti upakovan u Docker image.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Omogućava Docker Buildx builder za reproducibilan build image-a.
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Prijavljuje workflow na GHCR ugrađenim GITHUB_TOKEN tokenom.
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Gradi image iz Server direktorijuma i objavljuje ga samo na push eventu.
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./Server
+          file: ./Server/Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: ghcr.io/${{ github.repository }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Render
+    needs: build
+    # Deploy se izvršava samo nakon uspešnog builda na main grani.
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      # Render deploy hook pokreće novu verziju servisa.
+      - name: Trigger Render deploy
+        run: curl --fail --silent --show-error -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
