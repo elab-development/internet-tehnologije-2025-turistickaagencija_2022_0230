@@ -85,7 +85,7 @@ def admin_bookings(request, id=None):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def admin_bookings_list(request):
-    return admin_bookings(request)
+    return admin_bookings.cls.as_view()(request._request)
 
 
 @extend_schema(methods=['GET'], summary='Retrieve an admin booking', responses=BookingSerializer, operation_id='admin_bookings_retrieve')
@@ -94,4 +94,4 @@ def admin_bookings_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def admin_booking_detail(request, id):
-    return admin_bookings(request, id=id)
+    return admin_bookings.cls.as_view()(request._request, id=id)

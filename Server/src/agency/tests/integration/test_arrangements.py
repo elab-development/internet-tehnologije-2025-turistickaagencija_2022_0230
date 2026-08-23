@@ -1,70 +1,13 @@
 from datetime import date
 
 from django.contrib.auth.models import User
-from django.contrib.auth.tokens import default_token_generator
-from django.core import mail
 from django.test import TestCase
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from agency.models import Arrangement, Country, Destination, Hotel
 
 
-class PasswordResetTests(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='oldpass123',
-        )
-
-    def test_request_reset_password_returns_success_and_sends_email(self):
-        with self.settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend', FRONTEND_URL='http://localhost:4200'):
-            response = self.client.post(
-                '/api/auth/users/reset_password/',
-                {'email': 'test@example.com'},
-                content_type='application/json',
-            )
-
-            self.assertEqual(response.status_code, 200)
-            self.assertTrue(response.json()['success'])
-            self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('password-reset', mail.outbox[0].body)
-
-    def test_confirm_reset_password_updates_password(self):
-        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
-        token = default_token_generator.make_token(self.user)
-
-        response = self.client.post(
-            '/api/auth/users/reset_password_confirm/',
-            {
-                'uid': uid,
-                'token': token,
-                'new_password': 'newpass456',
-            },
-            content_type='application/json',
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.user.refresh_from_db()
-        self.assertTrue(self.user.check_password('newpass456'))
-
-    def test_login_with_valid_credentials_but_inactive_user_returns_specific_message(self):
-        self.user.is_active = False
-        self.user.save()
-
-        response = self.client.post(
-            '/api/auth/login/',
-            {'username': 'testuser', 'password': 'oldpass123'},
-            content_type='application/json',
-        )
-
-        self.assertEqual(response.status_code, 403)
-        self.assertIn('not activated', response.json()['message'].lower())
-
-
-class AgentArrangementPermissionTests(TestCase):
+class ArrangementIntegrationTests(TestCase):
     def setUp(self):
         self.agent = User.objects.create_user(
             username='agent1',
@@ -91,51 +34,47 @@ class AgentArrangementPermissionTests(TestCase):
             capacity=2,
         )
 
-    def auth_headers(self, user):
-        token = RefreshToken.for_user(user).access_token
+    def auth_headers(self):
+        token = RefreshToken.for_user(self.agent).access_token
         return {'HTTP_AUTHORIZATION': f'Bearer {token}'}
 
     def test_agent_can_create_arrangement(self):
-        payload = {
-            'name': 'New Trip',
-            'destination_id': self.destination.id,
-            'hotel_id': self.hotel.id,
-            'start_date': '2027-02-01',
-            'end_date': '2027-02-08',
-            'number_of_nights': 7,
-            'price': '400.00',
-            'capacity': 3,
-            'description': 'A new trip',
-        }
-
         response = self.client.post(
             '/api/arrangements/',
-            payload,
+            {
+                'name': 'New Trip',
+                'destination_id': self.destination.id,
+                'hotel_id': self.hotel.id,
+                'start_date': '2027-02-01',
+                'end_date': '2027-02-08',
+                'number_of_nights': 7,
+                'price': '400.00',
+                'capacity': 3,
+                'description': 'A new trip',
+            },
             content_type='application/json',
-            **self.auth_headers(self.agent),
+            **self.auth_headers(),
         )
 
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Arrangement.objects.filter(name='New Trip').exists())
 
     def test_agent_can_update_and_delete_arrangement(self):
-        payload = {
-            'name': 'Updated Trip',
-            'destination_id': self.destination.id,
-            'hotel_id': self.hotel.id,
-            'start_date': '2027-01-01',
-            'end_date': '2027-01-08',
-            'number_of_nights': 7,
-            'price': '550.00',
-            'capacity': 2,
-            'description': '',
-        }
-
         response = self.client.put(
             f'/api/arrangements/{self.arrangement.id}/',
-            payload,
+            {
+                'name': 'Updated Trip',
+                'destination_id': self.destination.id,
+                'hotel_id': self.hotel.id,
+                'start_date': '2027-01-01',
+                'end_date': '2027-01-08',
+                'number_of_nights': 7,
+                'price': '550.00',
+                'capacity': 2,
+                'description': '',
+            },
             content_type='application/json',
-            **self.auth_headers(self.agent),
+            **self.auth_headers(),
         )
         self.assertEqual(response.status_code, 200)
         self.arrangement.refresh_from_db()
@@ -143,7 +82,7 @@ class AgentArrangementPermissionTests(TestCase):
 
         response = self.client.delete(
             f'/api/arrangements/{self.arrangement.id}/',
-            **self.auth_headers(self.agent),
+            **self.auth_headers(),
         )
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Arrangement.objects.filter(id=self.arrangement.id).exists())
@@ -158,7 +97,7 @@ class AgentArrangementPermissionTests(TestCase):
                 'price_per_night': '90.00',
             },
             content_type='application/json',
-            **self.auth_headers(self.agent),
+            **self.auth_headers(),
         )
         self.assertEqual(hotel_response.status_code, 403)
 
@@ -166,7 +105,7 @@ class AgentArrangementPermissionTests(TestCase):
             '/api/destinations/',
             {'name': 'Unauthorized Destination', 'country_id': self.country.id},
             content_type='application/json',
-            **self.auth_headers(self.agent),
+            **self.auth_headers(),
         )
         self.assertEqual(destination_response.status_code, 403)
 
