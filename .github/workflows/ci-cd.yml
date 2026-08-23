@@ -1,7 +1,6 @@
 name: CI/CD
 
 on:
-  # Proverava svaki push i pull request koji cilja main ili develop.
   push:
     branches: [main, develop]
   pull_request:
@@ -12,11 +11,9 @@ jobs:
     name: Test Django backend
     runs-on: ubuntu-latest
     steps:
-      # Preuzima kod repozitorijuma na GitHub runner.
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Instalira Python verziju koju koristi backend Docker image.
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -24,17 +21,19 @@ jobs:
           cache: pip
           cache-dependency-path: Server/src/requirements.txt
 
-      # Instalira Django i ostale backend zavisnosti.
       - name: Install dependencies
         working-directory: Server/src
         run: python -m pip install --upgrade pip && pip install -r requirements.txt
 
-      # Django test runner automatski pronalazi agency/tests/tests.py.
       - name: Run Django tests
         working-directory: Server/src
         env:
+          # CI nikada ne koristi produkcioni Neon DATABASE_URL.
+          DATABASE_URL: ''
+          DATABASE_URL_TEST: sqlite:///test-ci.sqlite3
           ALLOWED_HOSTS: localhost,127.0.0.1
           CORS_ALLOWED_ORIGINS: http://localhost:4200
+          CSRF_TRUSTED_ORIGINS: http://localhost:4200
         run: python manage.py test
 
   build:
@@ -45,15 +44,12 @@ jobs:
       contents: read
       packages: write
     steps:
-      # Preuzima kod koji će biti upakovan u Docker image.
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Omogućava Docker Buildx builder za reproducibilan build image-a.
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Prijavljuje workflow na GHCR ugrađenim GITHUB_TOKEN tokenom.
       - name: Log in to GitHub Container Registry
         if: github.event_name == 'push'
         uses: docker/login-action@v3
@@ -62,7 +58,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Gradi image iz Server direktorijuma i objavljuje ga samo na push eventu.
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -76,10 +71,10 @@ jobs:
   deploy:
     name: Deploy to Render
     needs: build
-    # Deploy se izvršava samo nakon uspešnog builda na main grani.
+
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      # Render deploy hook pokreće novu verziju servisa.
+
       - name: Trigger Render deploy
         run: curl --fail --silent --show-error -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,6 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'role', 'profile']
 
+    @extend_schema_field(dict)
     def get_profile(self, obj):
         profile = getattr(obj, 'profile', None)
         if profile is None:
@@ -21,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
             'created_at': profile.created_at,
         }
 
+    @extend_schema_field(str)
     def get_role(self, obj):
         if obj.is_superuser:
             return 'ADMIN'

@@ -6,11 +6,15 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 
 from ..models import Arrangement
 from ..serializers import ArrangementSerializer
 
 
+@extend_schema(methods=['GET'], summary='List travel arrangements', responses=ArrangementSerializer(many=True), operation_id='arrangements_list')
+@extend_schema(methods=['POST'], summary='Create a travel arrangement', request=ArrangementSerializer, responses=ArrangementSerializer, operation_id='arrangements_create')
 @api_view(['GET', 'POST'])
 def arrangements(request):
     if request.method == 'GET':
@@ -38,6 +42,9 @@ def arrangements(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(methods=['GET'], summary='Retrieve a travel arrangement', responses=ArrangementSerializer, operation_id='arrangements_retrieve')
+@extend_schema(methods=['PUT'], summary='Update a travel arrangement', request=ArrangementSerializer, responses=ArrangementSerializer, operation_id='arrangements_update')
+@extend_schema(methods=['DELETE'], summary='Delete a travel arrangement', responses=None, operation_id='arrangements_delete')
 @api_view(['GET', 'PUT', 'DELETE'])
 def arrangement_detail(request, id):
     arrangement = get_object_or_404(Arrangement, id=id)
@@ -75,6 +82,11 @@ def arrangement_detail(request, id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(
+    summary='List the top-rated travel arrangements',
+    responses=ArrangementSerializer(many=True),
+    operation_id='top_arrangements_list',
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def top_arrangements(request):
@@ -87,6 +99,20 @@ def top_arrangements(request):
     })
 
 
+@extend_schema(
+    summary='Filter travel arrangements',
+    request=inline_serializer(
+        name='ArrangementFilterRequest',
+        fields={
+            'destination_id': serializers.IntegerField(required=False),
+            'start_date': serializers.DateField(required=False),
+            'end_date': serializers.DateField(required=False),
+            'capacity': serializers.IntegerField(required=False),
+        },
+    ),
+    responses=dict,
+    operation_id='arrangements_filter_create',
+)
 @api_view(['POST'])
 def arrangements_filter(request):
     queryset = Arrangement.objects.all()

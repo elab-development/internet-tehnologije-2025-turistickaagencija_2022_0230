@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 
 from ..models import Country, Destination
 
@@ -18,6 +19,7 @@ class DestinationSerializer(serializers.ModelSerializer):
             'latitude', 'longitude', 'is_active',
         ]
 
+    @extend_schema_field(dict)
     def get_country(self, obj):
         from .country import CountrySerializer
 

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 
 from ..models import Destination, Hotel
 
@@ -30,6 +31,7 @@ class HotelSerializer(serializers.ModelSerializer):
             'destination_id',
         ]
 
+    @extend_schema_field(dict)
     def get_destination(self, obj):
         from .destination import DestinationSerializer
 
