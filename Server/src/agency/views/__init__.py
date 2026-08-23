@@ -1,6 +1,6 @@
 from .auth import login, register, me, activate, request_password_reset, confirm_password_reset
 from .user import users, user_detail
-from .admin import admin_bookings, admin_dashboard
+from .admin import admin_booking_detail, admin_bookings, admin_bookings_list, admin_dashboard
 from .country import countries, country_detail
 from .destination import destinations, destination_detail, top_destinations
 from .arrangement import arrangements, arrangement_detail, top_arrangements, arrangements_filter
@@ -18,6 +18,8 @@ __all__ = [
     'users',
     'user_detail',
     'admin_dashboard',
+    'admin_bookings_list',
+    'admin_booking_detail',
     'countries',
     'country_detail',
     'destinations',

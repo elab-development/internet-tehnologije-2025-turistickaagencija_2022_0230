@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-only-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()]
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
 
 
 # Application definition
@@ -59,6 +59,16 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Turistička agencija REST API',
     'DESCRIPTION': 'REST API za upravljanje turističkim aranžmanima, destinacijama, rezervacijama i korisnicima.',
     'VERSION': '1.0.0',
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            },
+        },
+    },
+    'SECURITY': [{'BearerAuth': []}],
 }
 
 SIMPLE_JWT = {
@@ -84,13 +94,13 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:4200').split(',')
+    for origin in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
     if origin.strip()
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:4200').split(',')
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
     if origin.strip()
 ]
 
@@ -197,5 +207,5 @@ EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() in ('1', 'true', 'ye
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'your-email@gmail.com')
 
 # Frontend base url used in activation/reset links
-FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:4200')
+FRONTEND_URL = os.getenv('FRONTEND_URL', '')
 

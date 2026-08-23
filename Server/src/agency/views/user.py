@@ -4,11 +4,17 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 from ..serializers import UserSerializer
 from ..models import UserProfile
 
 
+@extend_schema(
+    summary='List users grouped by role',
+    responses=dict,
+    operation_id='users_list',
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def users(request):
@@ -32,6 +38,8 @@ def users(request):
     })
 
 
+@extend_schema(methods=['PUT'], summary='Update a user', request=UserSerializer, responses=UserSerializer, operation_id='user_detail_update')
+@extend_schema(methods=['DELETE'], summary='Delete a user', responses=None, operation_id='user_detail_delete')
 @api_view(['PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def user_detail(request, id):
