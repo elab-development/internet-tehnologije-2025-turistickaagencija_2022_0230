@@ -19,13 +19,13 @@ export class HomeApiService {
 
 
   getTopDestinations(): Observable<TopDestResponse[]> {
-    return this.apiService.get<ApiResponse<TopDestResponse[]>>('api/destinations/top/').pipe(map(res => res.data));
+    return this.apiService.get<ApiResponse<TopDestResponse[]>>('destinations/top/').pipe(map(res => res.data));
   }
 
 
 getTopRatedHotels(): Observable<Arrangement[]> {
   return this.apiService
-    .get<ApiResponse<Arrangement[]>>('api/arrangements/top/')
+    .get<ApiResponse<Arrangement[]>>('arrangements/top/')
     .pipe(map(res => res.data));
   }
 } 
