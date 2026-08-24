@@ -12,18 +12,29 @@ import { ApiService } from '../../core/services/api.service';
 })
 export class AgentDashboardComponent implements OnInit {
   arrangementsCount = 0;
+  bookingsCount = 0;
   errorMessage = '';
 
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
-    this.api.get<any>('api/arrangements/').subscribe({
+    this.api.get<any>('arrangements/').subscribe({
       next: response => {
         const data = response && response.success !== undefined ? response.data : response;
         this.arrangementsCount = Array.isArray(data) ? data.length : 0;
       },
       error: () => {
         this.errorMessage = 'Unable to load arrangements.';
+      }
+    });
+
+    this.api.get<any>('agent/bookings/').subscribe({
+      next: response => {
+        const data = response && response.success !== undefined ? response.data : response;
+        this.bookingsCount = Array.isArray(data) ? data.length : 0;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load bookings.';
       }
     });
   }

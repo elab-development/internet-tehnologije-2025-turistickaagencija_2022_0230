@@ -19,6 +19,7 @@ import { AgentDashboardComponent } from './features/agent-dashboard/agent-dashbo
 import { AgentArrangementsComponent } from './features/agent-dashboard/agent-arrangements/agent-arrangements.component';
 import { TransportsManagementComponent } from './features/admin-dashboard/transports-management/transports-management.component';
 import { BookingsManagementComponent } from './features/admin-dashboard/bookings-management/bookings-management.component';
+import { AgentBookingsComponent } from './features/agent-dashboard/agent-bookings/agent-bookings.component';
 
 export const routes: Routes = [
     {
@@ -58,12 +59,14 @@ export const routes: Routes = [
     {
         path: 'booking/:id',
         component: BookingComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'CLIENT' }
     },
     {
         path: 'my-bookings',
         component: UserBookingsComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'CLIENT' }
     },
     {
         path: 'admin/dashboard',
@@ -122,6 +125,12 @@ export const routes: Routes = [
     {
         path: 'agent/arrangements',
         component: AgentArrangementsComponent,
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'AGENT' }
+    },
+    {
+        path: 'agent/bookings',
+        component: AgentBookingsComponent,
         canActivate: [AuthGuard],
         data: { requiredRole: 'AGENT' }
     }

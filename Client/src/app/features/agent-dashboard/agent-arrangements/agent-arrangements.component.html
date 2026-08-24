@@ -4,148 +4,195 @@
       <h1>Arrangements Management</h1>
       <p>Manage tour packages and their hotels/destinations.</p>
     </div>
-    <button class="btn-add" (click)="toggleAddForm()">+ Add Arrangement</button>
+    <button class="btn-add" (click)="toggleAddForm()">
+      <span class="btn-add__icon">+</span> Add Arrangement
+    </button>
   </div>
 
   <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
 
-  <div *ngIf="showAddForm" class="add-form">
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newArrangement.name" placeholder="Arrangement name" />
-    </div>
-    <div class="form-group">
-      <label>Destination</label>
-      <select [(ngModel)]="newArrangement.destination_id">
-        <option [ngValue]="0">Select destination</option>
-        <option *ngFor="let destination of destinations" [ngValue]="destination.id">{{ destination.name }}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Hotel</label>
-      <select [(ngModel)]="newArrangement.hotel_id">
-        <option [ngValue]="0">Select hotel</option>
-        <option *ngFor="let hotel of hotels" [ngValue]="hotel.id">{{ hotel.name }}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Start date</label>
-      <input type="date" [(ngModel)]="newArrangement.start_date" />
-    </div>
-    <div class="form-group">
-      <label>End date</label>
-      <input type="date" [(ngModel)]="newArrangement.end_date" />
-    </div>
-    <div class="form-group">
-      <label>Nights</label>
-      <input type="number" min="1" [(ngModel)]="newArrangement.number_of_nights" />
-    </div>
-    <div class="form-group">
-      <label>Price</label>
-      <input type="number" min="0" [(ngModel)]="newArrangement.price" />
-    </div>
-    <div class="form-group">
-      <label>Seats</label>
-      <input type="number" min="1" [(ngModel)]="newArrangement.capacity" />
-    </div>
-    <div class="form-group">
-      <label>Description</label>
-      <textarea [(ngModel)]="newArrangement.description"></textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn-save" (click)="addArrangement()">Save</button>
-      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+  <!-- Loading skeleton -->
+  <div class="arrangements-list" *ngIf="loading">
+    <div class="arrangement-card arrangement-card--skeleton" *ngFor="let s of [1,2,3,4]"></div>
+  </div>
+
+  <!-- Kartice aranžmana -->
+  <div class="arrangements-list" *ngIf="!loading">
+    <div
+      class="arrangement-card"
+      *ngFor="let arrangement of pagedArrangements"
+      [class.arrangement-card--expanded]="editingArrangementId === arrangement.id"
+    >
+      <div class="arrangement-card__row" (click)="toggleArrangement(arrangement)">
+        <div class="arrangement-icon">✈️</div>
+
+        <div class="arrangement-main">
+          <span class="arrangement-name">{{ arrangement.name }}</span>
+          <span class="arrangement-sub">{{ arrangement.destination.name }} · {{ arrangement.hotel?.name || 'No hotel' }}</span>
+        </div>
+
+        <div class="arrangement-meta">
+          <div class="meta-item">
+            <span class="meta-label">Dates</span>
+            <span class="meta-value">{{ arrangement.start_date }} → {{ arrangement.end_date }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Price</span>
+            <span class="meta-value">{{ arrangement.price }} €</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Seats</span>
+            <span class="meta-value">{{ arrangement.capacity }}</span>
+          </div>
+        </div>
+
+        <div class="arrangement-card__actions" (click)="$event.stopPropagation()">
+          <button class="btn-icon btn-icon--danger" title="Delete arrangement" (click)="deleteArrangement(arrangement.id, arrangement.name)">
+            🗑
+          </button>
+          <button
+            class="btn-expand"
+            [class.btn-expand--open]="editingArrangementId === arrangement.id"
+            (click)="toggleArrangement(arrangement)"
+            [attr.aria-expanded]="editingArrangementId === arrangement.id"
+            title="Edit arrangement"
+          >
+            <span class="chevron">⌄</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="arrangement-card__edit" *ngIf="editingArrangementId === arrangement.id">
+        <div class="edit-form">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" [(ngModel)]="editFormData.name" />
+          </div>
+          <div class="form-group">
+            <label>Destination</label>
+            <select [(ngModel)]="editFormData.destination_id">
+              <option [ngValue]="0">Select destination</option>
+              <option *ngFor="let destination of destinations" [ngValue]="destination.id">{{ destination.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Hotel</label>
+            <select [(ngModel)]="editFormData.hotel_id">
+              <option [ngValue]="0">Select hotel</option>
+              <option *ngFor="let hotel of hotels" [ngValue]="hotel.id">{{ hotel.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Start date</label>
+            <input type="date" [(ngModel)]="editFormData.start_date" />
+          </div>
+          <div class="form-group">
+            <label>End date</label>
+            <input type="date" [(ngModel)]="editFormData.end_date" />
+          </div>
+          <div class="form-group">
+            <label>Nights</label>
+            <input type="number" min="1" [(ngModel)]="editFormData.number_of_nights" />
+          </div>
+          <div class="form-group">
+            <label>Price</label>
+            <input type="number" min="0" [(ngModel)]="editFormData.price" />
+          </div>
+          <div class="form-group">
+            <label>Seats</label>
+            <input type="number" min="1" [(ngModel)]="editFormData.capacity" />
+          </div>
+
+          <div class="form-group form-group--wide">
+            <label>Description</label>
+            <textarea [(ngModel)]="editFormData.description"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-save" (click)="saveEdit(arrangement.id)">Save changes</button>
+          <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="table-container">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Destination</th>
-          <th>Hotel</th>
-          <th>Start</th>
-          <th>End</th>
-          <th>Price</th>
-          <th>Seats</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let arrangement of arrangements">
-          <tr *ngIf="editingArrangementId !== arrangement.id">
-            <td>{{ arrangement.name }}</td>
-            <td>{{ arrangement.destination.name }}</td>
-            <td>{{ arrangement.hotel?.name || '—' }}</td>
-            <td>{{ arrangement.start_date }}</td>
-            <td>{{ arrangement.end_date }}</td>
-            <td>{{ arrangement.price }}</td>
-            <td>{{ arrangement.capacity }}</td>
-            <td class="actions">
-              <button class="btn-edit" (click)="startEdit(arrangement)">Edit</button>
-              <button class="btn-delete" (click)="deleteArrangement(arrangement.id, arrangement.name)">Delete</button>
-            </td>
-          </tr>
-          <tr *ngIf="editingArrangementId === arrangement.id" class="edit-row">
-            <td colspan="8">
-              <div class="edit-form">
-                <div class="form-group">
-                  <label>Name</label>
-                  <input type="text" [(ngModel)]="editFormData.name" />
-                </div>
-                <div class="form-group">
-                  <label>Destination</label>
-                  <select [(ngModel)]="editFormData.destination_id">
-                    <option [ngValue]="0">Select destination</option>
-                    <option *ngFor="let destination of destinations" [ngValue]="destination.id">{{ destination.name }}</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Hotel</label>
-                  <select [(ngModel)]="editFormData.hotel_id">
-                    <option [ngValue]="0">Select hotel</option>
-                    <option *ngFor="let hotel of hotels" [ngValue]="hotel.id">{{ hotel.name }}</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Start date</label>
-                  <input type="date" [(ngModel)]="editFormData.start_date" />
-                </div>
-                <div class="form-group">
-                  <label>End date</label>
-                  <input type="date" [(ngModel)]="editFormData.end_date" />
-                </div>
-                <div class="form-group">
-                  <label>Nights</label>
-                  <input type="number" min="1" [(ngModel)]="editFormData.number_of_nights" />
-                </div>
-                <div class="form-group">
-                  <label>Price</label>
-                  <input type="number" min="0" [(ngModel)]="editFormData.price" />
-                </div>
-                <div class="form-group">
-                  <label>Seats</label>
-                  <input type="number" min="1" [(ngModel)]="editFormData.capacity" />
-                </div>
-                <div class="form-group">
-                  <label>Description</label>
-                  <textarea [(ngModel)]="editFormData.description"></textarea>
-                </div>
-                <div class="form-actions">
-                  <button class="btn-save" (click)="saveEdit(arrangement.id)">Save</button>
-                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </ng-container>
-      </tbody>
-    </table>
-  </div>
-
-  <div *ngIf="arrangements.length === 0 && !errorMessage" class="empty-state">
+  <div *ngIf="!loading && arrangements.length === 0 && !errorMessage" class="empty-state">
     <p>No arrangements found.</p>
+  </div>
+
+  <!-- Paginacija -->
+  <div class="pagination" *ngIf="!loading && totalPages > 1">
+    <button class="pagination__nav" (click)="prevPage()" [disabled]="currentPage === 1" aria-label="Previous page">
+      ‹
+    </button>
+
+    <span class="pagination__label">Page <strong>{{ currentPage }}</strong> of {{ totalPages }}</span>
+
+    <button class="pagination__nav" (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next page">
+      ›
+    </button>
+  </div>
+</div>
+
+<!-- Add arrangement modal -->
+<div class="modal-overlay" *ngIf="showAddForm" (click)="toggleAddForm()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add new arrangement</h2>
+      <button class="modal-close" (click)="toggleAddForm()" aria-label="Close">×</button>
+    </div>
+
+    <div class="edit-form edit-form--modal">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="newArrangement.name" placeholder="Arrangement name" />
+      </div>
+      <div class="form-group">
+        <label>Destination</label>
+        <select [(ngModel)]="newArrangement.destination_id">
+          <option [ngValue]="0">Select destination</option>
+          <option *ngFor="let destination of destinations" [ngValue]="destination.id">{{ destination.name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Hotel</label>
+        <select [(ngModel)]="newArrangement.hotel_id">
+          <option [ngValue]="0">Select hotel</option>
+          <option *ngFor="let hotel of hotels" [ngValue]="hotel.id">{{ hotel.name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Start date</label>
+        <input type="date" [(ngModel)]="newArrangement.start_date" />
+      </div>
+      <div class="form-group">
+        <label>End date</label>
+        <input type="date" [(ngModel)]="newArrangement.end_date" />
+      </div>
+      <div class="form-group">
+        <label>Nights</label>
+        <input type="number" min="1" [(ngModel)]="newArrangement.number_of_nights" />
+      </div>
+      <div class="form-group">
+        <label>Price</label>
+        <input type="number" min="0" [(ngModel)]="newArrangement.price" />
+      </div>
+      <div class="form-group">
+        <label>Seats</label>
+        <input type="number" min="1" [(ngModel)]="newArrangement.capacity" />
+      </div>
+
+      <div class="form-group form-group--wide">
+        <label>Description</label>
+        <textarea [(ngModel)]="newArrangement.description"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+      <button class="btn-save" (click)="addArrangement()">Create arrangement</button>
+    </div>
   </div>
 </div>

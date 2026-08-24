@@ -4,104 +4,154 @@
       <h1>Hotels Management</h1>
       <p>Manage hotel properties and linked destinations.</p>
     </div>
-    <button class="btn-add" (click)="toggleAddForm()">+ Add Hotel</button>
+    <button class="btn-add" (click)="toggleAddForm()">
+      <span class="btn-add__icon">+</span> Add Hotel
+    </button>
   </div>
 
   <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
 
-  <div *ngIf="showAddForm" class="add-form">
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newHotel.name" placeholder="Hotel name" />
-    </div>
-    <div class="form-group">
-      <label>Image URL</label>
-      <input type="text" [(ngModel)]="newHotel.image" placeholder="Image URL" />
-    </div>
-    <div class="form-group">
-      <label>Rating</label>
-      <input type="number" [(ngModel)]="newHotel.rating" placeholder="Rating" min="0" max="5" step="0.1" />
-    </div>
-    <div class="form-group">
-      <label>Nightly Price</label>
-      <input type="number" [(ngModel)]="newHotel.price_per_night" placeholder="Price per night" />
-    </div>
-    <div class="form-group">
-      <label>Destination</label>
-      <select [(ngModel)]="newHotel.destination_id">
-        <option value="0">Select destination</option>
-        <option *ngFor="let destination of destinations" [value]="destination.id">{{ destination.name }}</option>
-      </select>
-    </div>
-    <div class="form-actions">
-      <button class="btn-save" (click)="addHotel()">Save</button>
-      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+  <!-- Loading skeleton -->
+  <div class="hotels-list" *ngIf="loading">
+    <div class="hotel-card hotel-card--skeleton" *ngFor="let s of [1,2,3,4]"></div>
+  </div>
+
+  <!-- Kartice hotela -->
+  <div class="hotels-list" *ngIf="!loading">
+    <div
+      class="hotel-card"
+      *ngFor="let hotel of pagedHotels"
+      [class.hotel-card--expanded]="editingHotelId === hotel.id"
+    >
+      <div class="hotel-card__row" (click)="toggleHotel(hotel)">
+        <div class="hotel-thumb">
+          <img *ngIf="hotel.image" [src]="hotel.image" [alt]="hotel.name" />
+          <span *ngIf="!hotel.image">🏨</span>
+        </div>
+
+        <div class="hotel-main">
+          <span class="hotel-name">{{ hotel.name }}</span>
+          <span class="hotel-sub">{{ hotel.destination.name }}</span>
+        </div>
+
+        <div class="hotel-meta">
+          <div class="meta-item">
+            <span class="meta-label">Rating</span>
+            <span class="meta-value">★ {{ hotel.rating }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Per night</span>
+            <span class="meta-value">{{ hotel.price_per_night }} €</span>
+          </div>
+        </div>
+
+        <div class="hotel-card__actions" (click)="$event.stopPropagation()">
+          <button class="btn-icon btn-icon--danger" title="Delete hotel" (click)="deleteHotel(hotel.id, hotel.name)">
+            🗑
+          </button>
+          <button
+            class="btn-expand"
+            [class.btn-expand--open]="editingHotelId === hotel.id"
+            (click)="toggleHotel(hotel)"
+            [attr.aria-expanded]="editingHotelId === hotel.id"
+            title="Edit hotel"
+          >
+            <span class="chevron">⌄</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="hotel-card__edit" *ngIf="editingHotelId === hotel.id">
+        <div class="edit-form">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" [(ngModel)]="editFormData.name" />
+          </div>
+          <div class="form-group">
+            <label>Image URL</label>
+            <input type="text" [(ngModel)]="editFormData.image" />
+          </div>
+          <div class="form-group">
+            <label>Rating</label>
+            <input type="number" [(ngModel)]="editFormData.rating" min="0" max="5" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label>Nightly Price</label>
+            <input type="number" [(ngModel)]="editFormData.price_per_night" />
+          </div>
+          <div class="form-group">
+            <label>Destination</label>
+            <select [(ngModel)]="editFormData.destination_id">
+              <option value="0">Select destination</option>
+              <option *ngFor="let destination of destinations" [value]="destination.id">{{ destination.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-save" (click)="saveEdit(hotel.id)">Save changes</button>
+          <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="table-container">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Destination</th>
-          <th>Rating</th>
-          <th>Price</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let hotel of hotels">
-          <tr *ngIf="editingHotelId !== hotel.id">
-            <td>{{ hotel.name }}</td>
-            <td>{{ hotel.destination.name }}</td>
-            <td>{{ hotel.rating }}</td>
-            <td>{{ hotel.price_per_night }}</td>
-            <td class="actions">
-              <button class="btn-edit" (click)="startEdit(hotel)">Edit</button>
-              <button class="btn-delete" (click)="deleteHotel(hotel.id, hotel.name)">Delete</button>
-            </td>
-          </tr>
-          <tr *ngIf="editingHotelId === hotel.id" class="edit-row">
-            <td colspan="5">
-              <div class="edit-form">
-                <div class="form-group">
-                  <label>Name</label>
-                  <input type="text" [(ngModel)]="editFormData.name" />
-                </div>
-                <div class="form-group">
-                  <label>Image URL</label>
-                  <input type="text" [(ngModel)]="editFormData.image" />
-                </div>
-                <div class="form-group">
-                  <label>Rating</label>
-                  <input type="number" [(ngModel)]="editFormData.rating" min="0" max="5" step="0.1" />
-                </div>
-                <div class="form-group">
-                  <label>Nightly Price</label>
-                  <input type="number" [(ngModel)]="editFormData.price_per_night" />
-                </div>
-                <div class="form-group">
-                  <label>Destination</label>
-                  <select [(ngModel)]="editFormData.destination_id">
-                    <option value="0">Select destination</option>
-                    <option *ngFor="let destination of destinations" [value]="destination.id">{{ destination.name }}</option>
-                  </select>
-                </div>
-                <div class="form-actions">
-                  <button class="btn-save" (click)="saveEdit(hotel.id)">Save</button>
-                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </ng-container>
-      </tbody>
-    </table>
-  </div>
-
-  <div *ngIf="hotels.length === 0 && !errorMessage" class="empty-state">
+  <div *ngIf="!loading && hotels.length === 0 && !errorMessage" class="empty-state">
     <p>No hotels found.</p>
+  </div>
+
+  <!-- Paginacija -->
+  <div class="pagination" *ngIf="!loading && totalPages > 1">
+    <button class="pagination__nav" (click)="prevPage()" [disabled]="currentPage === 1" aria-label="Previous page">
+      ‹
+    </button>
+
+    <span class="pagination__label">Page <strong>{{ currentPage }}</strong> of {{ totalPages }}</span>
+
+    <button class="pagination__nav" (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next page">
+      ›
+    </button>
+  </div>
+</div>
+
+<!-- Add hotel modal -->
+<div class="modal-overlay" *ngIf="showAddForm" (click)="toggleAddForm()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add new hotel</h2>
+      <button class="modal-close" (click)="toggleAddForm()" aria-label="Close">×</button>
+    </div>
+
+    <div class="edit-form edit-form--modal">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="newHotel.name" placeholder="Hotel name" />
+      </div>
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="text" [(ngModel)]="newHotel.image" placeholder="Image URL" />
+      </div>
+      <div class="form-group">
+        <label>Rating</label>
+        <input type="number" [(ngModel)]="newHotel.rating" placeholder="Rating" min="0" max="5" step="0.1" />
+      </div>
+      <div class="form-group">
+        <label>Nightly Price</label>
+        <input type="number" [(ngModel)]="newHotel.price_per_night" placeholder="Price per night" />
+      </div>
+      <div class="form-group">
+        <label>Destination</label>
+        <select [(ngModel)]="newHotel.destination_id">
+          <option value="0">Select destination</option>
+          <option *ngFor="let destination of destinations" [value]="destination.id">{{ destination.name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+      <button class="btn-save" (click)="addHotel()">Create hotel</button>
+    </div>
   </div>
 </div>

@@ -9,7 +9,7 @@ import { LoginResponse } from '../api-message/login-response.model';
 @Injectable({ providedIn: 'root' })
 export class LoginApiService {
 
-  private readonly endpoint = 'api/auth/login/';
+  private readonly endpoint = 'auth/login/';
 
   constructor(private api: ApiService) {}
 

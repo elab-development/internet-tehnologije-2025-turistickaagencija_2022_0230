@@ -9,19 +9,29 @@
 
   <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <h3>Arrangements</h3>
-      <p>{{ arrangementsCount }}</p>
-    </div>
-  </div>
-
   <div class="management-cards-grid">
     <a class="management-card" routerLink="/agent/arrangements">
       <div class="card-icon">✈️</div>
-      <h2>Arrangements</h2>
-      <p>Add, edit, or remove travel packages</p>
-      <div class="card-count">{{ arrangementsCount }} arrangements</div>
+      <div class="card-body">
+        <h2>Arrangements</h2>
+        <p>Add, edit, or remove travel packages</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ arrangementsCount }} arrangements</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="management-card" routerLink="/agent/bookings">
+      <div class="card-icon">🧾</div>
+      <div class="card-body">
+        <h2>Bookings</h2>
+        <p>Review bookings for your arrangements</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">{{ bookingsCount }} bookings</span>
+        <span class="card-arrow">→</span>
+      </div>
     </a>
   </div>
 </section>

@@ -8,6 +8,6 @@ export class ArrangementApiService {
   constructor(private api: ApiService) {}
 
   getArrangement(id: number) {
-    return this.api.get<ApiResponse<Arrangement>>(`api/arrangements/${id}/`);
+    return this.api.get<ApiResponse<Arrangement>>(`arrangements/${id}/`);
   }
 }
