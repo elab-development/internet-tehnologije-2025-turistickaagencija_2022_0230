@@ -20,6 +20,8 @@ import { AgentArrangementsComponent } from './features/agent-dashboard/agent-arr
 import { TransportsManagementComponent } from './features/admin-dashboard/transports-management/transports-management.component';
 import { BookingsManagementComponent } from './features/admin-dashboard/bookings-management/bookings-management.component';
 import { AgentBookingsComponent } from './features/agent-dashboard/agent-bookings/agent-bookings.component';
+import { AboutUsComponent } from './features/about-us/about-us.component';
+import { FaqComponent } from './features/faq/faq.component';
 
 export const routes: Routes = [
     {
@@ -31,6 +33,14 @@ export const routes: Routes = [
         path: 'home',
         component: HomeComponent,
 
+    },
+    {
+        path: 'about-us',
+        component: AboutUsComponent,
+    },
+    {
+        path: 'faq',
+        component: FaqComponent,
     },
     {
         path: 'login',

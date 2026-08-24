@@ -95,7 +95,11 @@ def arrangement_detail(request, id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def top_arrangements(request):
-    arrangements = Arrangement.objects.order_by('-hotel__rating')[:8]
+    arrangements = (
+        Arrangement.objects
+        .select_related('destination', 'destination__country', 'hotel', 'transport')
+        .order_by('-hotel__rating', 'id')[:8]
+    )
 
     serializer = ArrangementSerializer(arrangements, many=True)
     return Response({

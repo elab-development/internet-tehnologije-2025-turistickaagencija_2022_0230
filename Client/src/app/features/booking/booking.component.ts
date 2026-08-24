@@ -34,23 +34,23 @@ export class BookingComponent {
   // Mock podataka — u realnoj aplikaciji ovo dolazi iz servisa/rute (resolver ili API poziv po ID-u)
   package = signal<TravelPackage>({
     id: 'prolece-u-parizu',
-    name: 'Prolece u Parizu',
-    country: 'Francuska',
+    name: 'Springtime in Paris',
+    country: 'France',
     image:
       'https://images.unsplash.com/photo-1502602898536-47ad22581b52?q=80&w=1600&auto=format&fit=crop',
     rating: 4.9,
-    description: 'Dozivite Pariz u svom najlepsem sjaju.',
+    description: 'Experience Paris at its most beautiful.',
     longDescription:
-      'Provedite tri nezaboravna dana u srcu Pariza. Setnja pored Sene, poseta Ajfelovoj kuli, ' +
-      'Luvru i Monmartru, uz smestaj u centru grada i doruk ukljucen svakog jutra. Idealno za parove ' +
-      'i ljubitelje kulture koji zele da otkriju grad svetlosti bez zurbe.',
+      'Spend three unforgettable days in the heart of Paris. Walk beside the Seine, visit the Eiffel Tower, ' +
+      'the Louvre and Montmartre, with a central hotel and breakfast included every morning. Ideal for couples ' +
+      'and culture lovers who want to discover the City of Light at an easy pace.',
     durationDays: 3,
     pricePerAdult: 260,
     pricePerChild: 180,
     totalCapacity: 40,
     remainingCapacity: 12,
-    availableDates: ['12. Sep 2026.', '19. Sep 2026.', '26. Sep 2026.', '3. Okt 2026.'],
-    includes: ['Avionske karte', 'Smestaj (3 nocenja)', 'Doruk', 'Vodic na srpskom jeziku'],
+    availableDates: ['12 Sep 2026', '19 Sep 2026', '26 Sep 2026', '3 Oct 2026'],
+    includes: ['Flights', 'Hotel (3 nights)', 'Breakfast', 'English-speaking guide'],
   });
 
   selectedDateIndex = signal(0);

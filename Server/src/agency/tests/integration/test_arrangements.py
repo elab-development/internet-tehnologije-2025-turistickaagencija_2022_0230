@@ -39,6 +39,48 @@ class ArrangementIntegrationTests(TestCase):
         token = RefreshToken.for_user(self.agent).access_token
         return {'HTTP_AUTHORIZATION': f'Bearer {token}'}
 
+    def test_top_destinations_returns_arrangement_counts_and_uses_id_as_tiebreaker(self):
+        second_destination = Destination.objects.create(name='Second City', country=self.country)
+        Arrangement.objects.create(
+            name='Second Trip',
+            destination=second_destination,
+            hotel=self.hotel,
+            start_date=date(2027, 2, 1),
+            end_date=date(2027, 2, 8),
+            number_of_nights=7,
+            price='500.00',
+            capacity=2,
+        )
+
+        response = self.client.get('/api/destinations/top/')
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()['data']
+        self.assertEqual(results[0]['destination']['id'], self.destination.id)
+        self.assertEqual(results[0]['arrangement_count'], 1)
+        self.assertEqual(results[1]['destination']['id'], second_destination.id)
+        self.assertEqual(results[1]['arrangement_count'], 1)
+
+    def test_top_arrangements_returns_highest_hotel_ratings_and_uses_id_as_tiebreaker(self):
+        second_arrangement = Arrangement.objects.create(
+            name='Second Rated Trip',
+            destination=self.destination,
+            hotel=self.hotel,
+            start_date=date(2027, 2, 1),
+            end_date=date(2027, 2, 8),
+            number_of_nights=7,
+            price='500.00',
+            capacity=2,
+        )
+
+        response = self.client.get('/api/arrangements/top/')
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()['data']
+        self.assertEqual(results[0]['id'], self.arrangement.id)
+        self.assertEqual(results[1]['id'], second_arrangement.id)
+        self.assertEqual(results[0]['hotel']['rating'], '4.5')
+
     def test_agent_can_create_arrangement(self):
         response = self.client.post(
             '/api/arrangements/',

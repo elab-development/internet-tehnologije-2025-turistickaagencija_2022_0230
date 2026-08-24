@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Observable } from 'rxjs';
 import { User } from '../../../core/models/user.model';
+
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  
   user$: Observable<User | null>;
   userMenuOpen = false;
 
