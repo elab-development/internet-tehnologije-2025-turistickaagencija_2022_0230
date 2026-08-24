@@ -5,13 +5,13 @@ import { ApiService } from '../../../core/services/api.service';
 import { Booking } from '../../../core/models/booking.model';
 
 @Component({
-  selector: 'app-bookings-management',
+  selector: 'app-agent-bookings',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './bookings-management.component.html',
-  styleUrls: ['./bookings-management.component.scss']
+  templateUrl: './agent-bookings.component.html',
+  styleUrls: ['./agent-bookings.component.scss']
 })
-export class BookingsManagementComponent implements OnInit {
+export class AgentBookingsComponent implements OnInit {
   bookings: Booking[] = [];
   errorMessage = '';
   successMessage = '';
@@ -33,7 +33,7 @@ export class BookingsManagementComponent implements OnInit {
 
   loadBookings(): void {
     this.loading = true;
-    this.api.get<{ success: boolean; data: Booking[] }>('admin/bookings/').subscribe({
+    this.api.get<{ success: boolean; data: Booking[] }>('agent/bookings/').subscribe({
       next: response => {
         this.loading = false;
         this.bookings = response.data;
@@ -41,12 +41,16 @@ export class BookingsManagementComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.errorMessage = 'Failed to load bookings.';
+        this.errorMessage = 'Failed to load bookings for your arrangements.';
       }
     });
   }
 
-  startEdit(booking: Booking): void {
+  toggleBooking(booking: Booking): void {
+    if (this.editingBookingId === booking.id) {
+      this.editingBookingId = null;
+      return;
+    }
     this.editingBookingId = booking.id;
     this.editFormData = {
       status: booking.status,
@@ -55,24 +59,11 @@ export class BookingsManagementComponent implements OnInit {
     };
   }
 
-  cancelEdit(): void {
-    this.editingBookingId = null;
-  }
-
-  // Wrapper za strelicu na kartici — otvara ili zatvara isti edit blok
-  toggleBooking(booking: Booking): void {
-    if (this.editingBookingId === booking.id) {
-      this.cancelEdit();
-    } else {
-      this.startEdit(booking);
-    }
-  }
-
   saveEdit(id: number): void {
-    this.api.put(`admin/bookings/${id}/`, this.editFormData).subscribe({
+    this.api.put(`agent/bookings/${id}/`, this.editFormData).subscribe({
       next: () => {
         this.successMessage = 'Booking updated successfully.';
-        this.cancelEdit();
+        this.editingBookingId = null;
         this.loadBookings();
       },
       error: () => this.errorMessage = 'Failed to update booking.'
@@ -83,12 +74,11 @@ export class BookingsManagementComponent implements OnInit {
     if (!confirm(`Delete booking #${id}?`)) {
       return;
     }
-
-    this.api.delete(`admin/bookings/${id}/`).subscribe({
+    this.api.delete(`agent/bookings/${id}/`).subscribe({
       next: () => {
         this.successMessage = 'Booking deleted successfully.';
         if (this.editingBookingId === id) {
-          this.cancelEdit();
+          this.editingBookingId = null;
         }
         this.loadBookings();
       },
@@ -97,20 +87,7 @@ export class BookingsManagementComponent implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'CONFIRMED':
-        return 'badge-confirmed';
-      case 'PENDING':
-        return 'badge-pending';
-      case 'CANCELLED':
-        return 'badge-cancelled';
-      default:
-        return 'badge-default';
-    }
-  }
-
-  getPaymentClass(paymentStatus: string): string {
-    return paymentStatus === 'PAID' ? 'badge-paid' : 'badge-unpaid';
+    return `status-${status.toLowerCase()}`;
   }
 
   // ===== Paginacija =====
@@ -128,7 +105,7 @@ export class BookingsManagementComponent implements OnInit {
       return;
     }
     this.currentPage = page;
-    this.cancelEdit();
+    this.editingBookingId = null;
   }
 
   nextPage(): void {

@@ -4,60 +4,98 @@
       <h1>Countries Management</h1>
       <p>Manage the list of available countries.</p>
     </div>
-    <button class="btn-add" (click)="toggleAddForm()">+ Add Country</button>
+    <button class="btn-add" (click)="toggleAddForm()">
+      <span class="btn-add__icon">+</span> Add Country
+    </button>
   </div>
 
   <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
 
-  <div *ngIf="showAddForm" class="add-form">
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newCountry.name" placeholder="Country name" />
-    </div>
-    <div class="form-actions">
-      <button class="btn-save" (click)="addCountry()">Save</button>
-      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+  <!-- Loading skeleton -->
+  <div class="countries-grid" *ngIf="loading">
+    <div class="country-card country-card--skeleton" *ngFor="let s of [1,2,3,4,5,6]"></div>
+  </div>
+
+  <!-- Kartice zemalja -->
+  <div class="countries-grid" *ngIf="!loading">
+    <div
+      class="country-card"
+      *ngFor="let country of pagedCountries"
+      [class.country-card--expanded]="editingCountryId === country.id"
+    >
+      <div class="country-card__row" (click)="toggleCountry(country)">
+        <div class="country-icon">🌍</div>
+        <span class="country-name">{{ country.name }}</span>
+
+        <div class="country-card__actions" (click)="$event.stopPropagation()">
+          <button class="btn-icon btn-icon--danger" title="Delete country" (click)="deleteCountry(country.id, country.name)">
+            🗑
+          </button>
+          <button
+            class="btn-expand"
+            [class.btn-expand--open]="editingCountryId === country.id"
+            (click)="toggleCountry(country)"
+            [attr.aria-expanded]="editingCountryId === country.id"
+            title="Edit country"
+          >
+            <span class="chevron">⌄</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="country-card__edit" *ngIf="editingCountryId === country.id">
+        <div class="edit-form">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" [(ngModel)]="editFormData.name" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-save" (click)="saveEdit(country.id)">Save changes</button>
+          <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="table-container">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let country of countries">
-          <tr *ngIf="editingCountryId !== country.id">
-            <td>{{ country.name }}</td>
-            <td class="actions">
-              <button class="btn-edit" (click)="startEdit(country)">Edit</button>
-              <button class="btn-delete" (click)="deleteCountry(country.id, country.name)">Delete</button>
-            </td>
-          </tr>
-          <tr *ngIf="editingCountryId === country.id" class="edit-row">
-            <td colspan="2">
-              <div class="edit-form">
-                <div class="form-group">
-                  <label>Name</label>
-                  <input type="text" [(ngModel)]="editFormData.name" />
-                </div>
-                <div class="form-actions">
-                  <button class="btn-save" (click)="saveEdit(country.id)">Save</button>
-                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </ng-container>
-      </tbody>
-    </table>
-  </div>
-
-  <div *ngIf="countries.length === 0 && !errorMessage" class="empty-state">
+  <div *ngIf="!loading && countries.length === 0 && !errorMessage" class="empty-state">
     <p>No countries found.</p>
+  </div>
+
+  <!-- Paginacija -->
+  <div class="pagination" *ngIf="!loading && totalPages > 1">
+    <button class="pagination__nav" (click)="prevPage()" [disabled]="currentPage === 1" aria-label="Previous page">
+      ‹
+    </button>
+
+    <span class="pagination__label">Page <strong>{{ currentPage }}</strong> of {{ totalPages }}</span>
+
+    <button class="pagination__nav" (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next page">
+      ›
+    </button>
+  </div>
+</div>
+
+<!-- Add country modal -->
+<div class="modal-overlay" *ngIf="showAddForm" (click)="toggleAddForm()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add new country</h2>
+      <button class="modal-close" (click)="toggleAddForm()" aria-label="Close">×</button>
+    </div>
+
+    <div class="edit-form">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="newCountry.name" placeholder="Country name" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+      <button class="btn-save" (click)="addCountry()">Create country</button>
+    </div>
   </div>
 </div>

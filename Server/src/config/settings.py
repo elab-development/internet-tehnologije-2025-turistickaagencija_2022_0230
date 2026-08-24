@@ -147,7 +147,9 @@ else:
     }
 
 if DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
-    DATABASES['default'].setdefault('OPTIONS', {})['sslmode'] = 'require'
+    sslmode = os.getenv('DB_SSLMODE')
+    if sslmode:
+        DATABASES['default'].setdefault('OPTIONS', {})['sslmode'] = sslmode
 
 
 # Password validation

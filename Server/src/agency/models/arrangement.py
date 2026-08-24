@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 from .destination import Destination
 from .hotel import Hotel
@@ -9,6 +10,14 @@ from .transport import Transport
 
 class Arrangement(models.Model):
     name = models.CharField(max_length=100, db_column='naziv')
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_arrangements',
+    )
 
     destination = models.ForeignKey(
         Destination,

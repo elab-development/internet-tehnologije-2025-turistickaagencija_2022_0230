@@ -19,6 +19,8 @@ from ..serializers import ArrangementSerializer
 def arrangements(request):
     if request.method == 'GET':
         arrangements = Arrangement.objects.all()
+        if request.user.is_authenticated and request.user.is_staff and not request.user.is_superuser:
+            arrangements = arrangements.filter(created_by=request.user)
         serializer = ArrangementSerializer(arrangements, many=True)
         return Response(serializer.data)
 
@@ -37,7 +39,7 @@ def arrangements(request):
 
         serializer = ArrangementSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(created_by=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -47,7 +49,10 @@ def arrangements(request):
 @extend_schema(methods=['DELETE'], summary='Delete a travel arrangement', responses=None, operation_id='arrangements_delete')
 @api_view(['GET', 'PUT', 'DELETE'])
 def arrangement_detail(request, id):
-    arrangement = get_object_or_404(Arrangement, id=id)
+    filters = {'id': id}
+    if request.user.is_authenticated and request.user.is_staff and not request.user.is_superuser:
+        filters['created_by'] = request.user
+    arrangement = get_object_or_404(Arrangement, **filters)
 
     if request.method == 'GET':
         serializer = ArrangementSerializer(arrangement)
@@ -116,6 +121,8 @@ def top_arrangements(request):
 @api_view(['POST'])
 def arrangements_filter(request):
     queryset = Arrangement.objects.all()
+    if request.user.is_authenticated and request.user.is_staff and not request.user.is_superuser:
+        queryset = queryset.filter(created_by=request.user)
 
     destination_id = request.data.get('destination_id')
     start_date = request.data.get('start_date')

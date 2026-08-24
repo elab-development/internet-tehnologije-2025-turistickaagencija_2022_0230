@@ -92,7 +92,7 @@ export class ArrangementsManagementComponent implements OnInit {
   }
 
   loadDestinations(): void {
-    this.api.get<any>('api/destinations/').subscribe({
+    this.api.get<any>('destinations/').subscribe({
       next: response => {
         this.destinations = this.resolveData(response);
       },
@@ -103,7 +103,7 @@ export class ArrangementsManagementComponent implements OnInit {
   }
 
   loadHotels(): void {
-    this.api.get<any>('api/hotels/').subscribe({
+    this.api.get<any>('hotels/').subscribe({
       next: response => {
         this.hotels = this.resolveData(response);
       },
@@ -114,7 +114,7 @@ export class ArrangementsManagementComponent implements OnInit {
   }
 
   loadTransports(): void {
-    this.api.get<any>('api/transports/').subscribe({
+    this.api.get<any>('transports/').subscribe({
       next: response => this.transports = this.resolveData(response),
       error: () => this.errorMessage = 'Failed to load transports.'
     });
@@ -122,7 +122,7 @@ export class ArrangementsManagementComponent implements OnInit {
 
   loadArrangements(): void {
     this.loading = true;
-    this.api.get<any>('api/arrangements/').subscribe({
+    this.api.get<any>('arrangements/').subscribe({
       next: response => {
         this.loading = false;
         this.arrangements = this.resolveData(response);
@@ -158,7 +158,7 @@ export class ArrangementsManagementComponent implements OnInit {
       return;
     }
 
-    this.api.post('api/arrangements/', this.newArrangement).subscribe({
+    this.api.post('arrangements/', this.newArrangement).subscribe({
       next: () => {
         this.successMessage = 'Arrangement added successfully.';
         this.newArrangement = { ...this.editFormData };
@@ -215,7 +215,7 @@ export class ArrangementsManagementComponent implements OnInit {
       return;
     }
 
-    this.api.put(`api/arrangements/${arrangementId}/`, this.editFormData).subscribe({
+    this.api.put(`arrangements/${arrangementId}/`, this.editFormData).subscribe({
       next: () => {
         this.successMessage = 'Arrangement updated successfully.';
         this.cancelEdit();
@@ -233,7 +233,7 @@ export class ArrangementsManagementComponent implements OnInit {
       return;
     }
 
-    this.api.delete(`api/arrangements/${id}/`).subscribe({
+    this.api.delete(`arrangements/${id}/`).subscribe({
       next: () => {
         this.successMessage = `Arrangement "${name}" deleted.`;
         if (this.editingArrangementId === id) {

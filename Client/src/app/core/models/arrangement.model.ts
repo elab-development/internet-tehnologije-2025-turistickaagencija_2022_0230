@@ -14,6 +14,7 @@ export interface Arrangement {
   price: number | string;
   price_per_child: number | string | null;
   capacity: number;
+  remaining_capacity: number;
   description: string;
   included_services: string;
   excluded_services: string;

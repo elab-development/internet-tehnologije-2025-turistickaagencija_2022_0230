@@ -154,6 +154,10 @@ export class BookingComponent {
     }).subscribe({
       next: response => {
         if (response.success) {
+          this.package.update(current => ({
+            ...current,
+            remainingCapacity: response.data.arrangement.remaining_capacity
+          }));
           this.bookingMessage = 'Booking confirmed. Redirecting to My Bookings...';
           setTimeout(() => this.router.navigate(['/my-bookings']), 1200);
         } else {
@@ -172,7 +176,7 @@ export class BookingComponent {
       id: arrangement.id.toString(),
       name: arrangement.name,
       country: arrangement.destination?.country?.name || 'Unknown',
-      image: imagePath ? (imagePath.startsWith('http') ? imagePath : `${environment.apiUrl}${imagePath}`) : '',
+      image: imagePath ? (imagePath.startsWith('http') ? imagePath : `${environment.mediaUrl}${imagePath}`) : '',
       rating: arrangement.hotel?.rating ? Number(arrangement.hotel.rating) : 0,
       description: arrangement.description || '',
       longDescription: arrangement.description || '',
@@ -180,7 +184,7 @@ export class BookingComponent {
       pricePerAdult: Number(arrangement.price),
       pricePerChild: Number(arrangement.price),
       totalCapacity: arrangement.capacity,
-      remainingCapacity: arrangement.capacity,
+      remainingCapacity: arrangement.remaining_capacity,
       availableDates: [this.formatDate(arrangement.start_date)],
       includes: [
         `Hotel: ${arrangement.hotel?.name ?? 'Not available'}`,

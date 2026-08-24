@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
@@ -24,10 +24,15 @@ export class CountriesManagementComponent implements OnInit {
   countries: Country[] = [];
   errorMessage = '';
   successMessage = '';
+  loading = false;
   editingCountryId: number | null = null;
   showAddForm = false;
   editFormData: { name: string } = { name: '' };
   newCountry: { name: string } = { name: '' };
+
+  // ===== Paginacija =====
+  pageSize = 10;
+  currentPage = 1;
 
   constructor(private api: ApiService) {}
 
@@ -36,12 +41,16 @@ export class CountriesManagementComponent implements OnInit {
   }
 
   loadCountries(): void {
-    this.api.get<CountriesResponse>('api/countries/').subscribe({
+    this.loading = true;
+    this.api.get<CountriesResponse>('countries/').subscribe({
       next: (response: any) => {
+        this.loading = false;
         const data = this.resolveData(response);
         this.countries = data;
+        this.clampCurrentPage();
       },
       error: () => {
+        this.loading = false;
         this.errorMessage = 'Failed to load countries.';
       }
     });
@@ -57,17 +66,25 @@ export class CountriesManagementComponent implements OnInit {
     this.successMessage = '';
   }
 
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.showAddForm) {
+      this.toggleAddForm();
+    }
+  }
+
   addCountry(): void {
     if (!this.newCountry.name.trim()) {
       this.errorMessage = 'Country name is required.';
       return;
     }
 
-    this.api.post('api/countries/', this.newCountry).subscribe({
+    this.api.post('countries/', this.newCountry).subscribe({
       next: () => {
         this.successMessage = 'Country added successfully.';
         this.newCountry = { name: '' };
         this.showAddForm = false;
+        this.currentPage = 1;
         this.loadCountries();
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -89,13 +106,22 @@ export class CountriesManagementComponent implements OnInit {
     this.editFormData = { name: '' };
   }
 
+  // Wrapper za strelicu na kartici — otvara ili zatvara isti edit blok
+  toggleCountry(country: Country): void {
+    if (this.editingCountryId === country.id) {
+      this.cancelEdit();
+    } else {
+      this.startEdit(country);
+    }
+  }
+
   saveEdit(countryId: number): void {
     if (!this.editFormData.name.trim()) {
       this.errorMessage = 'Country name is required.';
       return;
     }
 
-    this.api.put(`api/countries/${countryId}/`, this.editFormData).subscribe({
+    this.api.put(`countries/${countryId}/`, this.editFormData).subscribe({
       next: () => {
         this.successMessage = 'Country updated successfully.';
         this.cancelEdit();
@@ -113,9 +139,12 @@ export class CountriesManagementComponent implements OnInit {
       return;
     }
 
-    this.api.delete(`api/countries/${id}/`).subscribe({
+    this.api.delete(`countries/${id}/`).subscribe({
       next: () => {
         this.successMessage = `Country "${name}" deleted.`;
+        if (this.editingCountryId === id) {
+          this.cancelEdit();
+        }
         this.loadCountries();
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -123,5 +152,37 @@ export class CountriesManagementComponent implements OnInit {
         this.errorMessage = 'Failed to delete country.';
       }
     });
+  }
+
+  // ===== Paginacija =====
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.countries.length / this.pageSize));
+  }
+
+  get pagedCountries(): Country[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.countries.slice(start, start + this.pageSize);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
+    this.currentPage = page;
+    this.cancelEdit();
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  private clampCurrentPage(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 }
