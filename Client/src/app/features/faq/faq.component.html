@@ -1,0 +1,20 @@
+<main class="faq-page">
+  <section class="faq-intro">
+    <p class="eyebrow">Need to know</p>
+    <h1>Questions, answered.</h1>
+    <p>Everything you need for a smoother journey. Still wondering about something? Our team is ready to help.</p>
+  </section>
+
+  <section class="faq-list" aria-label="Frequently asked questions">
+    <article class="faq-item" *ngFor="let item of questions; let i = index" [class.faq-item--open]="openIndex === i">
+      <button class="faq-question" type="button" [attr.aria-expanded]="openIndex === i" (click)="toggle(i)">
+        <span class="faq-number">0{{ i + 1 }}</span>
+        <span>{{ item.question }}</span>
+        <span class="faq-toggle" aria-hidden="true">{{ openIndex === i ? '&#8722;' : '+' }}</span>
+      </button>
+      <div class="faq-answer" *ngIf="openIndex === i">
+        <p>{{ item.answer }}</p>
+      </div>
+    </article>
+  </section>
+</main>

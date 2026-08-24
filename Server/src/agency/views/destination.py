@@ -90,7 +90,7 @@ def top_destinations(request):
     queryset = (
         Destination.objects
         .annotate(arrangement_count=Count('arrangements'))
-        .order_by('-arrangement_count')[:8]
+        .order_by('-arrangement_count', 'id')[:8]
     )
 
     data = [

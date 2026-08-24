@@ -20,6 +20,19 @@
         </div>
 
         <div class="form-group">
+            <label for="phoneNumber">Phone number</label>
+            <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                placeholder="Enter phone number"
+                (blur)="validateField('phoneNumber')"
+                (input)="validateField('phoneNumber')"
+                required />
+            <span *ngIf="fieldErrors.phoneNumber" class="error-text">{{ fieldErrors.phoneNumber }}</span>
+        </div>
+
+        <div class="form-group">
             <label for="email">Email</label>
             <input 
                 type="text" 
