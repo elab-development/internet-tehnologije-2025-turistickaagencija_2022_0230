@@ -25,6 +25,7 @@ import { Router } from '@angular/router';
 
 export class HomeComponent {
   apiUrl = environment.apiUrl;
+  mediaUrl = environment.mediaUrl;
   topDestinations: TopDestResponse[] = [];
   topArrangements: Arrangement[] = [];
 
@@ -49,7 +50,7 @@ export class HomeComponent {
       return this.fallbackImage;
     }
 
-    return path.startsWith('http') ? path : `${this.apiUrl}${path}`;
+    return path.startsWith('http') ? path : `${this.mediaUrl}${path}`;
   }
 
   bookNow(arrangement: Arrangement): void {
