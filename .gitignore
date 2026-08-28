@@ -27,6 +27,12 @@ Server/*.py[cod]
 Server/*$py.class
 Server/db.sqlite3
 Server/media/
+Server/src/media/*
+!Server/src/media/
+!Server/src/media/destinations/
+!Server/src/media/hotels/
+!Server/src/media/destinations/*
+!Server/src/media/hotels/*
 Server/*.log
 Server/.Python
 Server/pip-log.txt

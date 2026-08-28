@@ -80,7 +80,7 @@ Stop the services with:
 docker compose down
 ```
 
-The Compose development configuration runs Django migrations automatically when the backend starts. Uploaded files are stored in `Server/src/media/`.
+The Compose development configuration runs Django migrations automatically when the backend starts. Uploaded files are stored in `Server/src/media/`. In production, this folder must be included in the deployment or mounted on persistent storage; Render's default filesystem is temporary, so object storage or a persistent disk is recommended for uploaded images.
 
 ## Running Manually
 
