@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'profile']
+        fields = ['id', 'username', 'email', 'role', 'is_active', 'profile']
 
     @extend_schema_field(dict)
     def get_profile(self, obj):

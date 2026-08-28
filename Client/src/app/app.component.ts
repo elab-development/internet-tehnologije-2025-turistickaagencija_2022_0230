@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from "./shared/components/footer/footer.component";
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -29,5 +30,18 @@ import { FooterComponent } from "./shared/components/footer/footer.component";
   `],
 })
 export class AppComponent {
+  constructor(router: Router) {
+    router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          window.scrollTo(0, 0);
+        });
+      });
+    });
+  }
 
 }

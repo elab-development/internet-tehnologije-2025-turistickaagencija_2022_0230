@@ -27,6 +27,35 @@
         </div>
       </div>
 
+      <section class="weather" *ngIf="weather() as forecast; else weatherState">
+        <span class="weather__icon" aria-hidden="true">{{ forecast.weatherIcon }}</span>
+        <div>
+          <span class="weather__label">Average weather during your stay</span>
+          <strong class="weather__temperature">{{ forecast.averageTemperature }}°C</strong>
+        </div>
+      </section>
+      <ng-template #weatherState>
+        <p class="weather weather--status" *ngIf="weatherLoading">Loading weather...</p>
+      </ng-template>
+
+      <section class="section map-section" *ngIf="mapLocation() as location">
+        <div class="map-section__header">
+          <div>
+            <h2 class="section__title">Hotel location</h2>
+            <p class="map-section__hint">
+              {{ location.isHotelLocation ? 'Exact hotel location' : 'Destination location' }}
+            </p>
+          </div>
+          <a class="map-section__link" [href]="mapLink()" target="_blank" rel="noopener">Open map</a>
+        </div>
+        <iframe
+          class="map-section__frame"
+          [src]="mapUrl()"
+          title="Hotel location map"
+          loading="lazy">
+        </iframe>
+      </section>
+
       <section class="section">
         <h2 class="section__title">About this arrangement</h2>
         <p class="section__text">{{ package().longDescription }}</p>

@@ -26,6 +26,8 @@ class HotelSerializer(serializers.ModelSerializer):
             'amenities',
             'phone_number',
             'email',
+            'latitude',
+            'longitude',
             'is_active',
             'destination',
             'destination_id',

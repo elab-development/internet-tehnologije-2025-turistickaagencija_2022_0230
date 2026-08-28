@@ -281,6 +281,36 @@
       box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
     }
   }
+
+  input[type='file'] {
+    padding: 6px;
+    color: #6b7280;
+    cursor: pointer;
+
+    &::file-selector-button {
+      margin-right: 10px;
+      padding: 8px 12px;
+      border: 0;
+      border-radius: 7px;
+      background: #111827;
+      color: #fff;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    &:hover::file-selector-button {
+      background: #374151;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #111827;
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+    }
+  }
 }
 
 .form-actions {

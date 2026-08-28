@@ -8,6 +8,7 @@ interface User {
   username: string;
   email: string;
   role: string;
+  is_active: boolean;
   profile: {
     gender: string;
     date_of_birth: string | null;
@@ -52,7 +53,7 @@ export class UsersManagementComponent implements OnInit {
   addErrors: string[] = [];
 
   private emptyFormData() {
-    return { username: '', email: '', password: '', role: '', gender: '', date_of_birth: '', phone_number: '' };
+    return { username: '', email: '', password: '', role: '', is_active: false, gender: '', date_of_birth: '', phone_number: '' };
   }
 
   constructor(private api: ApiService) {}
@@ -91,6 +92,7 @@ export class UsersManagementComponent implements OnInit {
       email: user.email,
       password: '',
       role: user.role,
+      is_active: user.is_active,
       gender: user.profile?.gender || '',
       date_of_birth: user.profile?.date_of_birth || '',
       phone_number: user.profile?.phone_number || ''

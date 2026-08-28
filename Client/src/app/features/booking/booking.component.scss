@@ -109,6 +109,77 @@
   }
 }
 
+.weather {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 32px;
+  padding: 18px 20px;
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+  background: linear-gradient(105deg, #eff6ff, #fffbeb);
+
+  &__icon {
+    font-size: 42px;
+    line-height: 1;
+  }
+
+  &__label,
+  &__description {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  &__temperature {
+    display: inline-block;
+    margin: 3px 8px 2px 0;
+    color: #172554;
+    font-size: 24px;
+  }
+
+  &--status {
+    display: block;
+    color: #64748b;
+    font-size: 14px;
+  }
+}
+
+.map-section {
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__hint {
+    margin: -4px 0 12px;
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  &__link {
+    flex-shrink: 0;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__frame {
+    display: block;
+    width: 100%;
+    height: 280px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+  }
+}
+
 // ===== Sekcije opisa =====
 .section {
   margin-bottom: 28px;

@@ -26,7 +26,7 @@
     >
       <div class="hotel-card__row" (click)="toggleHotel(hotel)">
         <div class="hotel-thumb">
-          <img *ngIf="hotel.image" [src]="hotel.image" [alt]="hotel.name" />
+          <img *ngIf="hotel.image" [src]="getImageUrl(hotel.image)" [alt]="hotel.name" />
           <span *ngIf="!hotel.image">🏨</span>
         </div>
 
@@ -69,8 +69,8 @@
             <input type="text" [(ngModel)]="editFormData.name" />
           </div>
           <div class="form-group">
-            <label>Image URL</label>
-            <input type="text" [(ngModel)]="editFormData.image" />
+            <label>Image</label>
+            <input type="file" accept="image/*" (change)="onImageSelected($event, true)" />
           </div>
           <div class="form-group">
             <label>Rating</label>
@@ -79,6 +79,14 @@
           <div class="form-group">
             <label>Nightly Price</label>
             <input type="number" [(ngModel)]="editFormData.price_per_night" />
+          </div>
+          <div class="form-group">
+            <label>Latitude</label>
+            <input type="number" [(ngModel)]="editFormData.latitude" step="0.000001" placeholder="e.g. 44.8125" />
+          </div>
+          <div class="form-group">
+            <label>Longitude</label>
+            <input type="number" [(ngModel)]="editFormData.longitude" step="0.000001" placeholder="e.g. 20.4612" />
           </div>
           <div class="form-group">
             <label>Destination</label>
@@ -129,8 +137,8 @@
         <input type="text" [(ngModel)]="newHotel.name" placeholder="Hotel name" />
       </div>
       <div class="form-group">
-        <label>Image URL</label>
-        <input type="text" [(ngModel)]="newHotel.image" placeholder="Image URL" />
+        <label>Image</label>
+        <input type="file" accept="image/*" (change)="onImageSelected($event, false)" />
       </div>
       <div class="form-group">
         <label>Rating</label>
@@ -139,6 +147,14 @@
       <div class="form-group">
         <label>Nightly Price</label>
         <input type="number" [(ngModel)]="newHotel.price_per_night" placeholder="Price per night" />
+      </div>
+      <div class="form-group">
+        <label>Latitude</label>
+        <input type="number" [(ngModel)]="newHotel.latitude" step="0.000001" placeholder="e.g. 44.8125" />
+      </div>
+      <div class="form-group">
+        <label>Longitude</label>
+        <input type="number" [(ngModel)]="newHotel.longitude" step="0.000001" placeholder="e.g. 20.4612" />
       </div>
       <div class="form-group">
         <label>Destination</label>

@@ -7,4 +7,6 @@ export interface Hotel {
   rating: number | string;
   price_per_night: number | string;
   destination: Destination;
+  latitude: number | null;
+  longitude: number | null;
 }

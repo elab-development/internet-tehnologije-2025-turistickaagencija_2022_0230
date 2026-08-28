@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArrangementApiService } from '../../core/services/component-api/arrangement-api.service';
 import { BookingApiService } from '../../core/services/component-api/booking-api.service';
 import { Arrangement } from '../../core/models/arrangement.model';
 import { environment } from '../../../environments/environment';
+import { WeatherService, WeatherSummary } from '../../core/services/weather.service';
 
 export interface TravelPackage {
   id: string;
@@ -21,6 +23,12 @@ export interface TravelPackage {
   remainingCapacity: number;
   availableDates: string[];
   includes: string[];
+}
+
+interface MapLocation {
+  latitude: number;
+  longitude: number;
+  isHotelLocation: boolean;
 }
 
 @Component({
@@ -77,12 +85,39 @@ export class BookingComponent {
   error: string | null = null;
   bookingMessage: string | null = null;
   arrangementId: number | null = null;
+  weather = signal<WeatherSummary | null>(null);
+  weatherLoading = false;
+  mapLocation = signal<MapLocation | null>(null);
+  mapUrl = computed<SafeResourceUrl | null>(() => {
+    const location = this.mapLocation();
+    if (!location) {
+      return null;
+    }
+
+    const offset = 0.04;
+    const bbox = [
+      location.longitude - offset,
+      location.latitude - offset,
+      location.longitude + offset,
+      location.latitude + offset
+    ].join('%2C');
+    const url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${location.latitude}%2C${location.longitude}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  });
+  mapLink = computed(() => {
+    const location = this.mapLocation();
+    return location
+      ? `https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}#map=15/${location.latitude}/${location.longitude}`
+      : '';
+  });
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private arrangementApi: ArrangementApiService,
-    private bookingApi: BookingApiService
+    private bookingApi: BookingApiService,
+    private weatherService: WeatherService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -99,6 +134,7 @@ export class BookingComponent {
       next: response => {
         if (response.success) {
           this.updatePackage(response.data);
+          this.loadWeather(response.data);
         } else {
           this.error = response.message || 'Arrangement not found.';
         }
@@ -193,6 +229,53 @@ export class BookingComponent {
       ]
     });
     this.selectedDateIndex.set(0);
+    this.setMapLocation(arrangement);
+  }
+
+  private setMapLocation(arrangement: Arrangement): void {
+    const hotelLatitude = arrangement.hotel?.latitude == null ? NaN : Number(arrangement.hotel.latitude);
+    const hotelLongitude = arrangement.hotel?.longitude == null ? NaN : Number(arrangement.hotel.longitude);
+    const destinationLatitude = arrangement.destination?.latitude == null ? NaN : Number(arrangement.destination.latitude);
+    const destinationLongitude = arrangement.destination?.longitude == null ? NaN : Number(arrangement.destination.longitude);
+
+    if (Number.isFinite(hotelLatitude) && Number.isFinite(hotelLongitude)) {
+      this.mapLocation.set({
+        latitude: hotelLatitude,
+        longitude: hotelLongitude,
+        isHotelLocation: true
+      });
+    } else if (Number.isFinite(destinationLatitude) && Number.isFinite(destinationLongitude)) {
+      this.mapLocation.set({
+        latitude: destinationLatitude,
+        longitude: destinationLongitude,
+        isHotelLocation: false
+      });
+    } else {
+      this.mapLocation.set(null);
+    }
+  }
+
+  private loadWeather(arrangement: Arrangement): void {
+    const destination = arrangement.destination?.name;
+    if (!destination) {
+      return;
+    }
+
+    this.weatherLoading = true;
+    this.weatherService.getAverageForPeriod(
+      destination,
+      arrangement.start_date,
+      arrangement.end_date
+    ).subscribe({
+      next: summary => {
+        this.weather.set(summary);
+        this.weatherLoading = false;
+      },
+      error: () => {
+        this.weather.set(null);
+        this.weatherLoading = false;
+      }
+    });
   }
 
   private formatDate(date: string | Date): string {
