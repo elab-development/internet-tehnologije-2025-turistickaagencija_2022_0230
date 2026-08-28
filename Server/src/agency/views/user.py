@@ -11,11 +11,19 @@ from ..models import UserProfile
 
 
 @extend_schema(
+    methods=['GET'],
     summary='List users grouped by role',
     responses=dict,
     operation_id='users_list',
 )
-@api_view(['GET'])
+@extend_schema(
+    methods=['POST'],
+    summary='Create a user',
+    request=dict,
+    responses=UserSerializer,
+    operation_id='users_create',
+)
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def users(request):
     if not request.user.is_superuser:
@@ -23,6 +31,58 @@ def users(request):
             "success": False,
             "message": "Admin only",
         }, status=403)
+
+    if request.method == 'POST':
+        username = request.data.get('username', '').strip()
+        email = request.data.get('email', '').strip()
+        password = request.data.get('password', '')
+        role = request.data.get('role', '')
+        is_active = request.data.get('is_active', False)
+
+        if not username or not email or not password or role not in {'ADMIN', 'AGENT', 'CLIENT'}:
+            return Response({
+                "success": False,
+                "message": "Username, email, password, and a valid role are required",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        if len(password) < 6:
+            return Response({
+                "success": False,
+                "message": "Password must be at least 6 characters long",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(is_active, bool):
+            return Response({
+                "success": False,
+                "message": "is_active must be a boolean",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(username=username).exists():
+            return Response({
+                "success": False,
+                "message": "Username already in use",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(email=email).exists():
+            return Response({
+                "success": False,
+                "message": "Email already in use",
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            is_active=is_active,
+            is_staff=role in {'ADMIN', 'AGENT'},
+            is_superuser=role == 'ADMIN',
+        )
+        UserProfile.objects.create(
+            user=user,
+            gender=request.data.get('gender', ''),
+            date_of_birth=request.data.get('date_of_birth') or None,
+            phone_number=request.data.get('phone_number', ''),
+        )
+        return Response({
+            "success": True,
+            "data": UserSerializer(user).data,
+        }, status=status.HTTP_201_CREATED)
 
     admins = User.objects.filter(is_superuser=True).select_related('profile')
     agents = User.objects.filter(is_staff=True, is_superuser=False).select_related('profile')
