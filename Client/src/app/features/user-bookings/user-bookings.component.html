@@ -97,11 +97,6 @@
             </label>
           </div>
 
-          <label class="save-card">
-            <input type="checkbox" name="saveCard" [(ngModel)]="paymentForm.saveCard" />
-            <span>Save card for next time</span>
-          </label>
-
           <div *ngIf="savedCard" class="saved-card-footer">
             <p>
               Saved card ending <strong>{{ savedCard.last4 }}</strong>.

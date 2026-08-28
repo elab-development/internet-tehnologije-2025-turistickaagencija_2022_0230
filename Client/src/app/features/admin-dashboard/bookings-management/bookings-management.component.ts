@@ -15,10 +15,15 @@ export class BookingsManagementComponent implements OnInit {
   bookings: Booking[] = [];
   errorMessage = '';
   successMessage = '';
+  loading = false;
   editingBookingId: number | null = null;
   editFormData = { status: '', payment_status: '', notes: '' };
   readonly statuses = ['PENDING', 'CONFIRMED', 'CANCELLED'];
   readonly paymentStatuses = ['UNPAID', 'PAID'];
+
+  // ===== Paginacija =====
+  pageSize = 10;
+  currentPage = 1;
 
   constructor(private api: ApiService) {}
 
@@ -27,9 +32,17 @@ export class BookingsManagementComponent implements OnInit {
   }
 
   loadBookings(): void {
-    this.api.get<{ success: boolean; data: Booking[] }>('api/admin/bookings/').subscribe({
-      next: response => this.bookings = response.data,
-      error: () => this.errorMessage = 'Failed to load bookings.'
+    this.loading = true;
+    this.api.get<{ success: boolean; data: Booking[] }>('admin/bookings/').subscribe({
+      next: response => {
+        this.loading = false;
+        this.bookings = response.data;
+        this.clampCurrentPage();
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMessage = 'Failed to load bookings.';
+      }
     });
   }
 
@@ -46,8 +59,17 @@ export class BookingsManagementComponent implements OnInit {
     this.editingBookingId = null;
   }
 
+  // Wrapper za strelicu na kartici — otvara ili zatvara isti edit blok
+  toggleBooking(booking: Booking): void {
+    if (this.editingBookingId === booking.id) {
+      this.cancelEdit();
+    } else {
+      this.startEdit(booking);
+    }
+  }
+
   saveEdit(id: number): void {
-    this.api.put(`api/admin/bookings/${id}/`, this.editFormData).subscribe({
+    this.api.put(`admin/bookings/${id}/`, this.editFormData).subscribe({
       next: () => {
         this.successMessage = 'Booking updated successfully.';
         this.cancelEdit();
@@ -62,12 +84,64 @@ export class BookingsManagementComponent implements OnInit {
       return;
     }
 
-    this.api.delete(`api/admin/bookings/${id}/`).subscribe({
+    this.api.delete(`admin/bookings/${id}/`).subscribe({
       next: () => {
         this.successMessage = 'Booking deleted successfully.';
+        if (this.editingBookingId === id) {
+          this.cancelEdit();
+        }
         this.loadBookings();
       },
       error: () => this.errorMessage = 'Failed to delete booking.'
     });
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'CONFIRMED':
+        return 'badge-confirmed';
+      case 'PENDING':
+        return 'badge-pending';
+      case 'CANCELLED':
+        return 'badge-cancelled';
+      default:
+        return 'badge-default';
+    }
+  }
+
+  getPaymentClass(paymentStatus: string): string {
+    return paymentStatus === 'PAID' ? 'badge-paid' : 'badge-unpaid';
+  }
+
+  // ===== Paginacija =====
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.bookings.length / this.pageSize));
+  }
+
+  get pagedBookings(): Booking[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.bookings.slice(start, start + this.pageSize);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
+    this.currentPage = page;
+    this.cancelEdit();
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  private clampCurrentPage(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 }

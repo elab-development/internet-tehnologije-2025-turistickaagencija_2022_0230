@@ -19,6 +19,9 @@ import { AgentDashboardComponent } from './features/agent-dashboard/agent-dashbo
 import { AgentArrangementsComponent } from './features/agent-dashboard/agent-arrangements/agent-arrangements.component';
 import { TransportsManagementComponent } from './features/admin-dashboard/transports-management/transports-management.component';
 import { BookingsManagementComponent } from './features/admin-dashboard/bookings-management/bookings-management.component';
+import { AgentBookingsComponent } from './features/agent-dashboard/agent-bookings/agent-bookings.component';
+import { AboutUsComponent } from './features/about-us/about-us.component';
+import { FaqComponent } from './features/faq/faq.component';
 
 export const routes: Routes = [
     {
@@ -30,6 +33,14 @@ export const routes: Routes = [
         path: 'home',
         component: HomeComponent,
 
+    },
+    {
+        path: 'about-us',
+        component: AboutUsComponent,
+    },
+    {
+        path: 'faq',
+        component: FaqComponent,
     },
     {
         path: 'login',
@@ -58,16 +69,24 @@ export const routes: Routes = [
     {
         path: 'booking/:id',
         component: BookingComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'CLIENT' }
     },
     {
         path: 'my-bookings',
         component: UserBookingsComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'CLIENT' }
     },
     {
         path: 'admin/dashboard',
         component: AdminDashboardComponent,
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'ADMIN' }
+    },
+    {
+        path: 'admin/analytics',
+        loadComponent: () => import('./features/analytics/analytics.component').then(module => module.AnalyticsComponent),
         canActivate: [AuthGuard],
         data: { requiredRole: 'ADMIN' }
     },
@@ -120,8 +139,20 @@ export const routes: Routes = [
         data: { requiredRole: 'AGENT' }
     },
     {
+        path: 'agent/analytics',
+        loadComponent: () => import('./features/analytics/analytics.component').then(module => module.AnalyticsComponent),
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'AGENT' }
+    },
+    {
         path: 'agent/arrangements',
         component: AgentArrangementsComponent,
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'AGENT' }
+    },
+    {
+        path: 'agent/bookings',
+        component: AgentBookingsComponent,
         canActivate: [AuthGuard],
         data: { requiredRole: 'AGENT' }
     }

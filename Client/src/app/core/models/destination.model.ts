@@ -5,4 +5,6 @@ export interface Destination {
   name: string;
   image: string | null;
   country: Country;
+  latitude: number | null;
+  longitude: number | null;
 }

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from agency.models import Arrangement, Country, Destination, Hotel
+from agency.models import Arrangement, Booking, Country, Destination, Hotel
 
 
 class ArrangementIntegrationTests(TestCase):
@@ -25,6 +25,7 @@ class ArrangementIntegrationTests(TestCase):
         )
         self.arrangement = Arrangement.objects.create(
             name='Existing Trip',
+            created_by=self.agent,
             destination=self.destination,
             hotel=self.hotel,
             start_date=date(2027, 1, 1),
@@ -37,6 +38,48 @@ class ArrangementIntegrationTests(TestCase):
     def auth_headers(self):
         token = RefreshToken.for_user(self.agent).access_token
         return {'HTTP_AUTHORIZATION': f'Bearer {token}'}
+
+    def test_top_destinations_returns_arrangement_counts_and_uses_id_as_tiebreaker(self):
+        second_destination = Destination.objects.create(name='Second City', country=self.country)
+        Arrangement.objects.create(
+            name='Second Trip',
+            destination=second_destination,
+            hotel=self.hotel,
+            start_date=date(2027, 2, 1),
+            end_date=date(2027, 2, 8),
+            number_of_nights=7,
+            price='500.00',
+            capacity=2,
+        )
+
+        response = self.client.get('/api/destinations/top/')
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()['data']
+        self.assertEqual(results[0]['destination']['id'], self.destination.id)
+        self.assertEqual(results[0]['arrangement_count'], 1)
+        self.assertEqual(results[1]['destination']['id'], second_destination.id)
+        self.assertEqual(results[1]['arrangement_count'], 1)
+
+    def test_top_arrangements_returns_highest_hotel_ratings_and_uses_id_as_tiebreaker(self):
+        second_arrangement = Arrangement.objects.create(
+            name='Second Rated Trip',
+            destination=self.destination,
+            hotel=self.hotel,
+            start_date=date(2027, 2, 1),
+            end_date=date(2027, 2, 8),
+            number_of_nights=7,
+            price='500.00',
+            capacity=2,
+        )
+
+        response = self.client.get('/api/arrangements/top/')
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()['data']
+        self.assertEqual(results[0]['id'], self.arrangement.id)
+        self.assertEqual(results[1]['id'], second_arrangement.id)
+        self.assertEqual(results[0]['hotel']['rating'], '4.5')
 
     def test_agent_can_create_arrangement(self):
         response = self.client.post(
@@ -58,6 +101,72 @@ class ArrangementIntegrationTests(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Arrangement.objects.filter(name='New Trip').exists())
+        self.assertEqual(Arrangement.objects.get(name='New Trip').created_by, self.agent)
+
+    def test_agent_only_sees_and_manages_own_arrangements(self):
+        other_agent = User.objects.create_user(
+            username='agent2',
+            password='AgentPass123!',
+            is_staff=True,
+        )
+        other_arrangement = Arrangement.objects.create(
+            name='Other Agent Trip',
+            created_by=other_agent,
+            destination=self.destination,
+            hotel=self.hotel,
+            start_date=date(2027, 2, 1),
+            end_date=date(2027, 2, 8),
+            number_of_nights=7,
+            price='500.00',
+            capacity=2,
+        )
+
+        response = self.client.get('/api/arrangements/', **self.auth_headers())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item['id'] for item in response.json()], [self.arrangement.id])
+
+        response = self.client.delete(
+            f'/api/arrangements/{other_arrangement.id}/',
+            **self.auth_headers(),
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_agent_only_sees_bookings_for_own_arrangements(self):
+        other_agent = User.objects.create_user(
+            username='agent2',
+            password='AgentPass123!',
+            is_staff=True,
+        )
+        other_arrangement = Arrangement.objects.create(
+            name='Other Agent Trip',
+            created_by=other_agent,
+            destination=self.destination,
+            hotel=self.hotel,
+            start_date=date(2027, 2, 1),
+            end_date=date(2027, 2, 8),
+            number_of_nights=7,
+            price='500.00',
+            capacity=2,
+        )
+        client_user = User.objects.create_user(username='client', password='ClientPass123!')
+        own_booking = Booking.objects.create(
+            user=client_user, arrangement=self.arrangement, total_price='500.00'
+        )
+        other_booking = Booking.objects.create(
+            user=client_user, arrangement=other_arrangement, total_price='500.00'
+        )
+
+        response = self.client.get('/api/agent/bookings/', **self.auth_headers())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item['id'] for item in response.json()['data']], [own_booking.id])
+
+        response = self.client.put(
+            f'/api/agent/bookings/{other_booking.id}/',
+            {'status': 'CONFIRMED'},
+            content_type='application/json',
+            **self.auth_headers(),
+        )
+        self.assertEqual(response.status_code, 404)
 
     def test_agent_can_update_and_delete_arrangement(self):
         response = self.client.put(

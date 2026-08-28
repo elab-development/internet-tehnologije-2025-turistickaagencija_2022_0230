@@ -139,9 +139,24 @@
     font-weight: 700;
     color: #111827;
     font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .user-status-dot {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 9px;
+    border-radius: 50%;
+    background: #16a34a;
+
+    &--inactive {
+      background: #dc2626;
+    }
   }
 
   .user-email {
@@ -517,4 +532,10 @@
     order: 3;
     margin-left: auto;
   }
+}
+
+@media (max-width: 560px) {
+  .management-container { padding: 24px 14px 40px; }
+  .header .btn-add { width: 100%; justify-content: center; }
+  .modal-actions { flex-wrap: wrap; }
 }

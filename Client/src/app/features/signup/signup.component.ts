@@ -22,12 +22,14 @@ export class SignupComponent implements OnInit {
   fieldErrors: {
     username: string;
     email: string;
+    phoneNumber: string;
     password: string;
     gender: string;
     dateOfBirth: string;
   } = {
     username: '',
     email: '',
+    phoneNumber: '',
     password: '',
     gender: '',
     dateOfBirth: ''
@@ -110,6 +112,7 @@ export class SignupComponent implements OnInit {
   getFormData(): SignupRequest | null {
     const username = (document.getElementById('username') as HTMLInputElement).value.trim();
     const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+    const phoneNumber = (document.getElementById('phoneNumber') as HTMLInputElement).value.trim();
     const password = (document.getElementById('password') as HTMLInputElement).value;
     const gender = (document.querySelector('input[name="gender"]:checked') as HTMLInputElement)?.value;
     const day = (document.getElementById('day') as HTMLSelectElement).value;
@@ -119,6 +122,7 @@ export class SignupComponent implements OnInit {
     this.fieldErrors = {
       username: '',
       email: '',
+      phoneNumber: '',
       password: '',
       gender: '',
       dateOfBirth: ''
@@ -139,6 +143,14 @@ export class SignupComponent implements OnInit {
       isValid = false;
     } else if (!this.isEmailValid(email)) {
       this.fieldErrors.email = 'Please enter a valid email address!';
+      isValid = false;
+    }
+
+    if (!phoneNumber) {
+      this.fieldErrors.phoneNumber = 'Phone number is required!';
+      isValid = false;
+    } else if (!/^\+?[0-9\s()-]{7,30}$/.test(phoneNumber)) {
+      this.fieldErrors.phoneNumber = 'Please enter a valid phone number!';
       isValid = false;
     }
 
@@ -172,6 +184,7 @@ export class SignupComponent implements OnInit {
     return {
       username,
       email,
+      phone_number: phoneNumber,
       password,
       gender,
       date_of_birth: dateOfBirth
@@ -199,6 +212,16 @@ export class SignupComponent implements OnInit {
           this.fieldErrors.email = 'Please enter a valid email address!';
         } else {
           this.fieldErrors.email = '';
+        }
+        break;
+
+      case 'phoneNumber':
+        if (!value) {
+          this.fieldErrors.phoneNumber = 'Phone number is required!';
+        } else if (!/^\+?[0-9\s()-]{7,30}$/.test(value)) {
+          this.fieldErrors.phoneNumber = 'Please enter a valid phone number!';
+        } else {
+          this.fieldErrors.phoneNumber = '';
         }
         break;
 

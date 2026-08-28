@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArrangementApiService } from '../../core/services/component-api/arrangement-api.service';
 import { BookingApiService } from '../../core/services/component-api/booking-api.service';
 import { Arrangement } from '../../core/models/arrangement.model';
 import { environment } from '../../../environments/environment';
+import { WeatherService, WeatherSummary } from '../../core/services/weather.service';
 
 export interface TravelPackage {
   id: string;
@@ -23,6 +25,12 @@ export interface TravelPackage {
   includes: string[];
 }
 
+interface MapLocation {
+  latitude: number;
+  longitude: number;
+  isHotelLocation: boolean;
+}
+
 @Component({
   selector: 'app-booking',
   standalone: true,
@@ -34,23 +42,23 @@ export class BookingComponent {
   // Mock podataka — u realnoj aplikaciji ovo dolazi iz servisa/rute (resolver ili API poziv po ID-u)
   package = signal<TravelPackage>({
     id: 'prolece-u-parizu',
-    name: 'Prolece u Parizu',
-    country: 'Francuska',
+    name: 'Springtime in Paris',
+    country: 'France',
     image:
       'https://images.unsplash.com/photo-1502602898536-47ad22581b52?q=80&w=1600&auto=format&fit=crop',
     rating: 4.9,
-    description: 'Dozivite Pariz u svom najlepsem sjaju.',
+    description: 'Experience Paris at its most beautiful.',
     longDescription:
-      'Provedite tri nezaboravna dana u srcu Pariza. Setnja pored Sene, poseta Ajfelovoj kuli, ' +
-      'Luvru i Monmartru, uz smestaj u centru grada i doruk ukljucen svakog jutra. Idealno za parove ' +
-      'i ljubitelje kulture koji zele da otkriju grad svetlosti bez zurbe.',
+      'Spend three unforgettable days in the heart of Paris. Walk beside the Seine, visit the Eiffel Tower, ' +
+      'the Louvre and Montmartre, with a central hotel and breakfast included every morning. Ideal for couples ' +
+      'and culture lovers who want to discover the City of Light at an easy pace.',
     durationDays: 3,
     pricePerAdult: 260,
     pricePerChild: 180,
     totalCapacity: 40,
     remainingCapacity: 12,
-    availableDates: ['12. Sep 2026.', '19. Sep 2026.', '26. Sep 2026.', '3. Okt 2026.'],
-    includes: ['Avionske karte', 'Smestaj (3 nocenja)', 'Doruk', 'Vodic na srpskom jeziku'],
+    availableDates: ['12 Sep 2026', '19 Sep 2026', '26 Sep 2026', '3 Oct 2026'],
+    includes: ['Flights', 'Hotel (3 nights)', 'Breakfast', 'English-speaking guide'],
   });
 
   selectedDateIndex = signal(0);
@@ -77,12 +85,39 @@ export class BookingComponent {
   error: string | null = null;
   bookingMessage: string | null = null;
   arrangementId: number | null = null;
+  weather = signal<WeatherSummary | null>(null);
+  weatherLoading = false;
+  mapLocation = signal<MapLocation | null>(null);
+  mapUrl = computed<SafeResourceUrl | null>(() => {
+    const location = this.mapLocation();
+    if (!location) {
+      return null;
+    }
+
+    const offset = 0.04;
+    const bbox = [
+      location.longitude - offset,
+      location.latitude - offset,
+      location.longitude + offset,
+      location.latitude + offset
+    ].join('%2C');
+    const url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${location.latitude}%2C${location.longitude}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  });
+  mapLink = computed(() => {
+    const location = this.mapLocation();
+    return location
+      ? `https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}#map=15/${location.latitude}/${location.longitude}`
+      : '';
+  });
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private arrangementApi: ArrangementApiService,
-    private bookingApi: BookingApiService
+    private bookingApi: BookingApiService,
+    private weatherService: WeatherService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -99,6 +134,7 @@ export class BookingComponent {
       next: response => {
         if (response.success) {
           this.updatePackage(response.data);
+          this.loadWeather(response.data);
         } else {
           this.error = response.message || 'Arrangement not found.';
         }
@@ -154,6 +190,10 @@ export class BookingComponent {
     }).subscribe({
       next: response => {
         if (response.success) {
+          this.package.update(current => ({
+            ...current,
+            remainingCapacity: response.data.arrangement.remaining_capacity
+          }));
           this.bookingMessage = 'Booking confirmed. Redirecting to My Bookings...';
           setTimeout(() => this.router.navigate(['/my-bookings']), 1200);
         } else {
@@ -172,7 +212,7 @@ export class BookingComponent {
       id: arrangement.id.toString(),
       name: arrangement.name,
       country: arrangement.destination?.country?.name || 'Unknown',
-      image: imagePath ? (imagePath.startsWith('http') ? imagePath : `${environment.apiUrl}${imagePath}`) : '',
+      image: imagePath ? (imagePath.startsWith('http') ? imagePath : `${environment.mediaUrl}${imagePath}`) : '',
       rating: arrangement.hotel?.rating ? Number(arrangement.hotel.rating) : 0,
       description: arrangement.description || '',
       longDescription: arrangement.description || '',
@@ -180,7 +220,7 @@ export class BookingComponent {
       pricePerAdult: Number(arrangement.price),
       pricePerChild: Number(arrangement.price),
       totalCapacity: arrangement.capacity,
-      remainingCapacity: arrangement.capacity,
+      remainingCapacity: arrangement.remaining_capacity,
       availableDates: [this.formatDate(arrangement.start_date)],
       includes: [
         `Hotel: ${arrangement.hotel?.name ?? 'Not available'}`,
@@ -189,6 +229,53 @@ export class BookingComponent {
       ]
     });
     this.selectedDateIndex.set(0);
+    this.setMapLocation(arrangement);
+  }
+
+  private setMapLocation(arrangement: Arrangement): void {
+    const hotelLatitude = arrangement.hotel?.latitude == null ? NaN : Number(arrangement.hotel.latitude);
+    const hotelLongitude = arrangement.hotel?.longitude == null ? NaN : Number(arrangement.hotel.longitude);
+    const destinationLatitude = arrangement.destination?.latitude == null ? NaN : Number(arrangement.destination.latitude);
+    const destinationLongitude = arrangement.destination?.longitude == null ? NaN : Number(arrangement.destination.longitude);
+
+    if (Number.isFinite(hotelLatitude) && Number.isFinite(hotelLongitude)) {
+      this.mapLocation.set({
+        latitude: hotelLatitude,
+        longitude: hotelLongitude,
+        isHotelLocation: true
+      });
+    } else if (Number.isFinite(destinationLatitude) && Number.isFinite(destinationLongitude)) {
+      this.mapLocation.set({
+        latitude: destinationLatitude,
+        longitude: destinationLongitude,
+        isHotelLocation: false
+      });
+    } else {
+      this.mapLocation.set(null);
+    }
+  }
+
+  private loadWeather(arrangement: Arrangement): void {
+    const destination = arrangement.destination?.name;
+    if (!destination) {
+      return;
+    }
+
+    this.weatherLoading = true;
+    this.weatherService.getAverageForPeriod(
+      destination,
+      arrangement.start_date,
+      arrangement.end_date
+    ).subscribe({
+      next: summary => {
+        this.weather.set(summary);
+        this.weatherLoading = false;
+      },
+      error: () => {
+        this.weather.set(null);
+        this.weatherLoading = false;
+      }
+    });
   }
 
   private formatDate(date: string | Date): string {

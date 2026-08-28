@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 
@@ -24,6 +25,7 @@ class ArrangementSerializer(serializers.ModelSerializer):
     destination = serializers.SerializerMethodField(read_only=True)
     hotel = serializers.SerializerMethodField(read_only=True)
     transport = serializers.SerializerMethodField(read_only=True)
+    remaining_capacity = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Arrangement
@@ -42,6 +44,7 @@ class ArrangementSerializer(serializers.ModelSerializer):
             'price',
             'price_per_child',
             'capacity',
+            'remaining_capacity',
             'description',
             'included_services',
             'excluded_services',
@@ -70,6 +73,13 @@ class ArrangementSerializer(serializers.ModelSerializer):
         from .transport import TransportSerializer
 
         return TransportSerializer(obj.transport).data if obj.transport else None
+
+    @extend_schema_field(int)
+    def get_remaining_capacity(self, obj):
+        reserved = obj.bookings.exclude(status='CANCELLED').aggregate(
+            total=models.Sum('guests')
+        )['total'] or 0
+        return max(obj.capacity - reserved, 0)
 
     def validate(self, data):
         if data['end_date'] <= data['start_date']:

@@ -25,6 +25,8 @@ class Hotel(models.Model):
     amenities = models.TextField(blank=True)
     phone_number = models.CharField(max_length=30, blank=True)
     email = models.EmailField(blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     destination = models.ForeignKey(

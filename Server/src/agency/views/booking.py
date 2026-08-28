@@ -15,6 +15,12 @@ from ..serializers import BookingSerializer
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def bookings(request):
+    if request.user.is_staff:
+        return Response(
+            {"success": False, "message": "Staff users cannot manage personal bookings."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
     if request.method == 'GET':
         bookings = Booking.objects.filter(user=request.user).select_related('arrangement__destination', 'arrangement__hotel')
         serializer = BookingSerializer(bookings, many=True)

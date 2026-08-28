@@ -14,26 +14,55 @@
 
       <div class="meta">
         <div class="meta__item">
-          <span class="meta__label">TRAJANJE</span>
-          <span class="meta__value">{{ package().durationDays }} dana</span>
+          <span class="meta__label">DURATION</span>
+          <span class="meta__value">{{ package().durationDays }} days</span>
         </div>
         <div class="meta__item">
-          <span class="meta__label">CENA PO ODRASLOM</span>
+          <span class="meta__label">PRICE PER ADULT</span>
           <span class="meta__value">{{ package().pricePerAdult.toFixed(2) }} €</span>
         </div>
         <div class="meta__item">
-          <span class="meta__label">PREOSTALO MESTA</span>
+          <span class="meta__label">SEATS LEFT</span>
           <span class="meta__value">{{ package().remainingCapacity }} / {{ package().totalCapacity }}</span>
         </div>
       </div>
 
+      <section class="weather" *ngIf="weather() as forecast; else weatherState">
+        <span class="weather__icon" aria-hidden="true">{{ forecast.weatherIcon }}</span>
+        <div>
+          <span class="weather__label">Average weather during your stay</span>
+          <strong class="weather__temperature">{{ forecast.averageTemperature }}°C</strong>
+        </div>
+      </section>
+      <ng-template #weatherState>
+        <p class="weather weather--status" *ngIf="weatherLoading">Loading weather...</p>
+      </ng-template>
+
+      <section class="section map-section" *ngIf="mapLocation() as location">
+        <div class="map-section__header">
+          <div>
+            <h2 class="section__title">Hotel location</h2>
+            <p class="map-section__hint">
+              {{ location.isHotelLocation ? 'Exact hotel location' : 'Destination location' }}
+            </p>
+          </div>
+          <a class="map-section__link" [href]="mapLink()" target="_blank" rel="noopener">Open map</a>
+        </div>
+        <iframe
+          class="map-section__frame"
+          [src]="mapUrl()"
+          title="Hotel location map"
+          loading="lazy">
+        </iframe>
+      </section>
+
       <section class="section">
-        <h2 class="section__title">O aranzmanu</h2>
+        <h2 class="section__title">About this arrangement</h2>
         <p class="section__text">{{ package().longDescription }}</p>
       </section>
 
       <section class="section">
-        <h2 class="section__title">Aranzman ukljucuje</h2>
+        <h2 class="section__title">What is included</h2>
         <ul class="includes">
           <li class="includes__item" *ngFor="let item of package().includes">{{ item }}</li>
         </ul>
@@ -43,11 +72,11 @@
     <aside class="booking-card">
       <div class="booking-card__price">
         <span class="booking-card__price-value">{{ package().pricePerAdult.toFixed(2) }} €</span>
-        <span class="booking-card__price-suffix">/ po odrasloj osobi</span>
+        <span class="booking-card__price-suffix">/ per adult</span>
       </div>
 
       <div class="booking-card__block">
-        <span class="booking-card__label">Datum polaska</span>
+        <span class="booking-card__label">Departure date</span>
         <div class="dates">
           <button
             type="button"
@@ -62,12 +91,12 @@
       </div>
 
       <div class="booking-card__block">
-        <span class="booking-card__label">Broj putnika</span>
+        <span class="booking-card__label">Number of travelers</span>
 
         <div class="stepper">
           <div class="stepper__info">
-            <span class="stepper__title">Odrasli</span>
-            <span class="stepper__hint">13+ godina</span>
+            <span class="stepper__title">Adults</span>
+            <span class="stepper__hint">13+ years</span>
           </div>
           <div class="stepper__controls">
             <button type="button" class="stepper__btn" (click)="decrementAdults()">–</button>
@@ -78,8 +107,8 @@
 
         <div class="stepper">
           <div class="stepper__info">
-            <span class="stepper__title">Deca</span>
-            <span class="stepper__hint">2–12 godina</span>
+            <span class="stepper__title">Children</span>
+            <span class="stepper__hint">2–12 years</span>
           </div>
           <div class="stepper__controls">
             <button type="button" class="stepper__btn" (click)="decrementChildren()">–</button>
@@ -91,8 +120,8 @@
 
       <p class="booking-card__capacity" [class.booking-card__capacity--warning]="spotsLeftAfterBooking() < 0">
         {{ spotsLeftAfterBooking() >= 0
-          ? spotsLeftAfterBooking() + ' mesta ce ostati slobodno nakon rezervacije'
-          : 'Nema dovoljno slobodnih mesta za izabrani broj putnika' }}
+          ? spotsLeftAfterBooking() + ' seats will remain after booking'
+          : 'There are not enough seats for the selected travelers' }}
       </p>
 
       <div class="booking-card__total">
@@ -101,7 +130,7 @@
       </div>
 
       <button type="button" class="btn-book" [disabled]="!canBook()" (click)="bookNow()">
-        Rezervisi
+        Book now
       </button>
     </aside>
   </div>

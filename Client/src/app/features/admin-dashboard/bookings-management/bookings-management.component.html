@@ -1,26 +1,112 @@
 <div class="management-container">
-  <div class="header"><div><h1>Bookings Management</h1><p>Review and update customer bookings.</p></div></div>
+  <div class="header">
+    <div>
+      <h1>Bookings Management</h1>
+      <p>Review and update customer bookings.</p>
+    </div>
+  </div>
+
   <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
-  <div class="table-container">
-    <table class="data-table">
-      <thead><tr><th>ID</th><th>User</th><th>Arrangement</th><th>Guests</th><th>Total</th><th>Status</th><th>Payment</th><th>Booked</th><th>Actions</th></tr></thead>
-      <tbody>
-        <ng-container *ngFor="let booking of bookings">
-          <tr *ngIf="editingBookingId !== booking.id">
-            <td>#{{ booking.id }}</td><td>{{ booking.user.username }}</td><td>{{ booking.arrangement.name }}</td><td>{{ booking.guests }}</td>
-            <td>{{ booking.total_price }}</td><td>{{ booking.status }}</td><td>{{ booking.payment_status }}</td><td>{{ booking.booked_at | date:'mediumDate' }}</td>
-            <td class="actions"><button class="btn-edit" (click)="startEdit(booking)">Edit</button><button class="btn-delete" (click)="deleteBooking(booking.id)">Delete</button></td>
-          </tr>
-          <tr *ngIf="editingBookingId === booking.id" class="edit-row"><td colspan="9"><div class="edit-form">
-            <label>Status<select [(ngModel)]="editFormData.status"><option *ngFor="let status of statuses" [value]="status">{{ status }}</option></select></label>
-            <label>Payment<select [(ngModel)]="editFormData.payment_status"><option *ngFor="let status of paymentStatuses" [value]="status">{{ status }}</option></select></label>
-            <label>Notes<textarea [(ngModel)]="editFormData.notes"></textarea></label>
-            <div class="form-actions"><button class="btn-save" (click)="saveEdit(booking.id)">Save</button><button class="btn-cancel" (click)="cancelEdit()">Cancel</button></div>
-          </div></td></tr>
-        </ng-container>
-      </tbody>
-    </table>
+
+  <!-- Loading skeleton -->
+  <div class="bookings-list" *ngIf="loading">
+    <div class="booking-card booking-card--skeleton" *ngFor="let s of [1,2,3,4]"></div>
   </div>
-  <div *ngIf="bookings.length === 0 && !errorMessage" class="empty-state">No bookings found.</div>
+
+  <!-- Kartice rezervacija -->
+  <div class="bookings-list" *ngIf="!loading">
+    <div
+      class="booking-card"
+      *ngFor="let booking of pagedBookings"
+      [class.booking-card--expanded]="editingBookingId === booking.id"
+    >
+      <div class="booking-card__row" (click)="toggleBooking(booking)">
+        <div class="booking-icon">🧾</div>
+
+        <div class="booking-main">
+          <span class="booking-name">#{{ booking.id }} · {{ booking.arrangement.name }}</span>
+          <span class="booking-sub">{{ booking.user.username }}</span>
+        </div>
+
+        <div class="booking-meta">
+          <div class="meta-item">
+            <span class="meta-label">Guests</span>
+            <span class="meta-value">{{ booking.guests }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Total</span>
+            <span class="meta-value">{{ booking.total_price }} €</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Booked</span>
+            <span class="meta-value">{{ booking.booked_at | date:'mediumDate' }}</span>
+          </div>
+        </div>
+
+        <div class="booking-badges">
+          <span [ngClass]="['badge', getStatusClass(booking.status)]">{{ booking.status }}</span>
+          <span [ngClass]="['badge', getPaymentClass(booking.payment_status)]">{{ booking.payment_status }}</span>
+        </div>
+
+        <div class="booking-card__actions" (click)="$event.stopPropagation()">
+          <button class="btn-icon btn-icon--danger" title="Delete booking" (click)="deleteBooking(booking.id)">
+            🗑
+          </button>
+          <button
+            class="btn-expand"
+            [class.btn-expand--open]="editingBookingId === booking.id"
+            (click)="toggleBooking(booking)"
+            [attr.aria-expanded]="editingBookingId === booking.id"
+            title="Edit booking"
+          >
+            <span class="chevron">⌄</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="booking-card__edit" *ngIf="editingBookingId === booking.id">
+        <div class="edit-form">
+          <div class="form-group">
+            <label>Status</label>
+            <select [(ngModel)]="editFormData.status">
+              <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Payment</label>
+            <select [(ngModel)]="editFormData.payment_status">
+              <option *ngFor="let status of paymentStatuses" [value]="status">{{ status }}</option>
+            </select>
+          </div>
+          <div class="form-group form-group--wide">
+            <label>Notes</label>
+            <textarea [(ngModel)]="editFormData.notes"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-save" (click)="saveEdit(booking.id)">Save changes</button>
+          <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && bookings.length === 0 && !errorMessage" class="empty-state">
+    <p>No bookings found.</p>
+  </div>
+
+  <!-- Paginacija -->
+  <div class="pagination" *ngIf="!loading && totalPages > 1">
+    <button class="pagination__nav" (click)="prevPage()" [disabled]="currentPage === 1" aria-label="Previous page">
+      ‹
+    </button>
+
+    <span class="pagination__label">Page <strong>{{ currentPage }}</strong> of {{ totalPages }}</span>
+
+    <button class="pagination__nav" (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next page">
+      ›
+    </button>
+  </div>
 </div>

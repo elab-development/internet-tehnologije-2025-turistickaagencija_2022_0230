@@ -8,6 +8,7 @@ interface User {
   username: string;
   email: string;
   role: string;
+  is_active: boolean;
   profile: {
     gender: string;
     date_of_birth: string | null;
@@ -52,7 +53,7 @@ export class UsersManagementComponent implements OnInit {
   addErrors: string[] = [];
 
   private emptyFormData() {
-    return { username: '', email: '', password: '', role: '', gender: '', date_of_birth: '', phone_number: '' };
+    return { username: '', email: '', password: '', role: '', is_active: false, gender: '', date_of_birth: '', phone_number: '' };
   }
 
   constructor(private api: ApiService) {}
@@ -63,7 +64,7 @@ export class UsersManagementComponent implements OnInit {
 
   loadUsers(): void {
     this.loading = true;
-    this.api.get<UsersResponse>('api/users/').subscribe({
+    this.api.get<UsersResponse>('users/').subscribe({
       next: (response) => {
         this.loading = false;
         if (response.success) {
@@ -91,6 +92,7 @@ export class UsersManagementComponent implements OnInit {
       email: user.email,
       password: '',
       role: user.role,
+      is_active: user.is_active,
       gender: user.profile?.gender || '',
       date_of_birth: user.profile?.date_of_birth || '',
       phone_number: user.profile?.phone_number || ''
@@ -112,7 +114,7 @@ export class UsersManagementComponent implements OnInit {
   }
 
   saveEdit(userId: number): void {
-    this.api.put(`api/users/${userId}/`, this.editFormData).subscribe({
+    this.api.put(`users/${userId}/`, this.editFormData).subscribe({
       next: () => {
         this.successMessage = 'User updated successfully';
         this.cancelEdit();
@@ -127,7 +129,7 @@ export class UsersManagementComponent implements OnInit {
 
   deleteUser(id: number, username: string): void {
     if (confirm(`Are you sure you want to delete user "${username}"?`)) {
-      this.api.delete(`api/users/${id}/`).subscribe({
+      this.api.delete(`users/${id}/`).subscribe({
         next: () => {
           this.successMessage = `User "${username}" deleted successfully`;
           if (this.editingUserId === id) {
@@ -219,7 +221,7 @@ export class UsersManagementComponent implements OnInit {
       return;
     }
 
-    this.api.post('api/users/', this.newUserFormData).subscribe({
+    this.api.post('users/', this.newUserFormData).subscribe({
       next: () => {
         this.successMessage = 'User created successfully';
         this.closeAddModal();

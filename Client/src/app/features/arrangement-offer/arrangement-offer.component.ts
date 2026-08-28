@@ -80,7 +80,7 @@ export class ArrangementOfferComponent {
       return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop';
     }
 
-    return imagePath.startsWith('http') ? imagePath : `${environment.apiUrl}${imagePath}`;
+    return imagePath.startsWith('http') ? imagePath : `${environment.mediaUrl}${imagePath}`;
   }
 
   showDetails(ar: Arrangement): void {

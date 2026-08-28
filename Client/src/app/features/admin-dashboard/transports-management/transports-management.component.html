@@ -4,50 +4,165 @@
       <h1>Transport Management</h1>
       <p>Manage transport providers and routes.</p>
     </div>
-    <button class="btn-add" (click)="toggleAddForm()">+ Add Transport</button>
+    <button class="btn-add" (click)="toggleAddForm()">
+      <span class="btn-add__icon">+</span> Add Transport
+    </button>
   </div>
 
   <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="success-box">{{ successMessage }}</div>
 
-  <div *ngIf="showAddForm" class="form-panel">
-    <div class="form-grid">
-      <label>Company<input [(ngModel)]="newTransport.company_name" /></label>
-      <label>Type<select [(ngModel)]="newTransport.transport_type"><option *ngFor="let type of transportTypes" [ngValue]="type">{{ type }}</option></select></label>
-      <label>Vehicle<input [(ngModel)]="newTransport.vehicle_name" /></label>
-      <label>Departure<input [(ngModel)]="newTransport.departure_location" /></label>
-      <label>Arrival<input [(ngModel)]="newTransport.arrival_location" /></label>
-      <label class="wide">Description<textarea [(ngModel)]="newTransport.description"></textarea></label>
-      <label class="checkbox"><input type="checkbox" [(ngModel)]="newTransport.is_active" /> Active</label>
-    </div>
-    <div class="form-actions"><button class="btn-save" (click)="addTransport()">Save</button><button class="btn-cancel" (click)="toggleAddForm()">Cancel</button></div>
+  <!-- Loading skeleton -->
+  <div class="transports-list" *ngIf="loading">
+    <div class="transport-card transport-card--skeleton" *ngFor="let s of [1,2,3,4]"></div>
   </div>
 
-  <div class="table-container">
-    <table class="data-table">
-      <thead><tr><th>Company</th><th>Type</th><th>Vehicle</th><th>Route</th><th>Active</th><th>Actions</th></tr></thead>
-      <tbody>
-        <ng-container *ngFor="let transport of transports">
-          <tr *ngIf="editingTransportId !== transport.id">
-            <td>{{ transport.company_name }}</td><td>{{ transport.transport_type }}</td><td>{{ transport.vehicle_name || '—' }}</td>
-            <td>{{ transport.departure_location || '—' }} → {{ transport.arrival_location || '—' }}</td><td>{{ transport.is_active ? 'Yes' : 'No' }}</td>
-            <td class="actions"><button class="btn-edit" (click)="startEdit(transport)">Edit</button><button class="btn-delete" (click)="deleteTransport(transport.id, transport.company_name)">Delete</button></td>
-          </tr>
-          <tr *ngIf="editingTransportId === transport.id" class="edit-row"><td colspan="6"><div class="form-panel inline">
-            <div class="form-grid">
-              <label>Company<input [(ngModel)]="editFormData.company_name" /></label>
-              <label>Type<select [(ngModel)]="editFormData.transport_type"><option *ngFor="let type of transportTypes" [ngValue]="type">{{ type }}</option></select></label>
-              <label>Vehicle<input [(ngModel)]="editFormData.vehicle_name" /></label>
-              <label>Departure<input [(ngModel)]="editFormData.departure_location" /></label>
-              <label>Arrival<input [(ngModel)]="editFormData.arrival_location" /></label>
-              <label class="wide">Description<textarea [(ngModel)]="editFormData.description"></textarea></label>
-              <label class="checkbox"><input type="checkbox" [(ngModel)]="editFormData.is_active" /> Active</label>
-            </div>
-            <div class="form-actions"><button class="btn-save" (click)="saveEdit(transport.id)">Save</button><button class="btn-cancel" (click)="cancelEdit()">Cancel</button></div>
-          </div></td></tr>
-        </ng-container>
-      </tbody>
-    </table>
+  <!-- Kartice prevoznika -->
+  <div class="transports-list" *ngIf="!loading">
+    <div
+      class="transport-card"
+      *ngFor="let transport of pagedTransports"
+      [class.transport-card--expanded]="editingTransportId === transport.id"
+    >
+      <div class="transport-card__row" (click)="toggleTransport(transport)">
+        <div class="transport-icon">{{ getTransportIcon(transport.transport_type) }}</div>
+
+        <div class="transport-main">
+          <span class="transport-name">{{ transport.company_name }}</span>
+          <span class="transport-sub">{{ transport.vehicle_name || 'No vehicle specified' }}</span>
+        </div>
+
+        <div class="transport-meta">
+          <div class="meta-item">
+            <span class="meta-label">Route</span>
+            <span class="meta-value">{{ transport.departure_location || '—' }} → {{ transport.arrival_location || '—' }}</span>
+          </div>
+        </div>
+
+        <span class="badge badge-type">{{ transport.transport_type }}</span>
+
+        <span
+          class="active-dot"
+          [class.active-dot--inactive]="!transport.is_active"
+          [title]="transport.is_active ? 'Active' : 'Inactive'"
+        ></span>
+
+        <div class="transport-card__actions" (click)="$event.stopPropagation()">
+          <button class="btn-icon btn-icon--danger" title="Delete transport" (click)="deleteTransport(transport.id, transport.company_name)">
+            🗑
+          </button>
+          <button
+            class="btn-expand"
+            [class.btn-expand--open]="editingTransportId === transport.id"
+            (click)="toggleTransport(transport)"
+            [attr.aria-expanded]="editingTransportId === transport.id"
+            title="Edit transport"
+          >
+            <span class="chevron">⌄</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="transport-card__edit" *ngIf="editingTransportId === transport.id">
+        <div class="edit-form">
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" [(ngModel)]="editFormData.company_name" />
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select [(ngModel)]="editFormData.transport_type">
+              <option *ngFor="let type of transportTypes" [ngValue]="type">{{ type }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Vehicle</label>
+            <input type="text" [(ngModel)]="editFormData.vehicle_name" />
+          </div>
+          <div class="form-group">
+            <label>Departure</label>
+            <input type="text" [(ngModel)]="editFormData.departure_location" />
+          </div>
+          <div class="form-group">
+            <label>Arrival</label>
+            <input type="text" [(ngModel)]="editFormData.arrival_location" />
+          </div>
+          <label class="checkbox"><input type="checkbox" [(ngModel)]="editFormData.is_active" /> Active</label>
+
+          <div class="form-group form-group--wide">
+            <label>Description</label>
+            <textarea [(ngModel)]="editFormData.description"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-save" (click)="saveEdit(transport.id)">Save changes</button>
+          <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <div *ngIf="transports.length === 0 && !errorMessage" class="empty-state"><p>No transports found.</p></div>
+
+  <div *ngIf="!loading && transports.length === 0 && !errorMessage" class="empty-state">
+    <p>No transports found.</p>
+  </div>
+
+  <!-- Paginacija -->
+  <div class="pagination" *ngIf="!loading && totalPages > 1">
+    <button class="pagination__nav" (click)="prevPage()" [disabled]="currentPage === 1" aria-label="Previous page">
+      ‹
+    </button>
+
+    <span class="pagination__label">Page <strong>{{ currentPage }}</strong> of {{ totalPages }}</span>
+
+    <button class="pagination__nav" (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next page">
+      ›
+    </button>
+  </div>
+</div>
+
+<!-- Add transport modal -->
+<div class="modal-overlay" *ngIf="showAddForm" (click)="toggleAddForm()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add new transport</h2>
+      <button class="modal-close" (click)="toggleAddForm()" aria-label="Close">×</button>
+    </div>
+
+    <div class="edit-form edit-form--modal">
+      <div class="form-group">
+        <label>Company</label>
+        <input type="text" [(ngModel)]="newTransport.company_name" placeholder="Company name" />
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select [(ngModel)]="newTransport.transport_type">
+          <option *ngFor="let type of transportTypes" [ngValue]="type">{{ type }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Vehicle</label>
+        <input type="text" [(ngModel)]="newTransport.vehicle_name" />
+      </div>
+      <div class="form-group">
+        <label>Departure</label>
+        <input type="text" [(ngModel)]="newTransport.departure_location" />
+      </div>
+      <div class="form-group">
+        <label>Arrival</label>
+        <input type="text" [(ngModel)]="newTransport.arrival_location" />
+      </div>
+      <label class="checkbox"><input type="checkbox" [(ngModel)]="newTransport.is_active" /> Active</label>
+
+      <div class="form-group form-group--wide">
+        <label>Description</label>
+        <textarea [(ngModel)]="newTransport.description"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="toggleAddForm()">Cancel</button>
+      <button class="btn-save" (click)="addTransport()">Create transport</button>
+    </div>
+  </div>
 </div>

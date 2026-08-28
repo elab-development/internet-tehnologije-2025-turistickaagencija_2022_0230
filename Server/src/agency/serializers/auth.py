@@ -10,6 +10,7 @@ class LoginSerializer(serializers.Serializer):
 class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField()
     email = serializers.CharField()
+    phone_number = serializers.CharField(max_length=30)
     password = serializers.CharField(write_only=True, min_length=6)
     gender = serializers.CharField(required=False, allow_blank=True)
     date_of_birth = serializers.DateField(required=False, allow_null=True)
@@ -24,6 +25,12 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError("Email already exists")
         return value
 
+    def validate_phone_number(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError("Phone number is required")
+        return value
+
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
@@ -34,6 +41,7 @@ class RegisterSerializer(serializers.Serializer):
 
         UserProfile.objects.create(
             user=user,
+            phone_number=validated_data['phone_number'],
             gender=validated_data.get('gender', ''),
             date_of_birth=validated_data.get('date_of_birth'),
         )

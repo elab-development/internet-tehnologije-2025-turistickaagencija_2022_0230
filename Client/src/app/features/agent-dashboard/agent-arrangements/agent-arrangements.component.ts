@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
@@ -31,6 +31,7 @@ export class AgentArrangementsComponent implements OnInit {
   destinations: Destination[] = [];
   errorMessage = '';
   successMessage = '';
+  loading = false;
   editingArrangementId: number | null = null;
   showAddForm = false;
 
@@ -49,6 +50,10 @@ export class AgentArrangementsComponent implements OnInit {
   editFormData: ArrangementFormData = { ...this.emptyFormData };
   newArrangement: ArrangementFormData = { ...this.emptyFormData };
 
+  // ===== Paginacija =====
+  pageSize = 10;
+  currentPage = 1;
+
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
@@ -58,7 +63,7 @@ export class AgentArrangementsComponent implements OnInit {
   }
 
   loadDestinations(): void {
-    this.api.get<any>('api/destinations/').subscribe({
+    this.api.get<any>('destinations/').subscribe({
       next: response => {
         this.destinations = this.resolveData(response);
       },
@@ -69,7 +74,7 @@ export class AgentArrangementsComponent implements OnInit {
   }
 
   loadHotels(): void {
-    this.api.get<any>('api/hotels/').subscribe({
+    this.api.get<any>('hotels/').subscribe({
       next: response => {
         this.hotels = this.resolveData(response);
       },
@@ -80,11 +85,15 @@ export class AgentArrangementsComponent implements OnInit {
   }
 
   loadArrangements(): void {
-    this.api.get<any>('api/arrangements/').subscribe({
+    this.loading = true;
+    this.api.get<any>('arrangements/').subscribe({
       next: response => {
+        this.loading = false;
         this.arrangements = this.resolveData(response);
+        this.clampCurrentPage();
       },
       error: () => {
+        this.loading = false;
         this.errorMessage = 'Failed to load arrangements.';
       }
     });
@@ -98,6 +107,13 @@ export class AgentArrangementsComponent implements OnInit {
     this.showAddForm = !this.showAddForm;
     this.errorMessage = '';
     this.successMessage = '';
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.showAddForm) {
+      this.toggleAddForm();
+    }
   }
 
   private isFormValid(form: ArrangementFormData): boolean {
@@ -116,11 +132,12 @@ export class AgentArrangementsComponent implements OnInit {
       return;
     }
 
-    this.api.post('api/arrangements/', this.newArrangement).subscribe({
+    this.api.post('arrangements/', this.newArrangement).subscribe({
       next: () => {
         this.successMessage = 'Arrangement added successfully.';
         this.newArrangement = { ...this.emptyFormData };
         this.showAddForm = false;
+        this.currentPage = 1;
         this.loadArrangements();
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -150,13 +167,22 @@ export class AgentArrangementsComponent implements OnInit {
     this.editFormData = { ...this.emptyFormData };
   }
 
+  // Wrapper za strelicu na kartici — otvara ili zatvara isti edit blok
+  toggleArrangement(arrangement: Arrangement): void {
+    if (this.editingArrangementId === arrangement.id) {
+      this.cancelEdit();
+    } else {
+      this.startEdit(arrangement);
+    }
+  }
+
   saveEdit(arrangementId: number): void {
     if (!this.isFormValid(this.editFormData)) {
       this.errorMessage = 'Name, destination, hotel, and dates are required.';
       return;
     }
 
-    this.api.put(`api/arrangements/${arrangementId}/`, this.editFormData).subscribe({
+    this.api.put(`arrangements/${arrangementId}/`, this.editFormData).subscribe({
       next: () => {
         this.successMessage = 'Arrangement updated successfully.';
         this.cancelEdit();
@@ -174,9 +200,12 @@ export class AgentArrangementsComponent implements OnInit {
       return;
     }
 
-    this.api.delete(`api/arrangements/${id}/`).subscribe({
+    this.api.delete(`arrangements/${id}/`).subscribe({
       next: () => {
         this.successMessage = `Arrangement "${name}" deleted.`;
+        if (this.editingArrangementId === id) {
+          this.cancelEdit();
+        }
         this.loadArrangements();
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -184,5 +213,37 @@ export class AgentArrangementsComponent implements OnInit {
         this.errorMessage = 'Failed to delete arrangement.';
       }
     });
+  }
+
+  // ===== Paginacija =====
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.arrangements.length / this.pageSize));
+  }
+
+  get pagedArrangements(): Arrangement[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.arrangements.slice(start, start + this.pageSize);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
+    this.currentPage = page;
+    this.cancelEdit();
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  private clampCurrentPage(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 }

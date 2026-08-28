@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.contrib.auth.models import User
 
 from agency.serializers import LoginSerializer, RegisterSerializer
 
@@ -28,3 +29,16 @@ class AuthSerializerTests(TestCase):
 
         self.assertFalse(serializer.is_valid())
         self.assertIn('password', serializer.errors)
+
+    def test_register_serializer_saves_phone_number_to_profile(self):
+        serializer = RegisterSerializer(data={
+            'username': 'traveler',
+            'email': 'traveler@example.com',
+            'phone_number': '+381 11 555 010',
+            'password': 'Secret123!',
+        })
+
+        self.assertTrue(serializer.is_valid())
+        user = serializer.save()
+
+        self.assertEqual(User.objects.get(pk=user.pk).profile.phone_number, '+381 11 555 010')

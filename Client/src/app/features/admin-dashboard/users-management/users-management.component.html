@@ -25,7 +25,15 @@
         <div class="user-avatar">{{ getInitials(user.username) }}</div>
 
         <div class="user-main">
-          <span class="user-name">{{ user.username }}</span>
+          <span class="user-name">
+            <span
+              class="user-status-dot"
+              [class.user-status-dot--inactive]="!user.is_active"
+              [attr.title]="user.is_active ? 'Active' : 'Inactive'"
+              [attr.aria-label]="user.is_active ? 'Active user' : 'Inactive user'">
+            </span>
+            {{ user.username }}
+          </span>
           <span class="user-email">{{ user.email }}</span>
         </div>
 
@@ -91,6 +99,13 @@
           <div class="form-group">
             <label>Date of birth</label>
             <input type="date" [(ngModel)]="editFormData.date_of_birth" />
+          </div>
+          <div class="form-group">
+            <label>Active</label>
+            <select [(ngModel)]="editFormData.is_active">
+              <option [ngValue]="true">True</option>
+              <option [ngValue]="false">False</option>
+            </select>
           </div>
         </div>
 

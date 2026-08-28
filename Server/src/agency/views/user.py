@@ -56,6 +56,7 @@ def user_detail(request, id):
         email = request.data.get('email')
         password = request.data.get('password')
         role = request.data.get('role')
+        is_active = request.data.get('is_active')
 
         if username:
             if User.objects.filter(username=username).exclude(id=id).exists():
@@ -75,6 +76,14 @@ def user_detail(request, id):
 
         if password:
             user.set_password(password)
+
+        if is_active is not None:
+            if not isinstance(is_active, bool):
+                return Response({
+                    "success": False,
+                    "message": "is_active must be a boolean",
+                }, status=status.HTTP_400_BAD_REQUEST)
+            user.is_active = is_active
 
         if role:
             if role == 'ADMIN':

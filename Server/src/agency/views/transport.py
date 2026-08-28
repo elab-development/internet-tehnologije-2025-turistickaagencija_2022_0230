@@ -9,7 +9,7 @@ from ..serializers import TransportSerializer
 
 
 def is_admin(user):
-    return user.is_authenticated and (user.is_superuser or user.is_staff)
+    return user.is_authenticated and user.is_superuser
 
 
 @extend_schema(methods=['GET'], summary='List transports', responses=TransportSerializer(many=True), operation_id='transports_list')

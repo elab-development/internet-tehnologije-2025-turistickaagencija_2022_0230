@@ -1,0 +1,73 @@
+<section class="agent-bookings">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Agent workspace</p>
+      <h1>My arrangement bookings</h1>
+      <p>Review bookings made for arrangements you created.</p>
+    </div>
+    <span class="booking-count">{{ bookings.length }} bookings</span>
+  </header>
+
+  <div *ngIf="errorMessage" class="message message-error">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="message message-success">{{ successMessage }}</div>
+
+  <div *ngIf="loading" class="booking-list">
+    <div class="booking-card skeleton" *ngFor="let item of [1, 2, 3]"></div>
+  </div>
+
+  <div *ngIf="!loading" class="booking-list">
+    <article class="booking-card" *ngFor="let booking of pagedBookings">
+      <button class="booking-summary" type="button" (click)="toggleBooking(booking)">
+        <span class="booking-icon">🧾</span>
+        <span class="booking-main">
+          <strong>#{{ booking.id }} · {{ booking.arrangement.name }}</strong>
+          <small>{{ booking.user.username }} · {{ booking.booked_at | date:'mediumDate' }}</small>
+        </span>
+        <span class="booking-detail">{{ booking.guests }} guests</span>
+        <span class="booking-detail">{{ booking.total_price }} €</span>
+        <span [ngClass]="['status', getStatusClass(booking.status)]">{{ booking.status }}</span>
+        <span class="expand-icon" [class.expand-icon--open]="editingBookingId === booking.id">⌄</span>
+      </button>
+
+      <div class="edit-panel" *ngIf="editingBookingId === booking.id">
+        <label>
+          Status
+          <select [(ngModel)]="editFormData.status">
+            <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+          </select>
+        </label>
+        <label>
+          Payment
+          <select [(ngModel)]="editFormData.payment_status">
+            <option *ngFor="let status of paymentStatuses" [value]="status">{{ status }}</option>
+          </select>
+        </label>
+        <label class="notes-field">
+          Notes
+          <textarea [(ngModel)]="editFormData.notes"></textarea>
+        </label>
+        <div class="actions">
+          <button type="button" class="button button-primary" (click)="saveEdit(booking.id)">Save changes</button>
+          <button type="button" class="button button-danger" (click)="deleteBooking(booking.id)">Delete booking</button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div *ngIf="!loading && bookings.length === 0 && !errorMessage" class="empty-state">
+    No bookings found for your arrangements.
+  </div>
+
+  <!-- Paginacija -->
+  <div class="pagination" *ngIf="!loading && totalPages > 1">
+    <button class="pagination__nav" (click)="prevPage()" [disabled]="currentPage === 1" aria-label="Previous page">
+      ‹
+    </button>
+
+    <span class="pagination__label">Page <strong>{{ currentPage }}</strong> of {{ totalPages }}</span>
+
+    <button class="pagination__nav" (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next page">
+      ›
+    </button>
+  </div>
+</section>

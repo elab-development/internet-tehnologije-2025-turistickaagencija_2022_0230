@@ -57,7 +57,7 @@ export class AdminDashboardComponent implements OnInit {
       return;
     }
 
-    this.api.get<DashboardResponse>('api/admin/dashboard/').subscribe({
+    this.api.get<DashboardResponse>('admin/dashboard/').subscribe({
       next: (response) => {
         if (response.success) {
           this.stats = response.data.stats;

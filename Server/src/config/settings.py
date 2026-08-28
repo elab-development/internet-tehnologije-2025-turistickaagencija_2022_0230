@@ -15,6 +15,7 @@ from datetime import timedelta
 import os
 
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +31,13 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-only-key')
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
+IS_PRODUCTION = os.getenv('DJANGO_ENV', 'development').lower() == 'production'
+
+if IS_PRODUCTION:
+    if SECRET_KEY == 'django-insecure-dev-only-key':
+        raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG=False.')
+    if not ALLOWED_HOSTS:
+        raise ImproperlyConfigured('ALLOWED_HOSTS must be set when DEBUG=False.')
 
 
 # Application definition
@@ -53,6 +61,18 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/hour',
+        'user': '600/hour',
+        'login': '5/minute',
+        'registration': '10/hour',
+        'password_reset': '5/hour',
+        'activation': '10/hour',
+    },
 }
 
 SPECTACULAR_SETTINGS = {
@@ -104,6 +124,18 @@ CSRF_TRUSTED_ORIGINS = [
     if origin.strip()
 ]
 
+if IS_PRODUCTION:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'same-origin'
+    X_FRAME_OPTIONS = 'DENY'
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -147,7 +179,9 @@ else:
     }
 
 if DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
-    DATABASES['default'].setdefault('OPTIONS', {})['sslmode'] = 'require'
+    sslmode = os.getenv('DB_SSLMODE')
+    if sslmode:
+        DATABASES['default'].setdefault('OPTIONS', {})['sslmode'] = sslmode
 
 
 # Password validation

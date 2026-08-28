@@ -62,6 +62,32 @@ class BookingIntegrationTests(TestCase):
         booking = Booking.objects.get(user=self.user)
         self.assertEqual(booking.guests, 2)
         self.assertEqual(booking.total_price, Decimal('1000.00'))
+        arrangement_response = self.client.get(
+            f'/api/arrangements/{self.arrangement.id}/',
+            **self.auth_headers(),
+        )
+        self.assertEqual(arrangement_response.json()['data']['remaining_capacity'], 0)
+
+    def test_cancelled_booking_frees_capacity_for_a_new_booking(self):
+        self.create_booking(adults=2)
+        booking = Booking.objects.get(user=self.user)
+
+        cancel_response = self.client.put(
+            f'/api/bookings/{booking.id}/',
+            {'action': 'cancel'},
+            content_type='application/json',
+            **self.auth_headers(),
+        )
+        self.assertEqual(cancel_response.status_code, 200)
+
+        response = self.create_booking(user=self.other_user, adults=2)
+        self.assertEqual(response.status_code, 201)
+
+        delete_response = self.client.delete(
+            f'/api/bookings/{booking.id}/',
+            **self.auth_headers(),
+        )
+        self.assertEqual(delete_response.status_code, 204)
 
     def test_booking_is_rejected_when_capacity_is_exceeded(self):
         self.create_booking(adults=2)
@@ -70,6 +96,18 @@ class BookingIntegrationTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertIn('capacity', response.json()['message'].lower())
+
+    def test_staff_user_cannot_create_personal_booking(self):
+        agent = User.objects.create_user(
+            username='agent',
+            password='Agent123!',
+            is_staff=True,
+        )
+
+        response = self.create_booking(user=agent)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Booking.objects.filter(user=agent).exists())
 
     def test_user_can_pay_and_cancel_own_booking(self):
         self.create_booking()

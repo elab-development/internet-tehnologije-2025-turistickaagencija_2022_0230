@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
+import { environment } from '../../../../environments/environment';
 
 interface Country {
   id: number;
@@ -32,10 +33,17 @@ export class DestinationsManagementComponent implements OnInit {
   countries: Country[] = [];
   errorMessage = '';
   successMessage = '';
+  loading = false;
   editingDestinationId: number | null = null;
   showAddForm = false;
+  selectedImageFile: File | null = null;
+  newImageFile: File | null = null;
   editFormData = { name: '', image: '', country_id: 0 };
   newDestination = { name: '', image: '', country_id: 0 };
+
+  // ===== Paginacija =====
+  pageSize = 10;
+  currentPage = 1;
 
   constructor(private api: ApiService) {}
 
@@ -45,7 +53,7 @@ export class DestinationsManagementComponent implements OnInit {
   }
 
   loadCountries(): void {
-    this.api.get<any>('api/countries/').subscribe({
+    this.api.get<any>('countries/').subscribe({
       next: response => {
         this.countries = this.resolveData(response);
       },
@@ -56,11 +64,15 @@ export class DestinationsManagementComponent implements OnInit {
   }
 
   loadDestinations(): void {
-    this.api.get<any>('api/destinations/').subscribe({
+    this.loading = true;
+    this.api.get<any>('destinations/').subscribe({
       next: response => {
+        this.loading = false;
         this.destinations = this.resolveData(response);
+        this.clampCurrentPage();
       },
       error: () => {
+        this.loading = false;
         this.errorMessage = 'Failed to load destinations.';
       }
     });
@@ -73,10 +85,24 @@ export class DestinationsManagementComponent implements OnInit {
     return response;
   }
 
+  getImageUrl(image: string | null): string | null {
+    if (!image || image.startsWith('http')) {
+      return image;
+    }
+    return `${environment.mediaUrl}${image.startsWith('/') ? image : `/${image}`}`;
+  }
+
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
     this.errorMessage = '';
     this.successMessage = '';
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.showAddForm) {
+      this.toggleAddForm();
+    }
   }
 
   addDestination(): void {
@@ -85,11 +111,20 @@ export class DestinationsManagementComponent implements OnInit {
       return;
     }
 
-    this.api.post('api/destinations/', this.newDestination).subscribe({
+    const formData = new FormData();
+    formData.append('name', this.newDestination.name);
+    formData.append('country_id', String(this.newDestination.country_id));
+    if (this.newImageFile) {
+      formData.append('image', this.newImageFile);
+    }
+
+    this.api.post('destinations/', formData).subscribe({
       next: () => {
         this.successMessage = 'Destination added successfully.';
         this.newDestination = { name: '', image: '', country_id: 0 };
+        this.newImageFile = null;
         this.showAddForm = false;
+        this.currentPage = 1;
         this.loadDestinations();
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -101,6 +136,7 @@ export class DestinationsManagementComponent implements OnInit {
 
   startEdit(destination: Destination): void {
     this.editingDestinationId = destination.id;
+    this.selectedImageFile = null;
     this.editFormData = {
       name: destination.name,
       image: destination.image || '',
@@ -110,7 +146,17 @@ export class DestinationsManagementComponent implements OnInit {
 
   cancelEdit(): void {
     this.editingDestinationId = null;
+    this.selectedImageFile = null;
     this.editFormData = { name: '', image: '', country_id: 0 };
+  }
+
+  // Wrapper za strelicu na kartici — otvara ili zatvara isti edit blok
+  toggleDestination(destination: Destination): void {
+    if (this.editingDestinationId === destination.id) {
+      this.cancelEdit();
+    } else {
+      this.startEdit(destination);
+    }
   }
 
   saveEdit(destinationId: number): void {
@@ -119,7 +165,14 @@ export class DestinationsManagementComponent implements OnInit {
       return;
     }
 
-    this.api.put(`api/destinations/${destinationId}/`, this.editFormData).subscribe({
+    const formData = new FormData();
+    formData.append('name', this.editFormData.name);
+    formData.append('country_id', String(this.editFormData.country_id));
+    if (this.selectedImageFile) {
+      formData.append('image', this.selectedImageFile);
+    }
+
+    this.api.put(`destinations/${destinationId}/`, formData).subscribe({
       next: () => {
         this.successMessage = 'Destination updated successfully.';
         this.cancelEdit();
@@ -132,14 +185,27 @@ export class DestinationsManagementComponent implements OnInit {
     });
   }
 
+  onImageSelected(event: Event, isEdit: boolean): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+    if (isEdit) {
+      this.selectedImageFile = file;
+    } else {
+      this.newImageFile = file;
+    }
+  }
+
   deleteDestination(id: number, name: string): void {
     if (!confirm(`Delete destination "${name}"?`)) {
       return;
     }
 
-    this.api.delete(`api/destinations/${id}/`).subscribe({
+    this.api.delete(`destinations/${id}/`).subscribe({
       next: () => {
         this.successMessage = `Destination "${name}" deleted.`;
+        if (this.editingDestinationId === id) {
+          this.cancelEdit();
+        }
         this.loadDestinations();
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -147,5 +213,37 @@ export class DestinationsManagementComponent implements OnInit {
         this.errorMessage = 'Failed to delete destination.';
       }
     });
+  }
+
+  // ===== Paginacija =====
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.destinations.length / this.pageSize));
+  }
+
+  get pagedDestinations(): Destination[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.destinations.slice(start, start + this.pageSize);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
+    this.currentPage = page;
+    this.cancelEdit();
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  private clampCurrentPage(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 }
