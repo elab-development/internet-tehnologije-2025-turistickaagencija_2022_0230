@@ -56,4 +56,10 @@ export class HomeComponent {
   bookNow(arrangement: Arrangement): void {
     this.router.navigate(['/booking', arrangement.id]);
   }
+
+  searchByDestination(destinationId: number): void {
+    this.router.navigate(['/arrangement-offer'], {
+      queryParams: { destination_id: destinationId }
+    });
+  }
 }

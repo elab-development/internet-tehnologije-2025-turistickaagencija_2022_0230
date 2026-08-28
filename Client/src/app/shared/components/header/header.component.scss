@@ -49,7 +49,7 @@
           display: inline-block;
           padding: 0.7rem 1.15rem;
           border-radius: 999px;
-          background-color: transparent;
+          background-color: #fff;
           color: #111827;
           font-size: 0.95rem;
           font-weight: 700;
@@ -58,13 +58,13 @@
           transition: background-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
 
           &:hover {
-            background-color: rgba(242, 187, 32, 0.14);
-            color: #b8860f;
+            background-color: #f2bb20;
+            color: #111827;
           }
 
           &.active {
-            background-color: #111827;
-            color: #fff;
+            background-color: #f2bb20;
+            color: #111827;
           }
         }
       }
@@ -74,22 +74,19 @@
   // ===== Login / Sign up =====
   .login-link {
     border: 1.5px solid #e5e7eb;
-
-    &:hover {
-      border-color: #f2bb20;
-      background-color: rgba(242, 187, 32, 0.14);
-    }
-  }
-
-  .signup-link {
     background-color: #111827 !important;
     color: #fff !important;
 
     &:hover {
-      background-color: #f2bb20 !important;
-      color: #111827 !important;
-      transform: translateY(-1px);
+      border-color: #111827;
+      background-color: #111827 !important;
+      color: #fff !important;
     }
+  }
+
+  .signup-link {
+    background-color: #fff;
+    color: #111827;
   }
 
   // ===== User menu =====
@@ -169,7 +166,7 @@
         gap: 10px;
         width: 100%;
         padding: 10px 12px;
-        background-color: transparent;
+        background-color: #fff;
         border: none;
         border-radius: 10px;
         text-align: left;
@@ -187,29 +184,21 @@
           color: #111827;
         }
 
+        &--active,
+        &--active:hover {
+          background-color: #111827;
+          color: #fff;
+        }
+
         &--danger:hover {
           background-color: #fef2f2;
           color: #b91c1c;
         }
       }
 
-      .dropdown-icon {
-        font-size: 15px;
-        line-height: 1;
-      }
     }
   }
 
-  .navigation ul li:last-child a:not(.active) {
-    // Fallback za slučaj da Sign Up ostane poslednji element bez klase (npr. dok user$ učitava)
-    background-color: #111827;
-    color: #fff;
-
-    &:hover {
-      background-color: #f2bb20;
-      color: #111827;
-    }
-  }
 }
 
 @keyframes dropdown-in {
@@ -260,6 +249,36 @@
         gap: 6px;
         padding-bottom: 0.35rem;
       }
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .header {
+    padding: 0.6rem 0.75rem;
+
+    .logo-img {
+      height: 44px;
+    }
+
+    .navigation ul {
+      justify-content: stretch;
+
+      li {
+        flex: 1 1 auto;
+        min-width: 0;
+
+        a {
+          display: block;
+          padding: 0.55rem 0.45rem;
+          text-align: center;
+          font-size: 0.78rem;
+        }
+      }
+    }
+
+    .user-menu .user-button {
+      padding: 0.35rem;
     }
   }
 }

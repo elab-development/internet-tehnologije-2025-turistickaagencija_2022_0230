@@ -71,6 +71,10 @@ def admin_bookings(request, id=None):
     allowed_fields = [field for field in ('status', 'payment_status', 'notes') if field in request.data]
     if not allowed_fields:
         return Response({'success': False, 'message': 'No editable fields provided.'}, status=status.HTTP_400_BAD_REQUEST)
+    if 'status' in request.data and request.data['status'] not in dict(Booking.STATUS_CHOICES):
+        return Response({'success': False, 'message': 'Invalid booking status.'}, status=status.HTTP_400_BAD_REQUEST)
+    if 'payment_status' in request.data and request.data['payment_status'] not in dict(Booking.PAYMENT_STATUS_CHOICES):
+        return Response({'success': False, 'message': 'Invalid payment status.'}, status=status.HTTP_400_BAD_REQUEST)
     for field in allowed_fields:
         setattr(booking, field, request.data[field])
     booking.save(update_fields=allowed_fields)

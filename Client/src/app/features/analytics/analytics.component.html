@@ -1,0 +1,47 @@
+<main class="analytics-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">{{ isAdmin ? 'Admin intelligence' : 'Agent intelligence' }}</p>
+      <h1>Analytics</h1>
+      <p class="subtitle">{{ isAdmin ? 'A clear view of the agency performance.' : 'A focused view of your arrangements and bookings.' }}</p>
+    </div>
+    <div class="period-label">All time <span>● Live data</span></div>
+  </header>
+
+  <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+  <ng-container *ngIf="data as analytics; else loading">
+    <section class="metric-grid">
+      <article class="metric-card metric-card--dark"><span>Bookings</span><strong>{{ analytics.summary['bookings'] }}</strong><small>excluding cancellations</small></article>
+      <article class="metric-card"><span>Guests</span><strong>{{ analytics.summary['guests'] }}</strong><small>confirmed demand</small></article>
+      <article class="metric-card"><span>Confirmed revenue</span><strong>{{ formatCurrency(analytics.summary['revenue']) }}</strong><small>from active bookings</small></article>
+      <article class="metric-card"><span>Capacity</span><strong>{{ analytics.summary['capacity'] }}</strong><small>{{ analytics.summary['active_arrangements'] }} active arrangements</small></article>
+      <article *ngIf="isAdmin" class="metric-card"><span>Destinations</span><strong>{{ analytics.catalog?.['destinations'] }}</strong><small>{{ analytics.catalog?.['hotels'] }} hotels in catalog</small></article>
+    </section>
+
+    <section class="chart-grid">
+      <article class="panel panel--wide">
+        <div class="panel-heading"><div><p class="panel-kicker">Demand</p><h2>Bookings over time</h2></div><span class="legend"><i class="legend-dot"></i> bookings</span></div>
+        <div class="bar-chart bar-chart--timeline" *ngIf="analytics.bookings_over_time.length; else noData">
+          <div class="bar-group" *ngFor="let item of analytics.bookings_over_time"><div class="bar-value">{{ item.bookings }}</div><div class="bar" [style.height.%]="item.bookings / maxBookings() * 100"></div><span>{{ item.label }}</span></div>
+        </div>
+        <ng-template #noData><p class="empty-state">No booking data available yet.</p></ng-template>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading"><div><p class="panel-kicker">Pipeline</p><h2>Booking status</h2></div></div>
+        <div class="horizontal-bars"><div *ngFor="let item of analytics.booking_status" class="horizontal-row"><div><span>{{ item.label }}</span><strong>{{ item.value }}</strong></div><div class="track"><i [style.width.%]="item.value / maxValue(analytics.booking_status) * 100"></i></div></div></div>
+      </article>
+
+      <article class="panel panel--wide">
+        <div class="panel-heading"><div><p class="panel-kicker">Revenue</p><h2>Confirmed revenue</h2></div><span class="legend"><i class="legend-dot legend-dot--green"></i> EUR</span></div>
+        <div class="bar-chart bar-chart--revenue" *ngIf="analytics.revenue_over_time.length; else noRevenue"><div class="bar-group" *ngFor="let item of analytics.revenue_over_time"><div class="bar-value">{{ item.revenue | number:'1.0-0' }}</div><div class="bar bar--green" [style.height.%]="item.revenue / maxRevenue() * 100"></div><span>{{ item.label }}</span></div></div>
+        <ng-template #noRevenue><p class="empty-state">No revenue data available yet.</p></ng-template>
+      </article>
+
+      <article class="panel"><div class="panel-heading"><div><p class="panel-kicker">Market</p><h2>Top destinations</h2></div></div><div class="rank-list"><div *ngFor="let item of analytics.top_destinations; let index = index" class="rank-row"><b>{{ index + 1 }}</b><span>{{ item.name }}<small>{{ item.guests }} guests</small></span><strong>{{ item.bookings }}</strong></div><p *ngIf="!analytics.top_destinations.length" class="empty-state">No destination data available yet.</p></div></article>
+
+      <article class="panel panel--full"><div class="panel-heading"><div><p class="panel-kicker">Inventory performance</p><h2>Arrangement performance</h2></div></div><div class="performance-table"><div class="table-row table-head"><span>Arrangement</span><span>Bookings</span><span>Guests</span><span>Fill rate</span><span>Revenue</span></div><div *ngFor="let item of analytics.arrangement_performance" class="table-row"><span>{{ item.name }}</span><span>{{ item.bookings }}</span><span>{{ item.guests }}</span><span><em class="fill-rate">{{ utilization(item) }}%</em></span><span>{{ formatCurrency(item.revenue) }}</span></div><p *ngIf="!analytics.arrangement_performance.length" class="empty-state">No arrangement data available yet.</p></div></article>
+    </section>
+  </ng-container>
+  <ng-template #loading><div class="loading-state">Loading analytics...</div></ng-template>
+</main>

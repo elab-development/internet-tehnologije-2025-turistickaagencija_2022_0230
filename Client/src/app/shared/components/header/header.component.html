@@ -11,8 +11,8 @@
 
       <!-- Kada NEMA usera: login/sign up -->
       <ng-container *ngIf="!(user$ | async)">
-        <li><a routerLink="login" class="login-link">Login</a></li>
-        <li><a routerLink="signup" class="signup-link">Sign Up</a></li>
+        <li><a routerLink="/login" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="login-link">Login</a></li>
+        <li><a routerLink="/signup" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="signup-link">Sign Up</a></li>
       </ng-container>
 
       <ng-container *ngIf="user$ | async as user">
@@ -26,17 +26,23 @@
           </button>
 
           <div class="user-dropdown" *ngIf="userMenuOpen">
-            <a *ngIf="!isAdmin(user) && !isAgent(user)" routerLink="/my-bookings" class="dropdown-item" (click)="userMenuOpen = false">
-              <span class="dropdown-icon">🗓️</span> My Bookings
+            <a *ngIf="!isAdmin(user) && !isAgent(user)" routerLink="/my-bookings" routerLinkActive="dropdown-item--active" [routerLinkActiveOptions]="{exact: true}" class="dropdown-item" (click)="userMenuOpen = false">
+              My Bookings
             </a>
-            <a *ngIf="isAdmin(user)" routerLink="/admin/dashboard" class="dropdown-item" (click)="userMenuOpen = false">
-              <span class="dropdown-icon">🛠️</span> Dashboard
+            <a *ngIf="isAdmin(user)" routerLink="/admin/dashboard" routerLinkActive="dropdown-item--active" [routerLinkActiveOptions]="{exact: true}" class="dropdown-item" (click)="userMenuOpen = false">
+              Dashboard
             </a>
-            <a *ngIf="isAgent(user)" routerLink="/agent/dashboard" class="dropdown-item" (click)="userMenuOpen = false">
-              <span class="dropdown-icon">🧭</span> Agent Dashboard
+            <a *ngIf="isAdmin(user)" routerLink="/admin/analytics" routerLinkActive="dropdown-item--active" [routerLinkActiveOptions]="{exact: true}" class="dropdown-item" (click)="userMenuOpen = false">
+              Analytics
+            </a>
+            <a *ngIf="isAgent(user)" routerLink="/agent/dashboard" routerLinkActive="dropdown-item--active" [routerLinkActiveOptions]="{exact: true}" class="dropdown-item" (click)="userMenuOpen = false">
+              Agent Dashboard
+            </a>
+            <a *ngIf="isAgent(user)" routerLink="/agent/analytics" routerLinkActive="dropdown-item--active" [routerLinkActiveOptions]="{exact: true}" class="dropdown-item" (click)="userMenuOpen = false">
+              Analytics
             </a>
             <button class="dropdown-item dropdown-item--danger" (click)="logout()">
-              <span class="dropdown-icon">🚪</span> Logout
+              Logout
             </button>
           </div>
         </li>

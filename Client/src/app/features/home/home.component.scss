@@ -432,3 +432,85 @@
   }
 
 }
+
+@media (max-width: 768px) {
+  .home {
+    .main-content {
+      min-height: 420px;
+      height: auto;
+      padding: 4rem 1.25rem;
+
+      .text-content {
+        h1 {
+          font-size: clamp(2rem, 9vw, 3rem);
+          text-align: center;
+        }
+
+        p {
+          font-size: clamp(1.15rem, 5vw, 2rem);
+        }
+      }
+    }
+
+    .destinations-section,
+    .featured-tours,
+    .adventure-section {
+      margin-top: 5rem;
+      margin-bottom: 7rem;
+    }
+
+    .destinations-section .title,
+    .featured-tours h2,
+    .content h2,
+    .more-info__title {
+      font-size: clamp(1.75rem, 7vw, 2.5rem);
+    }
+
+    .adventure-grid,
+    .more-info__grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .features {
+      justify-content: center;
+    }
+
+    .more-info {
+      padding-top: 3rem;
+      padding-bottom: 7rem;
+    }
+  }
+}
+
+@media (max-width: 520px) {
+  .home {
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .features {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .feature-column,
+    .feature-column--right {
+      gap: 1rem;
+      margin-top: 0;
+    }
+
+    .feature-card {
+      width: 100%;
+    }
+
+    .more-info__images {
+      gap: 0.75rem;
+    }
+
+    .more-info__features {
+      grid-template-columns: 1fr;
+    }
+  }
+}

@@ -429,3 +429,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 560px) {
+  .management-container { padding: 24px 14px 40px; }
+  .header .btn-add { width: 100%; justify-content: center; }
+  .modal-actions { flex-wrap: wrap; }
+}

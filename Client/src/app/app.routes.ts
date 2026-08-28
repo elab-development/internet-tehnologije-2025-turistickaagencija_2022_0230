@@ -85,6 +85,12 @@ export const routes: Routes = [
         data: { requiredRole: 'ADMIN' }
     },
     {
+        path: 'admin/analytics',
+        loadComponent: () => import('./features/analytics/analytics.component').then(module => module.AnalyticsComponent),
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'ADMIN' }
+    },
+    {
         path: 'admin/users',
         component: UsersManagementComponent,
         canActivate: [AuthGuard],
@@ -129,6 +135,12 @@ export const routes: Routes = [
     {
         path: 'agent/dashboard',
         component: AgentDashboardComponent,
+        canActivate: [AuthGuard],
+        data: { requiredRole: 'AGENT' }
+    },
+    {
+        path: 'agent/analytics',
+        loadComponent: () => import('./features/analytics/analytics.component').then(module => module.AnalyticsComponent),
         canActivate: [AuthGuard],
         data: { requiredRole: 'AGENT' }
     },

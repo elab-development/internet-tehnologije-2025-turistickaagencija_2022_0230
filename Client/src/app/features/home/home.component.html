@@ -21,7 +21,7 @@
           <h3>{{ dest.destination.name }}</h3>
           <span>{{ dest.arrangement_count }} {{ dest.arrangement_count === 1 ? 'Tour' : 'Tours' }}</span>
         </div>
-        <button class="arrow">→</button>
+        <button type="button" class="arrow" (click)="searchByDestination(dest.destination.id)">→</button>
       </div>
     </div>
   </section>

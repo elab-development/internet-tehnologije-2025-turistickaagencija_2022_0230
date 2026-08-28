@@ -6,7 +6,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 import logging
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -14,6 +14,7 @@ from django.conf import settings
 from drf_spectacular.utils import extend_schema
 
 from ..serializers import LoginSerializer, RegisterSerializer
+from ..throttles import ActivationRateThrottle, LoginRateThrottle, PasswordResetRateThrottle, RegistrationRateThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 @extend_schema(summary='Authenticate a user and issue a JWT', request=LoginSerializer, responses=dict, operation_id='auth_login')
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@throttle_classes([LoginRateThrottle])
 def login(request):
     serializer = LoginSerializer(data=request.data)
 
@@ -88,6 +90,7 @@ def login(request):
 @extend_schema(summary='Register a new user account', request=RegisterSerializer, responses=dict, operation_id='auth_register')
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@throttle_classes([RegistrationRateThrottle])
 def register(request):
     serializer = RegisterSerializer(data=request.data)
 
@@ -136,6 +139,7 @@ def register(request):
 @extend_schema(summary='Activate a user account', request=dict, responses=dict, operation_id='auth_activate')
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@throttle_classes([ActivationRateThrottle])
 def activate(request):
     uid = request.data.get('uid')
     token = request.data.get('token')
@@ -180,6 +184,7 @@ def activate(request):
 @extend_schema(summary='Request a password reset email', request=dict, responses=dict, operation_id='auth_password_reset_request')
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@throttle_classes([PasswordResetRateThrottle])
 def request_password_reset(request):
     email = (request.data.get('email') or '').strip()
 
@@ -221,6 +226,7 @@ def request_password_reset(request):
 @extend_schema(summary='Confirm a password reset', request=dict, responses=dict, operation_id='auth_password_reset_confirm')
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@throttle_classes([PasswordResetRateThrottle])
 def confirm_password_reset(request):
     uid = request.data.get('uid')
     token = request.data.get('token')

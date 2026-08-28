@@ -23,8 +23,7 @@ export class UserBookingsComponent {
     cardName: '',
     cardNumber: '',
     expiry: '',
-    cvc: '',
-    saveCard: false
+    cvc: ''
   };
   paymentErrors: string[] = [];
   savedCard: { cardName: string; last4: string; expiry: string } | null = null;
@@ -56,7 +55,6 @@ export class UserBookingsComponent {
 
     this.paymentForm.cardName = this.savedCard.cardName;
     this.paymentForm.expiry = this.savedCard.expiry;
-    this.paymentForm.saveCard = true;
     this.message = 'Saved card details loaded. Enter full card number to complete payment.';
   }
 
@@ -91,8 +89,7 @@ export class UserBookingsComponent {
       cardName: '',
       cardNumber: '',
       expiry: '',
-      cvc: '',
-      saveCard: false
+      cvc: ''
     };
     this.selectedBookingToPay = booking;
   }
@@ -108,9 +105,6 @@ export class UserBookingsComponent {
     }
 
     const payload: any = { action: 'pay' };
-    if (this.paymentForm.saveCard) {
-      payload.save_card = true;
-    }
 
     this.bookingApi.updateBooking(this.selectedBookingToPay.id, payload).subscribe({
       next: response => {
@@ -118,10 +112,6 @@ export class UserBookingsComponent {
         this.selectedBookingToPay!.payment_status = updated.payment_status;
         this.selectedBookingToPay!.status = updated.status;
         this.message = 'Payment completed successfully.';
-
-        if (this.paymentForm.saveCard) {
-          this.saveCardInfo();
-        }
 
         this.closeModal();
       },
@@ -161,19 +151,6 @@ export class UserBookingsComponent {
     }
 
     return this.paymentErrors.length === 0;
-  }
-
-  saveCardInfo(): void {
-    const cardNumber = this.paymentForm.cardNumber.replace(/\s+/g, '');
-    localStorage.setItem(
-      'savedCard',
-      JSON.stringify({
-        cardName: this.paymentForm.cardName,
-        last4: cardNumber.slice(-4),
-        expiry: this.paymentForm.expiry
-      })
-    );
-    this.loadSavedCard();
   }
 
   cancel(booking: Booking): void {
@@ -218,8 +195,7 @@ export class UserBookingsComponent {
       cardName: '',
       cardNumber: '',
       expiry: '',
-      cvc: '',
-      saveCard: false
+      cvc: ''
     };
   }
 }

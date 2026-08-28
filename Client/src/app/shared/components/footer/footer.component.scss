@@ -288,3 +288,56 @@
     }
   }
 }
+
+@media (max-width: 800px) {
+  .app-footer {
+    min-height: auto;
+
+    .footer-row {
+      flex-direction: column;
+      margin-bottom: 0;
+
+      .footer-col,
+      .footer-col.company,
+      .footer-col.nsl,
+      .footer-col.services {
+        align-items: center;
+        padding: 2rem 1rem;
+        padding-top: 2rem;
+
+        p,
+        .footer-item,
+        .col-title,
+        .col-text {
+          margin-left: 0;
+          margin-right: 0;
+          text-align: center;
+        }
+      }
+    }
+
+    .footer-row.row-2 {
+      flex-direction: column;
+      margin: 0 1rem 1rem;
+
+      .footer-col {
+        border-right: none;
+        border-bottom: 1px solid #8e8e8e;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+    }
+
+    .footer-row.row-3 {
+      gap: 1rem;
+      padding: 1rem;
+
+      .footer-col {
+        justify-content: center !important;
+        padding: 0;
+      }
+    }
+  }
+}
